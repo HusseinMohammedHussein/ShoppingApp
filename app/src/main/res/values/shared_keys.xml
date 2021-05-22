@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="user_token" translatable="false">user_token</string>
+    <string name="category_pojo" translatable="false">category_pojo</string>
+    <string name="product_pojo" translatable="false">product_pojo</string>
+    <string name="is_user" translatable="false">is_user</string>
+</resources>

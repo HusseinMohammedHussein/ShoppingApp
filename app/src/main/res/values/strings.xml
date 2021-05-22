@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">E-commerceApp</string>
+
+
+    <!--Facebook Auth-->
+    <string name="facebook_app_id" translatable="false">268678187986841</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb268678187986841</string>
+
+
+    <!--TextView Home-->
+    <string name="old_price" translatable="false"><strike>$</strike></string>
+    <string name="price" translatable="false">2500$</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="Title_ShopCategory" translatable="false">Categories</string>
+</resources>

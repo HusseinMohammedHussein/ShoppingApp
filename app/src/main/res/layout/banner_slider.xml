@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.smarteist.autoimageslider.SliderView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/imageSlider"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    app:sliderAnimationDuration="700"
+    app:sliderAutoCycleDirection="back_and_forth"
+    app:sliderAutoCycleEnabled="true"
+    app:sliderIndicatorAnimationDuration="700"
+    app:sliderIndicatorGravity="center_horizontal|bottom"
+    app:sliderIndicatorMargin="15dp"
+    app:sliderIndicatorOrientation="horizontal"
+    app:sliderIndicatorPadding="3dp"
+    app:sliderIndicatorRadius="2dp"
+    app:sliderIndicatorSelectedColor="@color/primary"
+    app:sliderIndicatorUnselectedColor="@color/white"
+    app:sliderScrollTimeInSec="3"
+    app:sliderStartAutoCycle="true" />
+

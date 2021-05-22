@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cv_favorite"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="70dp"
+    app:cardElevation="2dp">
+
+    <ImageView
+        android:id="@+id/ic_favorite"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:scaleType="center"
+        app:srcCompat="@drawable/ic_favorite_disactive" />
+</androidx.cardview.widget.CardView>

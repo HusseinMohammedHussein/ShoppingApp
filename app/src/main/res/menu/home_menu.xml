@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_home_selector"
+        android:title="Home"
+        tools:ignore="HardcodedText" />
+
+    <item
+        android:id="@+id/shop"
+        android:icon="@drawable/ic_shop_selector"
+        android:title="Shop"
+        tools:ignore="HardcodedText" />
+
+    <item
+        android:id="@+id/bag"
+        android:icon="@drawable/ic_bag_selector"
+        android:title="Bag"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/favorites"
+        android:icon="@drawable/ic_favorite_selector"
+        android:title="Favorites"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/ic_profile_selector"
+        android:title="Profile"
+        tools:ignore="HardcodedText" />
+</menu>
