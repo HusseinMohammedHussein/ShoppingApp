@@ -3,6 +3,7 @@ package com.e.commerce.ui.fragments.auth.favorite
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.auth.FavoritesPojo
+import com.e.commerce.ui.common.AddRemoveFavorite
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -13,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FavoritesViewModel @Inject constructor() : ViewModel() {
     private val favoritesRepo = FavoritesRepo()
+    private val addRemoveFavoriteRepo = AddRemoveFavorite()
     val favoritesMData: MutableLiveData<FavoritesPojo> = MutableLiveData()
     val removeFromFavoritesMData: MutableLiveData<FavoritesPojo> = MutableLiveData()
 
@@ -33,7 +35,7 @@ class FavoritesViewModel @Inject constructor() : ViewModel() {
     }
 
     fun removeFromFavorite(productId: Int) {
-        favoritesRepo.removeFromFavorite(productId).enqueue(object : Callback<FavoritesPojo> {
+        addRemoveFavoriteRepo.addOrRemoveFavorite(productId).enqueue(object : Callback<FavoritesPojo> {
             override fun onResponse(call: Call<FavoritesPojo>, response: Response<FavoritesPojo>) {
                 if (response.isSuccessful && response.body() != null) {
                     removeFromFavoritesMData.value = response.body()

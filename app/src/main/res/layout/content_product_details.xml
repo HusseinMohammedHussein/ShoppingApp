@@ -66,7 +66,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:scaleType="center"
-                    app:srcCompat="@drawable/ic_favorite_disactive" />
+                    android:src="@drawable/ic_favorite_disactive" />
             </androidx.cardview.widget.CardView>
 
 

@@ -12,8 +12,4 @@ class FavoritesRepo {
     fun getFavorites(): Call<FavoritesPojo> {
         return ApiControl.apiService().getFavorites()
     }
-
-    fun removeFromFavorite(productId: Int): Call<FavoritesPojo> {
-        return ApiControl.apiService().addOrRemoveFavorite(productId)
-    }
 }

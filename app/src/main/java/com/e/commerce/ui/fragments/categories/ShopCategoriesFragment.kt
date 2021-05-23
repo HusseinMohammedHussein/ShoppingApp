@@ -28,24 +28,8 @@ class ShopCategoriesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         viewModelShop =
             ViewModelProvider(requireActivity()).get(ShopCategoriesViewModel::class.java)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.categories_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.search -> {
-                Toast.makeText(this.context, "Search", Toast.LENGTH_LONG).show()
-                return true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

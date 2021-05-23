@@ -3,6 +3,7 @@ package com.e.commerce.ui.fragments.categorydetails;
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +17,7 @@ class CategoryProductsAdapter :
     RecyclerView.Adapter<CategoryProductsAdapter.CategoryProductsViewHolder>() {
 
     private lateinit var pojoList: MutableList<ProductPojo>
+    lateinit var onItemClick: ((ProductPojo) -> Unit)
 
     fun setData(pojos: MutableList<ProductPojo>) {
         pojos.also { this.pojoList = it }
@@ -32,9 +34,33 @@ class CategoryProductsAdapter :
         fun bind(pojo: ProductPojo) {
             binding.tvProductName.text = pojo.name
             binding.tvProductPrice.text = String.format("${pojo.price} $")
-            binding.tvProductOldPrice.text = String.format("${pojo.old_price} $")
             binding.tvProductOldPrice.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             binding.tvDiscount.text = String.format("- ${pojo.discount}%%")
+
+            if (pojo.old_price == 0.0) {
+                binding.tvProductOldPrice.visibility = View.GONE
+                Timber.d("Discount::${pojo.old_price}")
+            } else {
+                binding.tvProductOldPrice.text = String.format("${pojo.old_price} $")
+            }
+
+            var i = 0
+            if (pojo.in_favorites) {
+                binding.favorite.icFavorite.setImageResource(R.drawable.ic_favorite_active)
+                i++
+            }
+
+            binding.favorite.icFavorite.setOnClickListener {
+                if (i == 0) {
+                    onItemClick.invoke(pojo)
+                    binding.favorite.icFavorite.setImageResource(R.drawable.ic_favorite_active)
+                    i++
+                } else if (i == 1) {
+                    onItemClick.invoke(pojo)
+                    binding.favorite.icFavorite.setImageResource(R.drawable.ic_favorite_disactive)
+                    i = 0
+                }
+            }
 
             Picasso.get()
                 .load(pojo.image)

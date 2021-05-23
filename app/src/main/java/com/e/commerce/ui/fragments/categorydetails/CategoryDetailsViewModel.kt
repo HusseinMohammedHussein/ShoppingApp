@@ -3,6 +3,9 @@ package com.e.commerce.ui.fragments.categorydetails
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.CategoryDetailsPojo
+import com.e.commerce.data.model.ProductsPojo
+import com.e.commerce.data.model.auth.FavoritesPojo
+import com.e.commerce.ui.common.AddRemoveFavorite
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -13,7 +16,10 @@ import javax.inject.Inject
 @HiltViewModel
 class CategoryDetailsViewModel @Inject constructor() : ViewModel() {
     private val catDetailsRepo = CategoryDetailsRepo()
+    private val addRemoveFavoriteRepo = AddRemoveFavorite()
     var categoryDetailsMutable: MutableLiveData<CategoryDetailsPojo> = MutableLiveData()
+    var searchProductMutable: MutableLiveData<ProductsPojo> = MutableLiveData()
+    var addRemoveFavoriteMutable: MutableLiveData<FavoritesPojo> = MutableLiveData()
 
 
     fun getCategoryDetails(id: Int) {
@@ -31,6 +37,35 @@ class CategoryDetailsViewModel @Inject constructor() : ViewModel() {
                 Timber.d("categoryDetailsFailure::${t.localizedMessage}")
             }
 
+        })
+    }
+
+    fun searchProduct(keyword: String) {
+        catDetailsRepo.searchProduct(keyword).enqueue(object: Callback<ProductsPojo>{
+            override fun onResponse(call: Call<ProductsPojo>, response: Response<ProductsPojo>) {
+                if (response.isSuccessful && response.body() != null) {
+                    searchProductMutable.value = response.body()
+                }
+            }
+
+            override fun onFailure(call: Call<ProductsPojo>, t: Throwable) {
+                Timber.d("searchProductFailure::${t.localizedMessage}")
+            }
+
+        })
+    }
+
+    fun addRemoveFavorite(productId: Int) {
+        addRemoveFavoriteRepo.addOrRemoveFavorite(productId).enqueue(object: Callback<FavoritesPojo>{
+            override fun onResponse(call: Call<FavoritesPojo>, response: Response<FavoritesPojo>) {
+                if (response.isSuccessful && response.body() != null) {
+                    addRemoveFavoriteMutable.value = response.body()
+                }
+            }
+
+            override fun onFailure(call: Call<FavoritesPojo>, t: Throwable) {
+                Timber.d("addRemoveFavoriteFailure::${t.localizedMessage}")
+            }
         })
     }
 }

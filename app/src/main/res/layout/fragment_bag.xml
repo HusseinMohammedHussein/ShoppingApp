@@ -61,12 +61,7 @@
                     android:layout_height="35dp"
                     android:background="@color/white"
                     android:hint="Enter your promo code"
-                    android:paddingHorizontal="10dp"
-                    app:layout_constrainedWidth="true"
-                    app:layout_constraintBottom_toBottomOf="@id/img_row"
-                    app:layout_constraintEnd_toStartOf="@id/img_row"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:paddingHorizontal="10dp" />
             </androidx.cardview.widget.CardView>
 
             <ImageView

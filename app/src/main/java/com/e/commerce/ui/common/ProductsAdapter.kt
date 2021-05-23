@@ -47,12 +47,13 @@ class ProductsAdapter : RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>
                 .load(pojo.image)
                 .into(binding.imgProduct)
 
+            var i = 0
             if (pojo.in_favorites) {
                 binding.btnFavorite.icFavorite.setImageResource(R.drawable.ic_favorite_active)
+                i++
             }
 
-            var i = 0
-            binding.btnFavorite.cvFavorite.setOnClickListener {
+            binding.btnFavorite.icFavorite.setOnClickListener {
                 if (i == 0) {
                     onItemClick.invoke(pojo)
                     binding.btnFavorite.icFavorite.setImageResource(R.drawable.ic_favorite_active)

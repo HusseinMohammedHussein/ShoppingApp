@@ -1,9 +1,7 @@
 package com.e.commerce.ui.fragments.categorydetails
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -35,6 +33,7 @@ class CategoryProductsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         viewModel = ViewModelProvider(requireActivity()).get(CategoryDetailsViewModel::class.java)
     }
 
@@ -46,13 +45,38 @@ class CategoryProductsFragment : Fragment() {
     private fun methods() {
         init()
         setupToolbar()
+        request()
         observeData()
+        setupSearch()
+        onCLickListener()
+    }
+
+    private fun onCLickListener() {
+        productsAdapter.onItemClick = { product ->
+            viewModel.addRemoveFavorite(product.id)
+        }
+    }
+
+    private fun request() {
+        viewModel.getCategoryDetails(categoryProductsParcelable.id)
+        Timber.d("categoryId::${categoryProductsParcelable.id}")
+        Timber.d("categoryName::${categoryProductsParcelable.name}")
+    }
+
+    private fun setupSearch() {
+        binding.tvSearch.setOnClickListener {
+            val keyword = binding.etSearch.text.toString().trim()
+            viewModel.searchProduct(keyword)
+            Timber.d("KeywordForSearch::${keyword}")
+            binding.loading.loading.visibility = View.VISIBLE
+            binding.rvProducts.visibility = View.GONE
+        }
     }
 
     private fun setupToolbar() {
-        (activity as MainActivity).setSupportActionBar(binding.appbar.toolbar)
-        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as MainActivity).setSupportActionBar(binding.appbar.toolbar)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
         binding.appbar.toolbar.setNavigationOnClickListener { (activity as MainActivity).onBackPressed() }
         binding.appbar.tvTitle.text = categoryProductsParcelable.name
@@ -72,16 +96,35 @@ class CategoryProductsFragment : Fragment() {
     }
 
     private fun observeData() {
-        viewModel.getCategoryDetails(categoryProductsParcelable.id)
-        Timber.d("categoryId::${categoryProductsParcelable.id}")
-        Timber.d("categoryName::${categoryProductsParcelable.name}")
-
         viewModel.categoryDetailsMutable.observe(viewLifecycleOwner, { categoryDetials ->
             productsAdapter.setData(categoryDetials.data.Products)
             productsAdapter.notifyDataSetChanged()
             binding.rvProducts.visibility = View.VISIBLE
             binding.loading.loading.visibility = View.GONE
         })
+
+        viewModel.searchProductMutable.observe(viewLifecycleOwner, { searchResponse ->
+            binding.loading.loading.visibility =View.GONE
+            binding.rvProducts.visibility = View.VISIBLE
+            productsAdapter.setData(searchResponse.data.products)
+            productsAdapter.notifyDataSetChanged()
+        })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.categories_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.search -> {
+                productsAdapter.clearData()
+                binding.rlSearch.visibility = View.VISIBLE
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onDestroyView() {

@@ -34,6 +34,10 @@ interface ApiService {
     fun getProducts(): Call<ProductsPojo>
 
 
+    @POST("products/search")
+    fun searchProduct(@Query("text") keyword: String): Call<ProductsPojo>
+
+
     /**Auth________________________________________________________________________*/
     @POST("register")
     fun requestRegister(@Body requestRegister: RequestRegisterPojo): Call<RegisterPojo>

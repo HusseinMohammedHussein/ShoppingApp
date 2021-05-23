@@ -1,5 +1,6 @@
 package com.e.commerce.ui.fragments.productdetails
 
+import android.annotation.SuppressLint
 import android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,13 +22,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 @AndroidEntryPoint
+@SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n")
 class ProductDetailsFragment : Fragment() {
     private lateinit var binding: FragmentProductDetailsBinding
+    private lateinit var productPojoParcelable: ProductPojo
+    private lateinit var bundle: Bundle
     private var viewModel: ProductDetailsViewModel = ProductDetailsViewModel()
     private var imagesAdapter: ProductImageAdapter = ProductImageAdapter()
     private var productsAdapter: ProductsAdapter = ProductsAdapter()
-    private lateinit var productPojoParcelable: ProductPojo
-    private lateinit var bundle: Bundle
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,43 +65,6 @@ class ProductDetailsFragment : Fragment() {
         binding.appbar.tvTitle.text = productPojoParcelable.name
     }
 
-    private fun onClickListener() {
-        var i = 0
-        var y = 0
-        binding.content.btnAddCart.setOnClickListener {
-            if (i == 0) {
-                viewModel.addToCart(productPojoParcelable.id)
-                binding.content.btnAddCart.text = "Add To Cart"
-                i++
-            } else if (i == 1) {
-                viewModel.addToCart(productPojoParcelable.id)
-                binding.content.btnAddCart.text = "Remove From Cart"
-                i = 0
-            }
-        }
-
-        binding.content.cvFavorite.setOnClickListener {
-            if (y == 0) {
-                viewModel.addToFavorites(productPojoParcelable.id)
-                binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_active)
-                y++
-            } else if (y == 1) {
-                viewModel.addToFavorites(productPojoParcelable.id)
-                binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_disactive)
-                y = 0
-            }
-        }
-
-        productsAdapter.onItemClick = {
-            viewModel.addToFavorites(productPojoParcelable.id)
-        }
-
-
-        binding.content.cvFavorite.setOnClickListener {
-            viewModel.addToFavorites(productPojoParcelable.id)
-        }
-    }
-
     private fun init() {
         bundle = Bundle()
         bundle = requireArguments()
@@ -126,21 +91,14 @@ class ProductDetailsFragment : Fragment() {
         })
 
         viewModel.productsLiveData.observe(viewLifecycleOwner, { products ->
-                binding.content.loading.loading.visibility = View.GONE
-                productsList(products)
-//            Handler(Looper.getMainLooper()).postDelayed({
-//            }, 5000)
+            binding.content.loading.loading.visibility = View.GONE
+            productsList(products)
+        //  Handler(Looper.getMainLooper()).postDelayed({}, 5000)
         })
 
         viewModel.addToBagLiveData.observe(viewLifecycleOwner, { cartResponse ->
             Toast.makeText(requireContext(), cartResponse.message, Toast.LENGTH_LONG).show()
         })
-
-        viewModel.addToFavoritesLiveData.observe(viewLifecycleOwner, { addToFavorite ->
-            Toast.makeText(requireContext(), addToFavorite.message, Toast.LENGTH_LONG).show()
-        })
-
-
     }
 
     private fun productsList(products: ProductsPojo) {
@@ -158,13 +116,61 @@ class ProductDetailsFragment : Fragment() {
         binding.content.tvProOldprice.paintFlags = STRIKE_THRU_TEXT_FLAG
         binding.content.tvProDesc.text = productDetails.data.description
         if (productDetails.data.in_favorites) {
-            binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_active)
+            binding.content.icFavorite.setImageDrawable(resources.getDrawable(R.drawable.ic_favorite_active))
+        }
+
+        if (productDetails.data.in_cart) {
+            binding.content.btnAddCart.text = "Remove From Cart"
         }
 
         imagesAdapter.setData(productDetails.data.images)
         binding.content.vpProImages.adapter = imagesAdapter
         binding.content.dotsIndicator.setViewPager2(binding.content.vpProImages)
 
+    }
+
+    private fun onClickListener() {
+        var i = 0
+        var y = 0
+        binding.content.btnAddCart.setOnClickListener {
+            if (i == 0) {
+                Timber.d("I for click = $i")
+                binding.content.btnAddCart.text = "Add To Cart"
+                viewModel.addToCart(productPojoParcelable.id)
+                i++
+            } else if (i == 1) {
+                Timber.d("I for click = $i")
+                binding.content.btnAddCart.text = "Remove From Cart"
+                viewModel.addToCart(productPojoParcelable.id)
+                i = 0
+            }
+        }
+
+        binding.content.icFavorite.setOnClickListener {
+            if (y == 0) {
+                viewModel.addToFavorites(productPojoParcelable.id)
+                binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_active)
+                viewModel.addToFavoritesLiveData.observe(viewLifecycleOwner, { response ->
+                    Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                })
+                y++
+            } else if (y == 1) {
+                viewModel.addToFavorites(productPojoParcelable.id)
+                binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_disactive)
+                viewModel.addToFavoritesLiveData.observe(viewLifecycleOwner, { response ->
+                    Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                })
+                y = 0
+            }
+        }
+
+        productsAdapter.onItemClick = {
+            viewModel.addToFavorites(productPojoParcelable.id)
+        }
+
+        binding.content.cvFavorite.setOnClickListener {
+            viewModel.addToFavorites(productPojoParcelable.id)
+        }
     }
 
     override fun onDestroy() {
