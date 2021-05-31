@@ -1,7 +1,7 @@
 package com.e.commerce.ui.fragments.auth.register
 
-import com.e.commerce.data.model.RegisterPojo
-import com.e.commerce.data.model.RegisterPojo.RequestRegisterPojo
+import com.e.commerce.data.model.auth.RegisterPojo
+import com.e.commerce.data.model.auth.RegisterPojo.RequestRegisterPojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import dagger.hilt.android.scopes.ViewModelScoped
 import retrofit2.Call

@@ -2,7 +2,7 @@ package com.e.commerce.ui.fragments.home
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.auth.FavoritesPojo
+import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.data.model.home.CategoryPojo
 import com.e.commerce.data.model.home.HomePojo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +17,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     private val repo = HomeRepo()
     val homePojoMutable: MutableLiveData<HomePojo> = MutableLiveData()
     val categoryPojoMutable: MutableLiveData<CategoryPojo> = MutableLiveData()
-    val favoritePojoMutable: MutableLiveData<FavoritesPojo> = MutableLiveData()
+    val favoritePojoMutable: MutableLiveData<FavoritePojo> = MutableLiveData()
 
     fun getHomeLiveData() {
         repo.getHome().enqueue(object : Callback<HomePojo> {
@@ -49,14 +49,14 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     }
 
     fun addFavorite(productId: Int) {
-        repo.addFavorite(productId).enqueue(object : Callback<FavoritesPojo> {
-            override fun onResponse(call: Call<FavoritesPojo>, response: Response<FavoritesPojo>) {
+        repo.addFavorite(productId).enqueue(object : Callback<FavoritePojo> {
+            override fun onResponse(call: Call<FavoritePojo>, response: Response<FavoritePojo>) {
                 if (response.isSuccessful && response.body() != null) {
                     favoritePojoMutable.value = response.body()
                 }
             }
 
-            override fun onFailure(call: Call<FavoritesPojo>, t: Throwable) {
+            override fun onFailure(call: Call<FavoritePojo>, t: Throwable) {
                 Timber.d("addFavoriteFailure::${t.localizedMessage}")
             }
         })

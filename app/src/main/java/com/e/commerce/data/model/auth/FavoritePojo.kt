@@ -8,9 +8,9 @@ import kotlinx.parcelize.Parcelize
 
 // Created by Hussein_Mohammad on 5/16/2021.
 @Parcelize
-data class FavoritesPojo(
+data class FavoritePojo(
     @SerializedName("status") @Expose val status: Boolean,
-    @SerializedName("message") @Expose val message: String,
+    @SerializedName("message") @Expose var message: String,
     @SerializedName("data") @Expose val data: FavoriteResponse
 ) : Parcelable {
     @Parcelize

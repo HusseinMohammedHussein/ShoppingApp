@@ -63,7 +63,7 @@
         android:label="fragment_categories"
         tools:layout="@layout/fragment_categories">
         <action
-            android:id="@+id/categories_to_catDetails"
+            android:id="@+id/action_categories_to_catDetails"
             app:destination="@id/categoryDetailsFragment" />
     </fragment>
 
@@ -91,7 +91,10 @@
         android:id="@+id/profile"
         android:name="com.e.commerce.ui.fragments.auth.profile.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile">
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profile_to_updateFragment"
+            app:destination="@id/settingProfileFragment" />
     </fragment>
 
     <fragment
@@ -105,4 +108,10 @@
         android:name="com.e.commerce.ui.fragments.auth.bag.BagFragment"
         android:label="fragment_bag"
         tools:layout="@layout/fragment_bag" />
+
+    <fragment
+        android:id="@+id/settingProfileFragment"
+        android:name="com.e.commerce.ui.fragments.auth.settingprofile.SettingProfileFragment"
+        android:label="fragment_update"
+        tools:layout="@layout/fragment_setting_profile" />
 </navigation>

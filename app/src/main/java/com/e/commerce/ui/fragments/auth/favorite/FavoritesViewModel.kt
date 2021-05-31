@@ -2,8 +2,8 @@ package com.e.commerce.ui.fragments.auth.favorite
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.auth.FavoritesPojo
-import com.e.commerce.ui.common.AddRemoveFavorite
+import com.e.commerce.data.model.auth.FavoritePojo
+import com.e.commerce.ui.common.AddRemoveFavoriteRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,20 +14,20 @@ import javax.inject.Inject
 @HiltViewModel
 class FavoritesViewModel @Inject constructor() : ViewModel() {
     private val favoritesRepo = FavoritesRepo()
-    private val addRemoveFavoriteRepo = AddRemoveFavorite()
-    val favoritesMData: MutableLiveData<FavoritesPojo> = MutableLiveData()
-    val removeFromFavoritesMData: MutableLiveData<FavoritesPojo> = MutableLiveData()
+    private val addRemoveFavoriteRepo = AddRemoveFavoriteRepo()
+    val favoriteMData: MutableLiveData<FavoritePojo> = MutableLiveData()
+    val removeFromFavoriteMData: MutableLiveData<FavoritePojo> = MutableLiveData()
 
 
     fun getFavorites() {
-        favoritesRepo.getFavorites().enqueue(object : Callback<FavoritesPojo> {
-            override fun onResponse(call: Call<FavoritesPojo>, response: Response<FavoritesPojo>) {
+        favoritesRepo.getFavorites().enqueue(object : Callback<FavoritePojo> {
+            override fun onResponse(call: Call<FavoritePojo>, response: Response<FavoritePojo>) {
                 if (response.isSuccessful && response.body() != null) {
-                    favoritesMData.value = response.body()
+                    favoriteMData.value = response.body()
                 }
             }
 
-            override fun onFailure(call: Call<FavoritesPojo>, t: Throwable) {
+            override fun onFailure(call: Call<FavoritePojo>, t: Throwable) {
                 Timber.d("getFavoritesFailure::${t.localizedMessage}")
             }
 
@@ -35,14 +35,14 @@ class FavoritesViewModel @Inject constructor() : ViewModel() {
     }
 
     fun removeFromFavorite(productId: Int) {
-        addRemoveFavoriteRepo.addOrRemoveFavorite(productId).enqueue(object : Callback<FavoritesPojo> {
-            override fun onResponse(call: Call<FavoritesPojo>, response: Response<FavoritesPojo>) {
+        addRemoveFavoriteRepo.addOrRemoveFavorite(productId).enqueue(object : Callback<FavoritePojo> {
+            override fun onResponse(call: Call<FavoritePojo>, response: Response<FavoritePojo>) {
                 if (response.isSuccessful && response.body() != null) {
-                    removeFromFavoritesMData.value = response.body()
+                    removeFromFavoriteMData.value = response.body()
                 }
             }
 
-            override fun onFailure(call: Call<FavoritesPojo>, t: Throwable) {
+            override fun onFailure(call: Call<FavoritePojo>, t: Throwable) {
                 Timber.d("removeFromCartFailure::${t.localizedMessage}")
             }
         })

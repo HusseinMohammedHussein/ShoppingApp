@@ -10,7 +10,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class BagPojo(
     @SerializedName("status") @Expose val status: Boolean,
-    @SerializedName("message") @Expose val message: String,
-    @SerializedName("data") @Expose val addedBagResponseData: BagItemResponsePojo,
-
-    ) : Parcelable
+    @SerializedName("message") @Expose var message: String,
+    @SerializedName("data") @Expose val addedBagResponseData: BagItemResponsePojo
+) : Parcelable

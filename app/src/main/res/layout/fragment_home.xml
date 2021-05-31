@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_layout_color"
+    android:background="@color/bg_offwhite_color"
     tools:context=".ui.fragments.home.HomeFragment">
 
     <include
@@ -15,7 +15,7 @@
         android:layout_gravity="center_vertical|center_horizontal"
         android:visibility="gone" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -100,5 +100,5 @@
                 banner_slider"
                 tools:visibility="visible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </FrameLayout>

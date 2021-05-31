@@ -4,13 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
     tools:showIn="@layout/fragment_home">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        app:cardCornerRadius="10dp"
+        android:layout_height="140dp"
         app:cardElevation="0dp">
 
         <ImageView
@@ -24,27 +22,3 @@
             tools:src="@drawable/img_banner" />
     </androidx.cardview.widget.CardView>
 </RelativeLayout>
-
-    <!--    <ImageView-->
-    <!--        android:id="@+id/img_category"-->
-    <!--        android:layout_width="150dp"-->
-    <!--        android:layout_height="100dp"-->
-    <!--        android:layout_marginStart="20dp"-->
-    <!--        android:layout_below="@id/img_banner"-->
-    <!--        android:layout_alignParentStart="true"-->
-    <!--        tools:src="@drawable/img_category" />-->
-
-    <!--    <TextView-->
-    <!--        android:id="@+id/tv_category_name"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_below="@id/img_banner"-->
-    <!--        android:layout_centerInParent="true"-->
-    <!--        android:layout_marginStart="21dp"-->
-    <!--        android:layout_marginTop="40dp"-->
-    <!--        android:layout_toEndOf="@id/img_category"-->
-    <!--        android:textColor="@color/black"-->
-    <!--        android:fontFamily="@font/metropolis_bold"-->
-    <!--        android:textAllCaps="true"-->
-    <!--        android:textSize="15sp"-->
-    <!--        tools:text="category name" />-->

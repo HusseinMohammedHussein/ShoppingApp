@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.ProductDetailsPojo
 import com.e.commerce.data.model.ProductsPojo
 import com.e.commerce.data.model.auth.bag.BagPojo
-import com.e.commerce.data.model.auth.FavoritesPojo
+import com.e.commerce.data.model.auth.FavoritePojo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -17,10 +17,10 @@ import javax.inject.Inject
 class ProductDetailsViewModel @Inject constructor() : ViewModel() {
 
     private val productDetailsRepo = ProductDetailsRepo()
-    var productDetailsLiveData: MutableLiveData<ProductDetailsPojo> = MutableLiveData()
-    var productsLiveData: MutableLiveData<ProductsPojo> = MutableLiveData()
-    var addToBagLiveData: MutableLiveData<BagPojo> = MutableLiveData()
-    var addToFavoritesLiveData: MutableLiveData<FavoritesPojo> = MutableLiveData()
+    val productDetailsLiveData: MutableLiveData<ProductDetailsPojo> = MutableLiveData()
+    val productsLiveData: MutableLiveData<ProductsPojo> = MutableLiveData()
+    val addToBagLiveData: MutableLiveData<BagPojo> = MutableLiveData()
+    val addToFavoriteLiveData: MutableLiveData<FavoritePojo> = MutableLiveData()
 
     fun getProductDetails(id: Int) {
         productDetailsRepo.getProductDetails(id).enqueue(object : Callback<ProductDetailsPojo> {
@@ -30,7 +30,6 @@ class ProductDetailsViewModel @Inject constructor() : ViewModel() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     productDetailsLiveData.value = response.body()
-                    Timber.d("productsVM::${response.body()}")
                 }
             }
 
@@ -49,7 +48,6 @@ class ProductDetailsViewModel @Inject constructor() : ViewModel() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     productsLiveData.value = response.body()
-                    Timber.d("productsVM::${response.body()}")
                 }
             }
 
@@ -75,16 +73,28 @@ class ProductDetailsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun addToFavorites(productId: Int) {
-        productDetailsRepo.addToFavorites(productId).enqueue(object : Callback<FavoritesPojo> {
-            override fun onResponse(call: Call<FavoritesPojo>, response: Response<FavoritesPojo>) {
+        productDetailsRepo.addToFavorites(productId).enqueue(object : Callback<FavoritePojo> {
+            override fun onResponse(call: Call<FavoritePojo>, response: Response<FavoritePojo>) {
                 if (response.isSuccessful && response.body() != null) {
-                    addToFavoritesLiveData.value = response.body()
+                    addToFavoriteLiveData.value = response.body()
                 }
             }
 
-            override fun onFailure(call: Call<FavoritesPojo>, t: Throwable) {
+            override fun onFailure(call: Call<FavoritePojo>, t: Throwable) {
                 Timber.d("addFavoritesFailure::${t.localizedMessage}")
             }
         })
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        addToFavoriteLiveData.value = null
+        productDetailsLiveData.value = null
+        productsLiveData.value = null
+        addToBagLiveData.value = null
+        Timber.d("addToFavoritesLiveData::OnClearedViewModel::${addToFavoriteLiveData.value}")
+        Timber.d("productDetailsLiveData::OnClearedViewModel::${productDetailsLiveData.value}")
+        Timber.d("productsLiveData::OnClearedViewModel::${productsLiveData.value}")
+        Timber.d("addToBagLiveData::OnClearedViewModel::${addToBagLiveData.value}")
     }
 }

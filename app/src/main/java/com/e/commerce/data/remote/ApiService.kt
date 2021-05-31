@@ -1,13 +1,21 @@
 package com.e.commerce.data.remote
 
-import com.e.commerce.data.model.*
-import com.e.commerce.data.model.RegisterPojo.RequestRegisterPojo
-import com.e.commerce.data.model.auth.FavoritesPojo
+import com.e.commerce.data.model.CategoryDetailsPojo
+import com.e.commerce.data.model.ProductDetailsPojo
+import com.e.commerce.data.model.ProductsPojo
+import com.e.commerce.data.model.ProfilePojo
+import com.e.commerce.data.model.auth.AddressPojo
+import com.e.commerce.data.model.auth.FavoritePojo
+import com.e.commerce.data.model.auth.OrderPojo
+import com.e.commerce.data.model.auth.RegisterPojo
+import com.e.commerce.data.model.auth.RegisterPojo.RequestRegisterPojo
 import com.e.commerce.data.model.auth.bag.BagPojo
-import com.e.commerce.data.model.auth.bag.BagsPojo
-import com.e.commerce.data.model.auth.bag.UpdateBagResponsePojo
+import com.e.commerce.data.model.auth.bag.BagResponsePojo
+import com.e.commerce.data.model.auth.bag.BagUpdateResponsePojo
+import com.e.commerce.data.model.auth.common.SignResponsePojo
 import com.e.commerce.data.model.home.CategoryPojo
 import com.e.commerce.data.model.home.HomePojo
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -46,17 +54,33 @@ interface ApiService {
     fun getProfile(): Call<ProfilePojo>
 
     @POST("favorites")
-    fun addOrRemoveFavorite(@Query("product_id") productId: Int): Call<FavoritesPojo>
+    fun addOrRemoveFavorite(@Query("product_id") productId: Int): Call<FavoritePojo>
 
     @GET("favorites")
-    fun getFavorites(): Call<FavoritesPojo>
+    fun getFavorites(): Call<FavoritePojo>
 
     @POST("carts")
     fun addOrRemoveBag(@Query("product_id") productId: Int): Call<BagPojo>
 
     @GET("carts")
-    fun getBag(): Call<BagsPojo>
+    fun getBag(): Call<BagResponsePojo>
 
     @PUT("carts/{id}")
-    fun updateQuantityBag(@Path("id") bagProductId: Int, @QueryMap hashMap: HashMap<String, Int>): Call<UpdateBagResponsePojo>
+    fun updateQuantityBag(@Path("id") bagProductId: Int, @QueryMap hashMap: HashMap<String, Int>): Call<BagUpdateResponsePojo>
+
+    @GET("orders")
+    fun getOrders(): Call<OrderPojo>
+
+    @GET("addresses")
+    fun getAddresses(): Call<AddressPojo>
+
+    @Multipart
+    @PUT("update-profile")
+    fun settingProfile(
+        @Query("name") name: String,
+        @Query("phone") phone: String,
+        @Query("email") email: String,
+//        @Query("password") password: String,
+        @Part image: MultipartBody.Part
+    ): Call<SignResponsePojo>
 }

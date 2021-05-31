@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.e.commerce.R
-import com.e.commerce.data.model.RegisterPojo.RequestRegisterPojo
+import com.e.commerce.data.model.auth.RegisterPojo.RequestRegisterPojo
 import com.e.commerce.databinding.FragmentRegisterBinding
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
@@ -92,9 +92,9 @@ class RegisterFragment : Fragment() {
     }
 
     private fun initToolbar() {
-        (activity as MainActivity).setSupportActionBar(binding.toolbar.tool)
-        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as MainActivity).setSupportActionBar(binding.toolbar.tool)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.toolbar.tool.setNavigationIcon(R.drawable.ic_back_row)
         binding.toolbar.tool.setNavigationOnClickListener { requireActivity().onBackPressed() }
     }
@@ -108,11 +108,7 @@ class RegisterFragment : Fragment() {
             username, phone, email, password
         )
 
-
-        Timber.d(
-            " \n registerData::\n ${requestRegisterPojo.username}, \n ${requestRegisterPojo.email}, \n ${requestRegisterPojo.phone}, \n ${requestRegisterPojo.password}"
-
-        )
+        Timber.d("Username:: ${requestRegisterPojo.username} | Email:: ${requestRegisterPojo.email} | Phone:: ${requestRegisterPojo.phone} | Password:: ${requestRegisterPojo.password}")
         viewModel.requestRegister(requestRegisterPojo)
     }
 
@@ -156,7 +152,7 @@ class RegisterFragment : Fragment() {
 
     private fun validateEmail(): Boolean {
         val email: String = binding.etEmail.text.toString().trim()
-        val isValid: Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        val isEmailValid: Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
         when {
             binding.etEmail.text.toString().trim().isEmpty() -> {
                 binding.tilEmail.isErrorEnabled = true
@@ -164,7 +160,7 @@ class RegisterFragment : Fragment() {
                 requestFocus(binding.etEmail)
                 return false
             }
-            isValid.not() -> {
+            isEmailValid.not() -> {
                 binding.tilEmail.isErrorEnabled = true
                 binding.tilEmail.error = "Invalid Email address, ex: abc@example.com"
                 requestFocus(binding.etEmail)

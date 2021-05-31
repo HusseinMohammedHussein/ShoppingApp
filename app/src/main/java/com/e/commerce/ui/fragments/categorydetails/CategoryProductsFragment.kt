@@ -2,6 +2,7 @@ package com.e.commerce.ui.fragments.categorydetails
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -104,7 +105,7 @@ class CategoryProductsFragment : Fragment() {
         })
 
         viewModel.searchProductMutable.observe(viewLifecycleOwner, { searchResponse ->
-            binding.loading.loading.visibility =View.GONE
+            binding.loading.loading.visibility = View.GONE
             binding.rvProducts.visibility = View.VISIBLE
             productsAdapter.setData(searchResponse.data.products)
             productsAdapter.notifyDataSetChanged()
@@ -129,7 +130,9 @@ class CategoryProductsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        productsAdapter.clearData()
+        if (binding.rvProducts.isNotEmpty()) {
+            productsAdapter.clearData()
+        }
     }
 
     override fun onResume() {

@@ -12,7 +12,7 @@
 
         <include
             android:id="@+id/appbar"
-            layout="@layout/toolbar_custom"
+            layout="@layout/appbar_background_white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"

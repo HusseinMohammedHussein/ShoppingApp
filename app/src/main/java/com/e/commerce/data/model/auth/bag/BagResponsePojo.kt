@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 // Created by Hussein_Mohammad on 5/19/2021.
 @Parcelize
-data class BagsPojo(
+data class BagResponsePojo(
     @SerializedName("status") @Expose val status: Boolean,
     @SerializedName("message") @Expose val message: String,
     @SerializedName("data") @Expose val bagResponseData: BagResponsePojo
@@ -16,8 +16,8 @@ data class BagsPojo(
 
     @Parcelize
     data class BagResponsePojo(
-        @SerializedName("cart_items") @Expose val cartItems: List<BagItemResponsePojo>,
-        @SerializedName("sub_total") @Expose val sub_total: Int,
-        @SerializedName("total") @Expose val total: Int
+        @SerializedName("cart_items") @Expose val cartItems: MutableList<BagItemResponsePojo>,
+        @SerializedName("sub_total") @Expose val sub_total: Double,
+        @SerializedName("total") @Expose val total: Double
     ) : Parcelable
 }

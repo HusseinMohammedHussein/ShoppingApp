@@ -6,12 +6,9 @@ import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.e.commerce.R
-import com.e.commerce.data.model.ShopCategoryPojo.Data.ShopCategoriesPojo
-import com.e.commerce.data.model.home.CategoryPojo
 import com.e.commerce.data.model.home.CategoryPojo.Data.CategoriesPojo
 import com.e.commerce.databinding.ItemShopCategoryBinding
 import com.squareup.picasso.Picasso
-import timber.log.Timber
 
 class ShopCategoriesAdapter : RecyclerView.Adapter<ShopCategoriesAdapter.CategoriesViewHolder>() {
 
@@ -40,7 +37,7 @@ class ShopCategoriesAdapter : RecyclerView.Adapter<ShopCategoriesAdapter.Categor
                 val bundle = Bundle()
                 bundle.putParcelable(it.context.resources.getString(R.string.category_pojo), pojoShop)
 
-                itemView.findNavController().navigate(R.id.categories_to_catDetails, bundle)
+                itemView.findNavController().navigate(R.id.action_categories_to_catDetails, bundle)
             }
         }
     }

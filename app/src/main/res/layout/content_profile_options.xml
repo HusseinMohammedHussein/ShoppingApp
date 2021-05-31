@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/bg_offwhite_color"
+    tools:showIn="@layout/content_profile">
 
     <RelativeLayout
-        android:id="@+id/ll_orders"
+        android:id="@+id/rl_orders"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:gravity="center_vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,22 +23,26 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@id/ic_row_orders"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:paddingStart="0dp"
+            tools:ignore="RtlSymmetry">
 
             <TextView
-                android:id="@+id/tv_myorders_orders"
+                android:id="@+id/tv_myorders_count_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="My Orders"
                 android:textColor="@color/black"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_myorders_desc_orders"
+                android:id="@+id/tv_myorders_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
+                android:layout_marginTop="5dp"
+                android:textSize="14sp"
                 tools:text="Already have 12 orders" />
         </LinearLayout>
 
@@ -45,18 +51,22 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
-            tools:src="@drawable/ic_row" />
+            android:layout_centerVertical="true"
+            android:padding="5dp"
+            android:src="@drawable/ic_row"
+            android:paddingEnd="0dp"
+            tools:ignore="RtlSymmetry" />
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/ll_shipping_address"
+        android:id="@+id/rl_shipping_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:gravity="center_vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_orders">
+        app:layout_constraintTop_toBottomOf="@id/rl_orders">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -64,22 +74,26 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@id/ic_row_shipping_address"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:paddingStart="0dp"
+            tools:ignore="RtlSymmetry">
 
             <TextView
-                android:id="@+id/tv_myorders_shipping_address"
+                android:id="@+id/tv_shipping_address_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Shipping addresses"
                 android:textColor="@color/black"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_myorders_desc_shipping_address"
+                android:id="@+id/tv_shipping_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
+                android:layout_marginTop="5dp"
+                android:textSize="14sp"
                 tools:text="3 ddresses" />
         </LinearLayout>
 
@@ -88,14 +102,18 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
-            tools:src="@drawable/ic_row" />
+            android:layout_centerVertical="true"
+            android:padding="5dp"
+            android:src="@drawable/ic_row"
+            android:paddingEnd="0dp"
+            tools:ignore="RtlSymmetry" />
     </RelativeLayout>
 
-    <RelativeLayout
+    <!--<RelativeLayout
         android:id="@+id/ll_promocode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:gravity="center_vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -106,24 +124,26 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:padding="10dp"
             android:layout_toStartOf="@id/ic_row_promocode"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_myorders_promocode"
+                android:id="@+id/tv_promocode_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Promo codes"
+                android:text="Promocodes"
                 android:textColor="@color/black"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_myorders_desc_promocode"
+                android:id="@+id/tv_promocode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                tools:text="Visa  **34" />
+                android:textSize="14sp"
+                android:layout_marginTop="5dp"
+                tools:text="You have special promocodes" />
         </LinearLayout>
 
         <ImageView
@@ -131,18 +151,20 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
-            tools:src="@drawable/ic_row" />
-    </RelativeLayout>
+            android:padding="5dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_row" />
+    </RelativeLayout>-->
 
     <RelativeLayout
-        android:id="@+id/ll_setting"
+        android:id="@+id/rl_setting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:gravity="center_vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_promocode">
+        app:layout_constraintTop_toBottomOf="@id/rl_shipping_address">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -150,23 +172,27 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_toStartOf="@id/ic_row_setting"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:paddingStart="0dp"
+            tools:ignore="RtlSymmetry">
 
             <TextView
-                android:id="@+id/tv_myorders_setting"
+                android:id="@+id/tv_setting_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Settings"
                 android:textColor="@color/black"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_myorders_desc_setting"
+                android:id="@+id/tv_setting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                tools:text="Notifications, password" />
+                android:layout_marginTop="5dp"
+                android:text="Notifications, password"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <ImageView
@@ -174,6 +200,10 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
-            tools:src="@drawable/ic_row" />
+            android:layout_centerVertical="true"
+            android:padding="5dp"
+            android:src="@drawable/ic_row"
+            android:paddingEnd="0dp"
+            tools:ignore="RtlSymmetry" />
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

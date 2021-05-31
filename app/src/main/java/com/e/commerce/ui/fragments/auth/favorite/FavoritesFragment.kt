@@ -13,10 +13,12 @@ import com.e.commerce.R
 import com.e.commerce.databinding.FragmentFavoritesBinding
 import com.e.commerce.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class FavoritesFragment : Fragment() {
-    private lateinit var binding: FragmentFavoritesBinding
+    private var _binding: FragmentFavoritesBinding? = null
+    private val binding get() = _binding!!
     private var viewModel: FavoritesViewModel = FavoritesViewModel()
     private val favoritesAdapter: FavoritesAdapter = FavoritesAdapter()
 
@@ -24,7 +26,7 @@ class FavoritesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -71,7 +73,7 @@ class FavoritesFragment : Fragment() {
 
     private fun observerData() {
         viewModel.getFavorites()
-        viewModel.favoritesMData.observe(viewLifecycleOwner, { response ->
+        viewModel.favoriteMData.observe(viewLifecycleOwner, { response ->
             if (response.status) {
                 favoritesAdapter.setData(response.data.productsFavorites)
                 favoritesAdapter.notifyDataSetChanged()
@@ -84,13 +86,9 @@ class FavoritesFragment : Fragment() {
         })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        binding.content.rvFavorites.adapter = null
-    }
-
-    override fun onResume() {
-        super.onResume()
-        binding.loading.loading.visibility = View.VISIBLE
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        Timber.i("FavoriteBindingIs::${_binding}")
     }
 }

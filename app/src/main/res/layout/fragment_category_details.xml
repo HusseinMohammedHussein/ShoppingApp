@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_layout_color"
+    android:background="@color/bg_offwhite_color"
     tools:context=".ui.fragments.categorydetails.CategoryProductsFragment">
 
     <include
         android:id="@+id/appbar"
-        layout="@layout/toolbar_custom"
+        layout="@layout/appbar_background_white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"

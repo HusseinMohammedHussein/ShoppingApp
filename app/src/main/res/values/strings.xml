@@ -10,7 +10,6 @@
     <!--TextView Home-->
     <string name="old_price" translatable="false"><strike>$</strike></string>
     <string name="price" translatable="false">2500$</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="Title_ShopCategory" translatable="false">Categories</string>
 </resources>

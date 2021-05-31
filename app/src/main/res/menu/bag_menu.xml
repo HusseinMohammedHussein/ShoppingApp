@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/add_to_favorite"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/add_to_favorite"
         android:title="Add To Favorite" />
 
-    <item android:id="@+id/delete"
-        android:title="Delete from the list"/>
+    <item
+        android:id="@+id/remove_from_favorite"
+        android:title="Remove From Favorite"
+        android:visible="false"
+        tools:visible="true" />
+
+    <item
+        android:id="@+id/delete"
+        android:title="Delete from the list" />
 </menu>

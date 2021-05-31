@@ -2,8 +2,8 @@ package com.e.commerce.ui.fragments.auth.register
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.RegisterPojo
-import com.e.commerce.data.model.RegisterPojo.RequestRegisterPojo
+import com.e.commerce.data.model.auth.RegisterPojo
+import com.e.commerce.data.model.auth.RegisterPojo.RequestRegisterPojo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback

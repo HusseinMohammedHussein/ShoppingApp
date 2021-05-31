@@ -45,7 +45,7 @@ class BannerSliderAdapter(var context: Context) :
         viewHolder.bind(bannerImagesList[position])
     }
 
-    override fun getCount(): Int = bannerImagesList.size
+    override fun getCount(): Int = if (bannerImagesList.isNotEmpty()) bannerImagesList.size else 0
 
     inner class SliderAdapterVH(var binding: ItemBannerBinding) :
         SliderViewAdapter.ViewHolder(binding.root) {

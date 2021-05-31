@@ -3,7 +3,7 @@ package com.e.commerce.ui.fragments.productdetails
 import com.e.commerce.data.model.ProductDetailsPojo
 import com.e.commerce.data.model.ProductsPojo
 import com.e.commerce.data.model.auth.bag.BagPojo
-import com.e.commerce.data.model.auth.FavoritesPojo
+import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import dagger.hilt.android.scopes.ViewModelScoped
 import retrofit2.Call
@@ -25,7 +25,7 @@ class ProductDetailsRepo {
         return  ApiControl.apiService().addOrRemoveBag(productId)
     }
 
-    fun addToFavorites(productId: Int): Call<FavoritesPojo>{
+    fun addToFavorites(productId: Int): Call<FavoritePojo>{
         return ApiControl.apiService().addOrRemoveFavorite(productId)
     }
 }

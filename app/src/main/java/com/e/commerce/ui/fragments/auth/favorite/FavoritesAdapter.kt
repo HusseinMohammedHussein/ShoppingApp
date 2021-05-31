@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.FavoritesPojo.FavoriteResponse.FavoritesResponse
+import com.e.commerce.data.model.auth.FavoritePojo.FavoriteResponse.FavoritesResponse
 import com.e.commerce.databinding.ItemFavoriteBinding
 import com.squareup.picasso.Picasso
 
@@ -21,8 +21,10 @@ class FavoritesAdapter : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHold
     }
 
     fun clearData() {
-        pojoList.clear()
-        notifyDataSetChanged()
+        if (pojoList.size > 0) {
+            pojoList.clear()
+            notifyDataSetChanged()
+        }
     }
 
     fun removeItem(index: Int) {
@@ -67,5 +69,5 @@ class FavoritesAdapter : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHold
         holder.bind(pojoList[position], position)
     }
 
-    override fun getItemCount(): Int = pojoList.size
+    override fun getItemCount(): Int = if (pojoList.isNotEmpty()) pojoList.size else 0
 }

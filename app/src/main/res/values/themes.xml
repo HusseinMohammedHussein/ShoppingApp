@@ -3,7 +3,7 @@
     <style name="Theme.EcommerceApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/bg_offwhite_color</item>
         <item name="colorOnPrimary">@color/primary</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -36,7 +36,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">25sp</item>
         <item name="android:fontFamily">@font/metropolis_bold</item>
-        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginStart">10dp</item>
         <item name="android:layout_marginTop">20dp</item>
     </style>
 
@@ -46,7 +46,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">25sp</item>
         <item name="android:fontFamily">@font/metropolis_bold</item>
-        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginStart">10dp</item>
         <item name="android:layout_marginTop">20dp</item>
     </style>
 

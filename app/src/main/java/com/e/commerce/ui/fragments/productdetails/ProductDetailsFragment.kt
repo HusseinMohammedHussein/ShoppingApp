@@ -24,24 +24,28 @@ import timber.log.Timber
 @AndroidEntryPoint
 @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n")
 class ProductDetailsFragment : Fragment() {
-    private lateinit var binding: FragmentProductDetailsBinding
+    private var _binding: FragmentProductDetailsBinding? = null
+    private val binding get() = _binding!!
     private lateinit var productPojoParcelable: ProductPojo
     private lateinit var bundle: Bundle
     private var viewModel: ProductDetailsViewModel = ProductDetailsViewModel()
     private var imagesAdapter: ProductImageAdapter = ProductImageAdapter()
     private var productsAdapter: ProductsAdapter = ProductsAdapter()
 
+    private var i = 0
+    private var y = 0
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentProductDetailsBinding.inflate(inflater, container, false)
+        _binding = FragmentProductDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(ProductDetailsViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(ProductDetailsViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,6 +54,7 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun methods() {
+        Timber.d("Binding::${binding}")
         init()
         setupToolbar()
         observeData()
@@ -57,9 +62,9 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun setupToolbar() {
-        (activity as MainActivity).setSupportActionBar(binding.appbar.toolbar)
-        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as MainActivity).setSupportActionBar(binding.appbar.toolbar)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
         binding.appbar.toolbar.setNavigationOnClickListener { (activity as MainActivity).onBackPressed() }
         binding.appbar.tvTitle.text = productPojoParcelable.name
@@ -93,11 +98,15 @@ class ProductDetailsFragment : Fragment() {
         viewModel.productsLiveData.observe(viewLifecycleOwner, { products ->
             binding.content.loading.loading.visibility = View.GONE
             productsList(products)
-        //  Handler(Looper.getMainLooper()).postDelayed({}, 5000)
+            //  Handler(Looper.getMainLooper()).postDelayed({}, 5000)
         })
 
         viewModel.addToBagLiveData.observe(viewLifecycleOwner, { cartResponse ->
             Toast.makeText(requireContext(), cartResponse.message, Toast.LENGTH_LONG).show()
+        })
+
+        viewModel.addToFavoriteLiveData.observe(viewLifecycleOwner, { response ->
+            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
         })
     }
 
@@ -116,11 +125,13 @@ class ProductDetailsFragment : Fragment() {
         binding.content.tvProOldprice.paintFlags = STRIKE_THRU_TEXT_FLAG
         binding.content.tvProDesc.text = productDetails.data.description
         if (productDetails.data.in_favorites) {
-            binding.content.icFavorite.setImageDrawable(resources.getDrawable(R.drawable.ic_favorite_active))
+            binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_active)
+            y++
         }
 
         if (productDetails.data.in_cart) {
             binding.content.btnAddCart.text = "Remove From Cart"
+            i++
         }
 
         imagesAdapter.setData(productDetails.data.images)
@@ -130,8 +141,6 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun onClickListener() {
-        var i = 0
-        var y = 0
         binding.content.btnAddCart.setOnClickListener {
             if (i == 0) {
                 Timber.d("I for click = $i")
@@ -150,16 +159,11 @@ class ProductDetailsFragment : Fragment() {
             if (y == 0) {
                 viewModel.addToFavorites(productPojoParcelable.id)
                 binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_active)
-                viewModel.addToFavoritesLiveData.observe(viewLifecycleOwner, { response ->
-                    Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                })
+
                 y++
             } else if (y == 1) {
                 viewModel.addToFavorites(productPojoParcelable.id)
                 binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_disactive)
-                viewModel.addToFavoritesLiveData.observe(viewLifecycleOwner, { response ->
-                    Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                })
                 y = 0
             }
         }
@@ -178,8 +182,16 @@ class ProductDetailsFragment : Fragment() {
         productsAdapter.clearList()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        Timber.d("_Binding::${_binding}")
+    }
+
+
     override fun onResume() {
         super.onResume()
+        _binding = binding
         binding.groupViews.visibility = View.GONE
         binding.loading.loading.visibility = View.VISIBLE
     }

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.e.commerce.R
@@ -28,7 +29,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.bottomView.visibility = View.VISIBLE
-        setupBottomView()
         init()
     }
 
@@ -47,6 +47,11 @@ class MainActivity : AppCompatActivity() {
             }
             return@setOnMenuItemClickListener true
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setupBottomView()
     }
 
     private fun setupBottomView() {
@@ -79,6 +84,8 @@ class MainActivity : AppCompatActivity() {
         // onNavDestinationSelected(item, Navigation.findNavController(this, R.id.nav_host))
         // return@setOnNavigationItemSelectedListener true
         // }
+
+        binding.bottomView.setOnNavigationItemReselectedListener { }
     }
 
     private fun showBottomNav() {

@@ -17,6 +17,6 @@ data class ProfilePojo(
         @SerializedName("image") @Expose val image: String,
         @SerializedName("token") @Expose val token: String,
         @SerializedName("points") @Expose val points: Int,
-        @SerializedName("credit") @Expose val credit: Int
+        @SerializedName("credit") @Expose val credit: Double
     )
 }

@@ -1,7 +1,8 @@
 package com.e.commerce.ui.fragments.auth.bag
 
-import com.e.commerce.data.model.auth.bag.BagsPojo
-import com.e.commerce.data.model.auth.bag.UpdateBagResponsePojo
+import com.e.commerce.data.model.auth.bag.BagPojo
+import com.e.commerce.data.model.auth.bag.BagResponsePojo
+import com.e.commerce.data.model.auth.bag.BagUpdateResponsePojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import dagger.hilt.android.scopes.ViewModelScoped
 import retrofit2.Call
@@ -10,11 +11,15 @@ import retrofit2.Call
 @ViewModelScoped
 class BagRepo {
 
-    fun getBag(): Call<BagsPojo> {
+    fun getBag(): Call<BagResponsePojo> {
         return ApiControl.apiService().getBag()
     }
 
-    fun updateBag(bagProductId: Int, hashMap: HashMap<String, Int>): Call<UpdateBagResponsePojo> {
+    fun updateQuantityBag(bagProductId: Int, hashMap: HashMap<String, Int>): Call<BagUpdateResponsePojo> {
         return ApiControl.apiService().updateQuantityBag(bagProductId, hashMap)
+    }
+
+    fun removeBagProduct(productId: Int): Call<BagPojo> {
+        return ApiControl.apiService().addOrRemoveBag(productId)
     }
 }

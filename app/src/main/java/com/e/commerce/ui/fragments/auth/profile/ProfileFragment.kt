@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.e.commerce.R
 import com.e.commerce.databinding.FragmentProfileBinding
 import com.e.commerce.ui.main.MainActivity
@@ -16,7 +17,8 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
-    private lateinit var binding: FragmentProfileBinding
+    private var _binding: FragmentProfileBinding? = null
+    private val binding get() = _binding!!
     private var viewModel: ProfileViewModel = ProfileViewModel()
     private lateinit var sharedPref: SharedPref
 
@@ -27,7 +29,7 @@ class ProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentProfileBinding.inflate(inflater, container, false)
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -44,20 +46,37 @@ class ProfileFragment : Fragment() {
     private fun methods() {
         initToolbar()
         init()
+        request()
         observerData()
+        onClick()
+    }
+
+    private fun request() {
+        viewModel.getProfile()
+        viewModel.getOrders()
+        viewModel.getAddress()
     }
 
     private fun observerData() {
-        viewModel.getProfile()
-        viewModel.profileMutable.observe(viewLifecycleOwner, { response ->
-            binding.content.tvUsername.text = response.data.name
-            Timber.d("getUserName::${response.data.name}")
-            binding.content.tvEmail.text = response.data.email
-
+        viewModel.profileMutable.observe(viewLifecycleOwner, { profileResponse ->
+            binding.content.tvUsername.text = profileResponse.data.name
+            Timber.d("getUserName::${profileResponse.data.name}")
+            binding.content.tvEmail.text = profileResponse.data.email
             Picasso.get()
-                .load(response.data.image)
+                .load(profileResponse.data.image)
                 .into(binding.content.imgProfile)
-//            binding.content.contentOption.text = response.data.email
+        })
+
+        viewModel.ordersMutable.observe(viewLifecycleOwner, { orderResponse ->
+            Timber.d("TotalOrders::${orderResponse.data.total}")
+            binding.content.contentOption.tvMyordersCount.text = String.format("Already have ${orderResponse.data.total} orders")
+        })
+
+        viewModel.addressMutable.observe(viewLifecycleOwner, { addressResponse ->
+            if (addressResponse.status) {
+                Timber.d("TotalOrders::${addressResponse.data.total}")
+                binding.content.contentOption.tvShippingAddress.text = String.format("${addressResponse.data.total} address")
+            }
         })
     }
 
@@ -68,12 +87,24 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initToolbar() {
-        (activity as MainActivity).setSupportActionBar(binding.appbar.toolbar)
-        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as MainActivity).setSupportActionBar(binding.appbar.toolbar)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
         binding.appbar.toolbar.setNavigationOnClickListener { (requireActivity() as MainActivity).onBackPressed() }
         binding.appbar.tvTitle.text = ""
     }
 
+
+    private fun onClick() {
+        binding.content.contentOption.rlSetting.setOnClickListener {
+            it.findNavController().navigate(R.id.action_profile_to_updateFragment)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+        Timber.w("ProfileBindingIs::$_binding")
+    }
 }

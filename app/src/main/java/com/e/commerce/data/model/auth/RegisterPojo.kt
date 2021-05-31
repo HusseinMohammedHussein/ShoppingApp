@@ -1,5 +1,6 @@
-package com.e.commerce.data.model
+package com.e.commerce.data.model.auth
 
+import com.e.commerce.data.model.auth.common.SignResponsePojo
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -7,17 +8,8 @@ import com.google.gson.annotations.SerializedName
 data class RegisterPojo(
     @SerializedName("status") @Expose val status: Boolean,
     @SerializedName("message") @Expose val message: String,
-    @SerializedName("data") @Expose val data: ResponseRegisterPojo
+    @SerializedName("data") @Expose val data: SignResponsePojo
 ) {
-    data class ResponseRegisterPojo(
-        @SerializedName("id") @Expose val id: Int,
-        @SerializedName("name") @Expose val username: String,
-        @SerializedName("phone") @Expose val phone: String,
-        @SerializedName("email") @Expose val email: String,
-        @SerializedName("image") @Expose val image: String,
-        @SerializedName("token") @Expose val token: String,
-    )
-
     data class RequestRegisterPojo(
         @SerializedName("name") @Expose val username: String,
         @SerializedName("phone") @Expose val phone: String,

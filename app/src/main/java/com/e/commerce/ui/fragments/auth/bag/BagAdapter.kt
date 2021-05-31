@@ -1,5 +1,6 @@
 package com.e.commerce.ui.fragments.auth.bag
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupMenu
@@ -11,18 +12,35 @@ import com.e.commerce.util.NewQuantity
 import com.squareup.picasso.Picasso
 import timber.log.Timber
 
-class BagAdapter(var newQuantity: NewQuantity) : RecyclerView.Adapter<BagAdapter.BagViewHolder>() {
+class BagAdapter(var newQuantity: NewQuantity) :
+    RecyclerView.Adapter<BagAdapter.BagViewHolder>() {
 
-    private lateinit var pojoList: List<BagItemResponsePojo>
+    private lateinit var pojoList: MutableList<BagItemResponsePojo>
 
-    fun setData(pojos: List<BagItemResponsePojo>) {
+    lateinit var onAddRemoveFavoriteClick: ((BagItemResponsePojo) -> Unit)
+    lateinit var onRemoveFromBagClick: ((BagItemResponsePojo) -> Unit)
+    lateinit var context: Context
+
+
+    fun setData(pojos: MutableList<BagItemResponsePojo>) {
         pojos.also { this.pojoList = it }
+        notifyDataSetChanged()
     }
 
-    inner class BagViewHolder(var binding: ItemBagBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    fun clearData() {
+        pojoList.clear()
+        notifyDataSetChanged()
+    }
 
-        fun bind(bagPojo: BagItemResponsePojo) {
+    fun removeProduct(index: Int) {
+        pojoList.removeAt(index)
+        notifyDataSetChanged()
+    }
+
+    inner class BagViewHolder(var binding: ItemBagBinding) : RecyclerView.ViewHolder(binding.root) {
+        var isAddedToFavorite: Boolean = false
+
+        fun bind(bagPojo: BagItemResponsePojo, index: Int) {
             binding.tvProductName.text = bagPojo.product.name
             binding.tvProductPrice.text = String.format("${bagPojo.product.price} $")
             binding.tvProductQuantity.text = bagPojo.quantity.toString()
@@ -31,7 +49,6 @@ class BagAdapter(var newQuantity: NewQuantity) : RecyclerView.Adapter<BagAdapter
                 .load(bagPojo.product.image)
                 .into(binding.imgProduct)
 
-            Timber.d("quantityBeforeUpdate is ${bagPojo.quantity}")
 
             binding.cvPlus.setOnClickListener {
                 bagPojo.quantity++
@@ -47,36 +64,58 @@ class BagAdapter(var newQuantity: NewQuantity) : RecyclerView.Adapter<BagAdapter
                 Timber.d("quantityAfterUpdate_Minus is ${bagPojo.quantity}")
             }
 
-            binding.icThreeDots.setOnClickListener {
-                val popup = PopupMenu(itemView.context, binding.icThreeDots)
-                popup.inflate(R.menu.bag_menu)
-                popup.setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        R.id.add_to_favorite -> {
-                            Timber.d("Item Added ${bagPojo.id}")
-                            return@setOnMenuItemClickListener true
-                        }
 
-                        R.id.delete -> {
-                            Timber.d("Item Deleted ${bagPojo.id}")
-                            return@setOnMenuItemClickListener true
-                        }
+            val popupMenu = PopupMenu(itemView.context, binding.icThreeDots)
+            popupMenu.inflate(R.menu.bag_menu)
 
-                        else -> false
+            if (bagPojo.product.in_favorites) {
+                isAddedToFavorite = true
+                popupMenu.menu.getItem(0).title = "Remove From Favorites"
+            }
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.add_to_favorite -> {
+                        onAddRemoveFavoriteClick.invoke(bagPojo)
+                        isAddedToFavorite = true
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.remove_from_favorite -> {
+                        onAddRemoveFavoriteClick.invoke(bagPojo)
+                        isAddedToFavorite = false
+                        return@setOnMenuItemClickListener true
+                    }
+
+                    R.id.delete -> {
+                        onRemoveFromBagClick.invoke(bagPojo)
+                        removeProduct(index)
+                        return@setOnMenuItemClickListener true
                     }
                 }
-                popup.show()
+                return@setOnMenuItemClickListener false
+            }
+            binding.icThreeDots.setOnClickListener {
+                Timber.d("isAddedToFavorite::${isAddedToFavorite}")
+                if (isAddedToFavorite) {
+                    popupMenu.menu.getItem(0).isVisible = false
+                    popupMenu.menu.getItem(1).isVisible = true
+                } else {
+                    popupMenu.menu.getItem(0).isVisible = true
+                    popupMenu.menu.getItem(1).isVisible = false
+                }
+                popupMenu.show()
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BagViewHolder {
-        return BagViewHolder(ItemBagBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        context = parent.context
+        return BagViewHolder(ItemBagBinding.inflate(LayoutInflater.from(context), parent, false))
     }
 
     override fun onBindViewHolder(holder: BagViewHolder, position: Int) {
-        holder.bind(pojoList[position])
+        holder.bind(pojoList[position], position)
     }
+
 
     override fun getItemCount(): Int = if (pojoList.isNotEmpty()) pojoList.size else 0
 }

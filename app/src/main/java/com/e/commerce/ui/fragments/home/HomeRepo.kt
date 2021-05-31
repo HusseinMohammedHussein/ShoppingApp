@@ -1,6 +1,6 @@
 package com.e.commerce.ui.fragments.home
 
-import com.e.commerce.data.model.auth.FavoritesPojo
+import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.data.model.home.CategoryPojo
 import com.e.commerce.data.model.home.HomePojo
 import com.e.commerce.data.remote.retrofit.ApiControl
@@ -20,7 +20,7 @@ class HomeRepo {
         return ApiControl.apiService().getCategory()
     }
 
-    fun addFavorite(productId: Int): Call<FavoritesPojo> {
+    fun addFavorite(productId: Int): Call<FavoritePojo> {
         return ApiControl.apiService().addOrRemoveFavorite(productId)
     }
 }

@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 // Created by Hussein_Mohammad on 5/19/2021.
 
-data class UpdateBagResponsePojo(
+data class BagUpdateResponsePojo(
     @SerializedName("status") @Expose val status: Boolean,
     @SerializedName("message") @Expose val message: String,
     @SerializedName("data") @Expose val data: BagResponsePojo
