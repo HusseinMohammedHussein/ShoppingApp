@@ -16,7 +16,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor() : ViewModel() {
     private val profileRepo = ProfileRepo()
     var profileMutable: MutableLiveData<ProfilePojo> = MutableLiveData()
-    var ordersMutable: MutableLiveData<OrderPojo> = MutableLiveData()
+    var totalOrdersMutable: MutableLiveData<OrderPojo> = MutableLiveData()
     var addressMutable: MutableLiveData<AddressPojo> = MutableLiveData()
 
     fun getProfile() {
@@ -34,11 +34,11 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
         })
     }
 
-    fun getOrders() {
-        profileRepo.getOrders().enqueue(object : Callback<OrderPojo> {
+    fun getTotalOrders() {
+        profileRepo.getTotalOrders().enqueue(object : Callback<OrderPojo> {
             override fun onResponse(call: Call<OrderPojo>, response: Response<OrderPojo>) {
                 if (response.isSuccessful && response.body() != null) {
-                    ordersMutable.value = response.body()
+                    totalOrdersMutable.value = response.body()
                 }
             }
 

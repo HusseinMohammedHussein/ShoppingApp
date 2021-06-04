@@ -91,10 +91,13 @@
         android:id="@+id/profile"
         android:name="com.e.commerce.ui.fragments.auth.profile.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" >
+        tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profile_to_updateFragment"
-            app:destination="@id/settingProfileFragment" />
+            app:destination="@id/settingProfileFragment"/>
+        <action
+            android:id="@+id/action_profile_to_orders"
+            app:destination="@id/ordersFragment" />
     </fragment>
 
     <fragment
@@ -113,5 +116,15 @@
         android:id="@+id/settingProfileFragment"
         android:name="com.e.commerce.ui.fragments.auth.settingprofile.SettingProfileFragment"
         android:label="fragment_update"
-        tools:layout="@layout/fragment_setting_profile" />
+        tools:layout="@layout/fragment_setting_profile">
+        <action
+            android:id="@+id/action_setting_to_profile"
+            app:destination="@id/profile" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ordersFragment"
+        android:name="com.e.commerce.ui.fragments.auth.myorders.ordersRecyclerView.OrdersFragment"
+        android:label="fragment_orders"
+        tools:layout="@layout/fragment_orders" />
 </navigation>

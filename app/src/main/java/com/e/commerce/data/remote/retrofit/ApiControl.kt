@@ -8,10 +8,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -43,6 +45,7 @@ object ApiControl {
             }.apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
+//            protocols(Collections.singletonList(Protocol.HTTP_1_1))
 
             connectTimeout(REQUEST_TIMEOUT.toLong(), TimeUnit.SECONDS)
             readTimeout(REQUEST_TIMEOUT.toLong(), TimeUnit.SECONDS)

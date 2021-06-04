@@ -15,7 +15,7 @@ class ProfileRepo {
         return ApiControl.apiService().getProfile()
     }
 
-    fun getOrders(): Call<OrderPojo> {
+    fun getTotalOrders(): Call<OrderPojo> {
         return ApiControl.apiService().getOrders()
     }
 

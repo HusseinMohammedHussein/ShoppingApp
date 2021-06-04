@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.e.commerce.R
 import com.e.commerce.databinding.FragmentProfileBinding
 import com.e.commerce.ui.main.MainActivity
@@ -53,7 +53,7 @@ class ProfileFragment : Fragment() {
 
     private fun request() {
         viewModel.getProfile()
-        viewModel.getOrders()
+        viewModel.getTotalOrders()
         viewModel.getAddress()
     }
 
@@ -67,7 +67,7 @@ class ProfileFragment : Fragment() {
                 .into(binding.content.imgProfile)
         })
 
-        viewModel.ordersMutable.observe(viewLifecycleOwner, { orderResponse ->
+        viewModel.totalOrdersMutable.observe(viewLifecycleOwner, { orderResponse ->
             Timber.d("TotalOrders::${orderResponse.data.total}")
             binding.content.contentOption.tvMyordersCount.text = String.format("Already have ${orderResponse.data.total} orders")
         })
@@ -98,7 +98,11 @@ class ProfileFragment : Fragment() {
 
     private fun onClick() {
         binding.content.contentOption.rlSetting.setOnClickListener {
-            it.findNavController().navigate(R.id.action_profile_to_updateFragment)
+            findNavController().navigate(R.id.action_profile_to_updateFragment)
+        }
+
+        binding.content.contentOption.llMyOrders.setOnClickListener {
+            findNavController().navigate(R.id.action_profile_to_orders)
         }
     }
 
@@ -106,5 +110,10 @@ class ProfileFragment : Fragment() {
         super.onDestroy()
         _binding = null
         Timber.w("ProfileBindingIs::$_binding")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        _binding = binding
     }
 }

@@ -32,7 +32,6 @@ class ProductDetailsFragment : Fragment() {
     private var imagesAdapter: ProductImageAdapter = ProductImageAdapter()
     private var productsAdapter: ProductsAdapter = ProductsAdapter()
 
-    private var i = 0
     private var y = 0
 
     override fun onCreateView(
@@ -102,7 +101,8 @@ class ProductDetailsFragment : Fragment() {
         })
 
         viewModel.addToBagLiveData.observe(viewLifecycleOwner, { cartResponse ->
-            Toast.makeText(requireContext(), cartResponse.message, Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), cartResponse.message, Toast.LENGTH_SHORT).show()
+            viewModel.getProductDetails(productPojoParcelable.id)
         })
 
         viewModel.addToFavoriteLiveData.observe(viewLifecycleOwner, { response ->
@@ -129,9 +129,11 @@ class ProductDetailsFragment : Fragment() {
             y++
         }
 
+        Timber.d("ThisInCart::${productDetails.data.in_cart}")
         if (productDetails.data.in_cart) {
             binding.content.btnAddCart.text = "Remove From Cart"
-            i++
+        } else {
+            binding.content.btnAddCart.text = "Add To Cart"
         }
 
         imagesAdapter.setData(productDetails.data.images)
@@ -142,38 +144,33 @@ class ProductDetailsFragment : Fragment() {
 
     private fun onClickListener() {
         binding.content.btnAddCart.setOnClickListener {
-            if (i == 0) {
-                Timber.d("I for click = $i")
-                binding.content.btnAddCart.text = "Add To Cart"
-                viewModel.addToCart(productPojoParcelable.id)
-                i++
-            } else if (i == 1) {
-                Timber.d("I for click = $i")
+            if (binding.content.btnAddCart.text.equals("Add To Cart")) {
+                viewModel.addOrRemoveFromCart(productPojoParcelable.id)
                 binding.content.btnAddCart.text = "Remove From Cart"
-                viewModel.addToCart(productPojoParcelable.id)
-                i = 0
+            } else if (binding.content.btnAddCart.text.equals("Remove From Cart")) {
+                viewModel.addOrRemoveFromCart(productPojoParcelable.id)
+                binding.content.btnAddCart.text = "Add To Cart"
             }
         }
 
         binding.content.icFavorite.setOnClickListener {
             if (y == 0) {
-                viewModel.addToFavorites(productPojoParcelable.id)
+                viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
                 binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_active)
-
                 y++
             } else if (y == 1) {
-                viewModel.addToFavorites(productPojoParcelable.id)
+                viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
                 binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_disactive)
                 y = 0
             }
         }
 
         productsAdapter.onItemClick = {
-            viewModel.addToFavorites(productPojoParcelable.id)
+            viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
         }
 
         binding.content.cvFavorite.setOnClickListener {
-            viewModel.addToFavorites(productPojoParcelable.id)
+            viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
         }
     }
 

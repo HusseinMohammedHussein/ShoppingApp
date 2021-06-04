@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.databinding.FragmentHomeBinding
 import com.e.commerce.ui.common.ProductsAdapter
-import com.google.android.material.snackbar.Snackbar
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType
 import com.smarteist.autoimageslider.SliderAnimations
 import com.smarteist.autoimageslider.SliderView
@@ -22,6 +25,7 @@ import timber.log.Timber
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private var viewModelOwner: HomeViewModel = HomeViewModel()
     private var viewModel: HomeViewModel = HomeViewModel()
 
     private var productAdapter: ProductsAdapter = ProductsAdapter()
@@ -40,8 +44,8 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
+        viewModelOwner = ViewModelProvider(this).get(HomeViewModel::class.java)
         viewModel = ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,7 +68,13 @@ class HomeFragment : Fragment() {
 
     private fun listenerHandle() {
         productAdapter.onItemClick = { productPojo ->
-            viewModel.addFavorite(productPojo.id)
+            viewModelOwner.addOrRemoveFromFavorite(productPojo.id).observe(this.viewLifecycleOwner, { response ->
+                if (response.status) {
+                    DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                }
+                Timber.d("productFavoriteMessage::${response.message}")
+                Timber.d("productFavoriteStatus::${response.status}")
+            })
         }
     }
 
@@ -86,13 +96,6 @@ class HomeFragment : Fragment() {
                 binding.loading.loading.visibility = View.GONE
                 binding.viewGroup.visibility = View.VISIBLE
             })
-        })
-
-        viewModel.favoritePojoMutable.observe(viewLifecycleOwner, { response ->
-            if (response.status) {
-                view?.let { Snackbar.make(it, response.message, Snackbar.LENGTH_LONG).show() }
-                Timber.d("productFavoriteId::${response.data.id}")
-            }
         })
     }
 
@@ -134,5 +137,10 @@ class HomeFragment : Fragment() {
         binding.bannerSlider.imageSlider.stopAutoCycle()
         _binding = null
         Timber.i("HomeBinding::${_binding}")
+    }
+
+    override fun onResume() {
+        super.onResume()
+
     }
 }

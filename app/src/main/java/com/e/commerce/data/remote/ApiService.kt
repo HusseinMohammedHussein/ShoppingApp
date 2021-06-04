@@ -4,10 +4,8 @@ import com.e.commerce.data.model.CategoryDetailsPojo
 import com.e.commerce.data.model.ProductDetailsPojo
 import com.e.commerce.data.model.ProductsPojo
 import com.e.commerce.data.model.ProfilePojo
-import com.e.commerce.data.model.auth.AddressPojo
-import com.e.commerce.data.model.auth.FavoritePojo
-import com.e.commerce.data.model.auth.OrderPojo
-import com.e.commerce.data.model.auth.RegisterPojo
+import com.e.commerce.data.model.auth.*
+import com.e.commerce.data.model.auth.OrderPojo.OrdersPojo
 import com.e.commerce.data.model.auth.RegisterPojo.RequestRegisterPojo
 import com.e.commerce.data.model.auth.bag.BagPojo
 import com.e.commerce.data.model.auth.bag.BagResponsePojo
@@ -15,7 +13,6 @@ import com.e.commerce.data.model.auth.bag.BagUpdateResponsePojo
 import com.e.commerce.data.model.auth.common.SignResponsePojo
 import com.e.commerce.data.model.home.CategoryPojo
 import com.e.commerce.data.model.home.HomePojo
-import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -74,13 +71,6 @@ interface ApiService {
     @GET("addresses")
     fun getAddresses(): Call<AddressPojo>
 
-    @Multipart
     @PUT("update-profile")
-    fun settingProfile(
-        @Query("name") name: String,
-        @Query("phone") phone: String,
-        @Query("email") email: String,
-//        @Query("password") password: String,
-        @Part image: MultipartBody.Part
-    ): Call<SignResponsePojo>
+    fun settingProfile(@Body settingProfilePojo: SettingProfilePojo): Call<SignResponsePojo>
 }

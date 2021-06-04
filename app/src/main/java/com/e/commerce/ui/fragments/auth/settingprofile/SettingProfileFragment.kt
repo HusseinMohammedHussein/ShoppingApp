@@ -1,38 +1,43 @@
 package com.e.commerce.ui.fragments.auth.settingprofile
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.e.commerce.R
 import com.e.commerce.data.model.auth.SettingProfilePojo
 import com.e.commerce.databinding.FragmentSettingProfileBinding
 import com.e.commerce.ui.main.MainActivity
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.features.ReturnMode
-import com.esafirm.imagepicker.model.Image
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.util.regex.Pattern
+import java.io.FileInputStream
 
 @AndroidEntryPoint
 class SettingProfileFragment : Fragment() {
@@ -40,7 +45,8 @@ class SettingProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var viewModel: SettingViewModel = SettingViewModel()
-    private lateinit var pathImage: Image
+
+    private lateinit var imagePath: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +59,7 @@ class SettingProfileFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(SettingViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(SettingViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,8 +79,13 @@ class SettingProfileFragment : Fragment() {
         viewModel.settingProfileMutableData.observe(viewLifecycleOwner, { updateResponse ->
             if (updateResponse.status) {
                 Timber.d("UpdateStatus::${updateResponse.status}")
-                (requireActivity() as MainActivity).onBackPressed()
+                findNavController().navigate(R.id.action_setting_to_profile)
+            } else {
+                Toast.makeText(requireContext(), updateResponse.message, Toast.LENGTH_SHORT).show()
+                Timber.d("updateResponseMessage::${updateResponse.message}")
             }
+            Timber.d("UpdateStatusAgain::${updateResponse.status}")
+            Timber.d("UpdateMessageAgain::${updateResponse.message}")
         })
     }
 
@@ -99,6 +110,9 @@ class SettingProfileFragment : Fragment() {
             if (validatePhoneSetting() && validateEmailSetting() && validateFullnameSetting()) {
                 Timber.d("ButtonOnClick::AfterValidation")
                 update()
+            } else {
+                Timber.d("ButtonOnClick::ElseValidation")
+                Timber.d("validatePhoneSetting::${validatePhoneSetting()} | validateEmailSetting::${validateEmailSetting()} |  validateFullnameSetting::${validateFullnameSetting()}")
             }
         }
     }
@@ -107,10 +121,9 @@ class SettingProfileFragment : Fragment() {
         val fullname: String = binding.etFullnameSetting.text.toString().trim()
         val phone: String = binding.etPhoneSetting.text.toString().trim()
         val email: String = binding.etEmailSetting.text.toString().trim()
-        val settingProfilePojo = SettingProfilePojo(
-            fullname, email, phone, getImageRequestBody(pathImage.path, "image")!!
-        )
-        Timber.d("Fullname:: $fullname | Email:: $email ")
+
+        val settingProfilePojo = SettingProfilePojo(fullname, phone, email, imagePath)
+        Timber.d("SendImageHere::$imagePath")
         viewModel.setSettingProfile(settingProfilePojo)
     }
 
@@ -150,11 +163,30 @@ class SettingProfileFragment : Fragment() {
         if (imagePath != null) {
             if ((imagePath == "null").not()) {
                 val file = File(imagePath)
-                val request_body = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                val request_body = file.asRequestBody("multipart/raw".toMediaTypeOrNull())
                 part = name?.let { MultipartBody.Part.createFormData(it, file.name, request_body) }
             }
         }
         return part
+    }
+
+    private fun encodeImage(path: String): String {
+        val baos = ByteArrayOutputStream()
+        val file = File(path)
+        val fileStream = FileInputStream(file)
+        val bm = BitmapFactory.decodeStream(fileStream)
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val b = baos.toByteArray()
+        imagePath = Base64.encodeToString(b, Base64.DEFAULT)
+        Timber.d("ImagePath::$imagePath")
+        return imagePath
+    }
+
+    private fun decodeImage() {
+        val byte = Base64.decode(imagePath, Base64.DEFAULT)
+        val decodeImage = BitmapFactory.decodeByteArray(byte, 0, byte.size)
+        Timber.d("DecodeImage::$decodeImage")
+        binding.imgPerson.setImageBitmap(decodeImage)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -162,11 +194,8 @@ class SettingProfileFragment : Fragment() {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             val image = ImagePicker.getFirstImageOrNull(data)
             if (image != null) {
-                val file = File(image.path)
-                if (file.exists()) {
-                    Picasso.get().load(file).into(binding.imgPerson)
-                    pathImage = image
-                }
+                encodeImage(image.path)
+                decodeImage()
             }
         }
     }
@@ -180,17 +209,17 @@ class SettingProfileFragment : Fragment() {
                 return false
             }
 
-            binding.etFullnameSetting.text.toString().trim().length > 30 -> {
-                binding.tilFullnameSetting.isErrorEnabled = true
-                binding.tilFullnameSetting.error = "It should be 30 characters"
-                requestFocus(binding.etFullnameSetting)
-                return false
-            }
-
-            binding.etFullnameSetting.text.toString().trim().length <= 30 -> {
-                binding.tilFullnameSetting.isErrorEnabled = false
-                return false
-            }
+//            binding.etFullnameSetting.text.toString().trim().length > 30 -> {
+//                binding.tilFullnameSetting.isErrorEnabled = true
+//                binding.tilFullnameSetting.error = "It should be 30 characters"
+//                requestFocus(binding.etFullnameSetting)
+//                return false
+//            }
+//
+//            binding.etFullnameSetting.text.toString().trim().length <= 30 -> {
+//                binding.tilFullnameSetting.isErrorEnabled = false
+//                return false
+//            }
             else -> binding.tilFullnameSetting.isErrorEnabled = false
         }
         return true
@@ -229,8 +258,8 @@ class SettingProfileFragment : Fragment() {
                 return false
             }
 
-            !Pattern.matches("(011|012|010|015)[0-9]{8}", binding.etPhoneSetting.text.toString()) ||
-                    binding.etPhoneSetting.text.toString().trim().length != 11 -> {
+//            !Pattern.matches("(011|012|010|015)[0-9]{8}", binding.etPhoneSetting.text.toString()) ||
+            binding.etPhoneSetting.text.toString().trim().length != 11 -> {
                 binding.tilPhoneSetting.isErrorEnabled = true
                 binding.tilPhoneSetting.error = "Invalid Number!"
                 requestFocus(binding.etPhoneSetting)
@@ -262,5 +291,11 @@ class SettingProfileFragment : Fragment() {
                 R.id.et_phone_setting -> validatePhoneSetting()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+        Timber.d("SettingBindingIs::$_binding")
     }
 }

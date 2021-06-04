@@ -8,17 +8,17 @@ import com.google.gson.annotations.SerializedName
 data class OrderPojo(
     @SerializedName("status") @Expose val status: Boolean,
     @SerializedName("message") @Expose val message: String,
-    @SerializedName("data") @Expose val data: OrdersDataPojo
+    @SerializedName("data") @Expose val data: OrdersPojo
 ) {
-    data class OrdersDataPojo(
-        @SerializedName("data") @Expose val data: MutableList<OrderDataPojo>,
+    data class OrdersPojo(
+        @SerializedName("data") @Expose val ordersList: MutableList<OrderItemPojo>,
         @SerializedName("total") @Expose val total: Int
     ) {
-        data class OrderDataPojo(
+        data class OrderItemPojo (
             @SerializedName("id") @Expose val id: Int,
             @SerializedName("total") @Expose val total: Double,
             @SerializedName("date") @Expose val date: String,
-            @SerializedName("status") @Expose val status: Boolean
+            @SerializedName("status") @Expose val status: String
         )
     }
 }

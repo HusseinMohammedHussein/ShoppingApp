@@ -21,11 +21,11 @@ class ProductDetailsRepo {
         return ApiControl.apiService().getProducts()
     }
 
-    fun addToCart(productId: Int): Call<BagPojo> {
+    fun addOrRemoveFromBag(productId: Int): Call<BagPojo> {
         return  ApiControl.apiService().addOrRemoveBag(productId)
     }
 
-    fun addToFavorites(productId: Int): Call<FavoritePojo>{
+    fun addOrRemoveFromFavorites(productId: Int): Call<FavoritePojo>{
         return ApiControl.apiService().addOrRemoveFavorite(productId)
     }
 }

@@ -72,10 +72,10 @@
                     android:focusable="true"
                     android:padding="15dp"
                     android:src="@drawable/ic_change_profile_image"
-                    app:layout_constraintTop_toBottomOf="@id/img_person"
-                    app:layout_constraintStart_toEndOf="@id/img_person"
                     app:layout_constraintBottom_toBottomOf="@id/img_person"
-                    app:layout_constraintEnd_toEndOf="@id/img_person" />
+                    app:layout_constraintEnd_toEndOf="@id/img_person"
+                    app:layout_constraintStart_toEndOf="@id/img_person"
+                    app:layout_constraintTop_toBottomOf="@id/img_person" />
 
                 <TextView
                     android:id="@+id/tv_sub_title"
@@ -99,8 +99,6 @@
                     android:hint="Full name"
                     app:boxStrokeWidth="0dp"
                     app:boxStrokeWidthFocused="0dp"
-                    app:counterEnabled="true"
-                    app:counterMaxLength="30"
                     app:counterTextColor="@color/primary"
                     app:hintAnimationEnabled="true"
                     app:hintEnabled="true"
@@ -198,34 +196,32 @@
                     app:layout_constraintTop_toBottomOf="@id/til_email_setting"
                     tools:ignore="RtlSymmetry" />
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_password_setting"
+                    style="@style/TextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:hint="Password"
+                    android:textColorHint="@color/hint_color"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:hintAnimationEnabled="true"
+                    app:hintEnabled="true"
+                    app:hintTextColor="@color/hint_color"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_change_password_title">
 
-                <!--                <com.google.android.material.textfield.TextInputLayout-->
-                <!--                    android:id="@+id/til_password_setting"-->
-                <!--                    style="@style/TextInputLayout"-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="wrap_content"-->
-                <!--                    android:layout_marginBottom="15dp"-->
-                <!--                    android:hint="Password"-->
-                <!--                    android:textColorHint="@color/hint_color"-->
-                <!--                    app:boxStrokeWidth="0dp"-->
-                <!--                    app:boxStrokeWidthFocused="0dp"-->
-                <!--                    app:hintAnimationEnabled="true"-->
-                <!--                    app:hintEnabled="true"-->
-                <!--                    app:hintTextColor="@color/hint_color"-->
-                <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-                <!--                    app:layout_constraintStart_toStartOf="parent"-->
-                <!--                    app:layout_constraintTop_toBottomOf="@id/tv_change_password_title">-->
-
-                <!--                    <com.google.android.material.textfield.TextInputEditText-->
-                <!--                        android:id="@+id/et_password_setting"-->
-                <!--                        style="@style/EditText"-->
-                <!--                        android:layout_width="match_parent"-->
-                <!--                        android:layout_height="wrap_content"-->
-                <!--                        android:enabled="false"-->
-                <!--                        android:inputType="textPassword"-->
-                <!--                        android:text="123456" />-->
-                <!--                </com.google.android.material.textfield.TextInputLayout>-->
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_password_setting"
+                        style="@style/EditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:inputType="textPassword"
+                        android:text="123456" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_submit_setting"
@@ -250,7 +246,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_change_password_click" />
+                    app:layout_constraintTop_toBottomOf="@id/til_password_setting" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
 

@@ -13,12 +13,6 @@ import timber.log.Timber
 class SettingProfileRepo {
     fun settingProfile(settingPojo: SettingProfilePojo): Call<SignResponsePojo> {
         Timber.d("Setting::Repo")
-        return ApiControl.apiService().settingProfile(
-            settingPojo.name,
-            settingPojo.phone,
-            settingPojo.email,
-//            settingPojo.password,
-            settingPojo.image
-        )
+        return ApiControl.apiService().settingProfile(settingPojo)
     }
 }

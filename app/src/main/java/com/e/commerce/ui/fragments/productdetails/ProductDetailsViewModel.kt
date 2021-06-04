@@ -58,8 +58,8 @@ class ProductDetailsViewModel @Inject constructor() : ViewModel() {
         })
     }
 
-    fun addToCart(productId: Int) {
-        productDetailsRepo.addToCart(productId).enqueue(object : Callback<BagPojo> {
+    fun addOrRemoveFromCart(productId: Int) {
+        productDetailsRepo.addOrRemoveFromBag(productId).enqueue(object : Callback<BagPojo> {
             override fun onResponse(call: Call<BagPojo>, response: Response<BagPojo>) {
                 if (response.isSuccessful && response.body() != null) {
                     addToBagLiveData.value = response.body()
@@ -72,8 +72,8 @@ class ProductDetailsViewModel @Inject constructor() : ViewModel() {
         })
     }
 
-    fun addToFavorites(productId: Int) {
-        productDetailsRepo.addToFavorites(productId).enqueue(object : Callback<FavoritePojo> {
+    fun addOrRemoveFromFavorites(productId: Int) {
+        productDetailsRepo.addOrRemoveFromFavorites(productId).enqueue(object : Callback<FavoritePojo> {
             override fun onResponse(call: Call<FavoritePojo>, response: Response<FavoritePojo>) {
                 if (response.isSuccessful && response.body() != null) {
                     addToFavoriteLiveData.value = response.body()

@@ -11,5 +11,5 @@ data class SettingProfilePojo(
     @SerializedName("phone") @Expose val phone: String,
     @SerializedName("email") @Expose val email: String,
 //    @SerializedName("password") @Expose val password: String,
-    @SerializedName("image") @Expose val image: MultipartBody.Part,
+    @SerializedName("image") @Expose val image: String
 )
