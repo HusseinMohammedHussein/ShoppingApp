@@ -20,36 +20,46 @@
 
     <fragment
         android:id="@+id/signup"
-        android:name="com.e.commerce.ui.fragments.auth.register.RegisterFragment"
+        android:name="com.e.commerce.ui.fragments.user.register.RegisterFragment"
         android:label="register_fragment"
         tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_signup_to_login"
-            app:destination="@id/login" />
+            app:destination="@id/login"
+            app:popUpTo="@id/signup"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_signup_to_profile"
             app:destination="@id/profile"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/profile"
+            app:popUpTo="@id/signup"
             app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
         android:id="@+id/login"
-        android:name="com.e.commerce.ui.fragments.auth.login.LoginFragment"
+        android:name="com.e.commerce.ui.fragments.user.login.LoginFragment"
         android:label="login_fragment"
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_login_to_forgot_password"
-            app:destination="@id/forgot_password" />
+            app:destination="@id/forgot_password"
+            app:popUpTo="@id/login"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_login_to_signup"
-            app:destination="@id/signup" />
+            app:destination="@id/signup"
+            app:popUpTo="@id/login"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_profile"
+            app:destination="@id/profile"
+            app:popUpTo="@id/login"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
         android:id="@+id/forgot_password"
-        android:name="com.e.commerce.ui.fragments.auth.forgotpassword.ForgotPasswordFragment"
+        android:name="com.e.commerce.ui.fragments.user.forgotpassword.ForgotPasswordFragment"
         android:label="forgot_password_fragment"
         tools:layout="@layout/fragment_forgot_password">
         <action
@@ -89,32 +99,48 @@
 
     <fragment
         android:id="@+id/profile"
-        android:name="com.e.commerce.ui.fragments.auth.profile.ProfileFragment"
+        android:name="com.e.commerce.ui.fragments.user.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profile_to_updateFragment"
-            app:destination="@id/settingProfileFragment"/>
+            app:destination="@id/settingProfileFragment" />
         <action
             android:id="@+id/action_profile_to_orders"
             app:destination="@id/ordersFragment" />
+        <action
+            android:id="@+id/action_profile_to_address"
+            app:destination="@id/addressFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/favorites"
-        android:name="com.e.commerce.ui.fragments.auth.favorite.FavoritesFragment"
+        android:name="com.e.commerce.ui.fragments.user.favorite.FavoritesFragment"
         android:label="fragment_favorites"
-        tools:layout="@layout/fragment_favorites" />
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favorites_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/bag"
-        android:name="com.e.commerce.ui.fragments.auth.bag.BagFragment"
+        android:name="com.e.commerce.ui.fragments.user.bag.BagFragment"
         android:label="fragment_bag"
-        tools:layout="@layout/fragment_bag" />
+        tools:layout="@layout/fragment_bag">
+        <action
+            android:id="@+id/action_bag_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
+        <action
+            android:id="@+id/action_bag_to_checkout"
+            app:destination="@id/checkoutFragment"
+            app:popUpTo="@id/bag"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/settingProfileFragment"
-        android:name="com.e.commerce.ui.fragments.auth.settingprofile.SettingProfileFragment"
+        android:name="com.e.commerce.ui.fragments.user.settingprofile.SettingProfileFragment"
         android:label="fragment_update"
         tools:layout="@layout/fragment_setting_profile">
         <action
@@ -124,7 +150,48 @@
 
     <fragment
         android:id="@+id/ordersFragment"
-        android:name="com.e.commerce.ui.fragments.auth.myorders.ordersRecyclerView.OrdersFragment"
+        android:name="com.e.commerce.ui.fragments.user.orders.ordersRecyclerView.OrdersFragment"
         android:label="fragment_orders"
-        tools:layout="@layout/fragment_orders" />
+        tools:layout="@layout/fragment_orders">
+        <action
+            android:id="@+id/action_orders_to_orderDetails"
+            app:destination="@id/orderDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/orderDetailsFragment"
+        android:name="com.e.commerce.ui.fragments.user.orderDetails.OrderDetailsFragment"
+        android:label="fragment_order_details"
+        tools:layout="@layout/fragment_order_details" />
+
+    <fragment
+        android:id="@+id/addressFragment"
+        android:name="com.e.commerce.ui.fragments.user.address.addresses.AddressFragment"
+        android:label="fragment_address"
+        tools:layout="@layout/fragment_address">
+        <action
+            android:id="@+id/action_address_to_addAddress"
+            app:destination="@id/addAddressFragment" />
+
+        <argument
+            android:name="edit_address"
+            android:defaultValue="@null"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addAddressFragment"
+        android:name="com.e.commerce.ui.fragments.user.address.addAddress.AddAddressFragment"
+        android:label="fragment_add_address"
+        tools:layout="@layout/fragment_add_address" />
+
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.e.commerce.ui.fragments.user.checkout.CheckoutFragment"
+        android:label="fragment_checkout"
+        tools:layout="@layout/fragment_checkout" >
+        <action
+            android:id="@+id/action_checkout_to_address"
+            app:destination="@id/addressFragment" />
+    </fragment>
 </navigation>

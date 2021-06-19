@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.auth.myorders.ordersViewPager.OrdersViewPager">
+    tools:context=".ui.fragments.user.orders.ordersViewPager_notwork.OrdersViewPager">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

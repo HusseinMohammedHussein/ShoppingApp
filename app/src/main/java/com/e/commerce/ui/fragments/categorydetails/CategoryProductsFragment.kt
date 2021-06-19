@@ -2,7 +2,6 @@ package com.e.commerce.ui.fragments.categorydetails
 
 import android.os.Bundle
 import android.view.*
-import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,10 +15,11 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 class CategoryProductsFragment : Fragment() {
-    private lateinit var binding: FragmentCategoryDetailsBinding
-    private lateinit var bundle: Bundle
+    private var _binding: FragmentCategoryDetailsBinding? = null
+    private val binding get() = _binding!!
+    private var bundle: Bundle? = null
 
-    private lateinit var categoryProductsParcelable: CategoriesPojo
+    private var categoryProductsParcelable: CategoriesPojo? = null
 
     private var viewModel: CategoryDetailsViewModel = CategoryDetailsViewModel()
     private var productsAdapter: CategoryProductsAdapter = CategoryProductsAdapter()
@@ -28,7 +28,7 @@ class CategoryProductsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCategoryDetailsBinding.inflate(inflater, container, false)
+        _binding = FragmentCategoryDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -59,9 +59,9 @@ class CategoryProductsFragment : Fragment() {
     }
 
     private fun request() {
-        viewModel.getCategoryDetails(categoryProductsParcelable.id)
-        Timber.d("categoryId::${categoryProductsParcelable.id}")
-        Timber.d("categoryName::${categoryProductsParcelable.name}")
+        categoryProductsParcelable?.id?.let { viewModel.getCategoryDetails(it) }
+        Timber.d("categoryId::${categoryProductsParcelable?.id}")
+        Timber.d("categoryName::${categoryProductsParcelable?.name}")
     }
 
     private fun setupSearch() {
@@ -80,19 +80,20 @@ class CategoryProductsFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
         binding.appbar.toolbar.setNavigationOnClickListener { (activity as MainActivity).onBackPressed() }
-        binding.appbar.tvTitle.text = categoryProductsParcelable.name
-        Timber.d("Title::${categoryProductsParcelable.name}")
+        binding.appbar.tvTitle.text = categoryProductsParcelable?.name
+        Timber.d("Title::${categoryProductsParcelable?.name}")
     }
 
     private fun init() {
         bundle = Bundle()
-        bundle = requireArguments()
-        categoryProductsParcelable = bundle.getParcelable(resources.getString(R.string.category_pojo))!!
+        bundle = arguments
+        categoryProductsParcelable = bundle?.getParcelable(resources.getString(R.string.category_pojo))!!
         binding.rvProducts.apply {
             setHasFixedSize(true)
             layoutManager =
                 GridLayoutManager(requireContext(), 2, LinearLayoutManager.VERTICAL, false)
             adapter = productsAdapter
+            visibility = View.GONE
         }
     }
 
@@ -130,9 +131,7 @@ class CategoryProductsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (binding.rvProducts.isNotEmpty()) {
-            productsAdapter.clearData()
-        }
+        _binding = null
     }
 
     override fun onResume() {

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/purple_500"
-    tools:context=".ui.fragments.auth.register.RegisterFragment">
+    tools:context=".ui.fragments.user.register.RegisterFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_name"
+                    android:id="@+id/til_name_register"
                     style="@style/TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -61,14 +61,14 @@
                     app:hintAnimationEnabled="true"
                     app:hintEnabled="true"
                     app:hintTextColor="@color/hint_color"
-                    app:layout_constraintBottom_toTopOf="@id/til_phone"
+                    app:layout_constraintBottom_toTopOf="@id/til_phone_register"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_chainStyle="spread">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_name"
+                        android:id="@+id/et_name_register"
                         style="@style/EditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_phone"
+                    android:id="@+id/til_phone_register"
                     style="@style/TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -86,13 +86,13 @@
                     app:hintAnimationEnabled="true"
                     app:hintEnabled="true"
                     app:hintTextColor="@color/hint_color"
-                    app:layout_constraintBottom_toTopOf="@id/til_email"
+                    app:layout_constraintBottom_toTopOf="@id/til_email_register"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/til_name">
+                    app:layout_constraintTop_toBottomOf="@id/til_name_register">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_phone"
+                        android:id="@+id/et_phone_register"
                         style="@style/EditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_email"
+                    android:id="@+id/til_email_register"
                     style="@style/TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -111,13 +111,13 @@
                     app:hintAnimationEnabled="true"
                     app:hintEnabled="true"
                     app:hintTextColor="@color/hint_color"
-                    app:layout_constraintBottom_toTopOf="@id/til_password"
+                    app:layout_constraintBottom_toTopOf="@id/til_password_register"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/til_phone">
+                    app:layout_constraintTop_toBottomOf="@id/til_phone_register">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_email"
+                        android:id="@+id/et_email_register"
                         style="@style/EditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_password"
+                    android:id="@+id/til_password_register"
                     style="@style/TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -139,12 +139,12 @@
                     app:layout_constraintBottom_toTopOf="@id/tv_haveaccount"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/til_email"
+                    app:layout_constraintTop_toBottomOf="@id/til_email_register"
                     app:passwordToggleEnabled="true"
                     app:passwordToggleTint="@color/primary">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_password"
+                        android:id="@+id/et_password_register"
                         style="@style/EditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -170,7 +170,7 @@
                     app:layout_constraintBottom_toTopOf="@id/btn_signup"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/til_password" />
+                    app:layout_constraintTop_toBottomOf="@id/til_password_register" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_signup"

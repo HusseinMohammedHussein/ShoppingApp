@@ -5,8 +5,12 @@ import com.e.commerce.data.model.ProductDetailsPojo
 import com.e.commerce.data.model.ProductsPojo
 import com.e.commerce.data.model.ProfilePojo
 import com.e.commerce.data.model.auth.*
-import com.e.commerce.data.model.auth.OrderPojo.OrdersPojo
-import com.e.commerce.data.model.auth.RegisterPojo.RequestRegisterPojo
+import com.e.commerce.data.model.auth.AddressPojo.AddAddressPojo
+import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
+import com.e.commerce.data.model.auth.LoginPojo.LoginDataPojo
+import com.e.commerce.data.model.auth.OrderPojo.AddOrderPojo
+import com.e.commerce.data.model.auth.OrderPojo.OrderResponsePojo
+import com.e.commerce.data.model.auth.RegisterPojo.RegisterDataPojo
 import com.e.commerce.data.model.auth.bag.BagPojo
 import com.e.commerce.data.model.auth.bag.BagResponsePojo
 import com.e.commerce.data.model.auth.bag.BagUpdateResponsePojo
@@ -38,14 +42,15 @@ interface ApiService {
     @GET("products")
     fun getProducts(): Call<ProductsPojo>
 
-
     @POST("products/search")
     fun searchProduct(@Query("text") keyword: String): Call<ProductsPojo>
 
-
     /**Auth________________________________________________________________________*/
     @POST("register")
-    fun requestRegister(@Body requestRegister: RequestRegisterPojo): Call<RegisterPojo>
+    fun register(@Body registerData: RegisterDataPojo): Call<RegisterPojo>
+
+    @POST("login")
+    fun login(@Body loginPojo: LoginDataPojo): Call<LoginPojo>
 
     @GET("profile")
     fun getProfile(): Call<ProfilePojo>
@@ -68,9 +73,27 @@ interface ApiService {
     @GET("orders")
     fun getOrders(): Call<OrderPojo>
 
+    @POST("orders")
+    fun addOrder(@Body order: AddOrderPojo): Call<OrderResponsePojo>
+
+    @GET("orders/{order_id}")
+    fun getOrderDetails(@Path("order_id") id: Int): Call<OrderDetailsPojo>
+
     @GET("addresses")
     fun getAddresses(): Call<AddressPojo>
 
+    @POST("addresses")
+    fun addAddresses(@Body addAddress: AddAddressPojo): Call<AddressPojo>
+
+    @DELETE("addresses/{id}")
+    fun deleteAddresses(@Path("id") addressId: Int): Call<AddressPojo>
+
+    @PUT("addresses/{id}")
+    fun updateAddresses(@Path("id") addressId: Int, @Body updateAddress: AddressObjectPojo): Call<AddressPojo>
+
     @PUT("update-profile")
     fun settingProfile(@Body settingProfilePojo: SettingProfilePojo): Call<SignResponsePojo>
+
+    @POST("promo-codes/validate")
+    fun checkPromoCode(@Query("code") code: String): Call<PromocodePojo>
 }

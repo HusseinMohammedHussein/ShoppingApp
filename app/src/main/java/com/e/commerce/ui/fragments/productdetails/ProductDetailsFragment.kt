@@ -31,7 +31,6 @@ class ProductDetailsFragment : Fragment() {
     private var viewModel: ProductDetailsViewModel = ProductDetailsViewModel()
     private var imagesAdapter: ProductImageAdapter = ProductImageAdapter()
     private var productsAdapter: ProductsAdapter = ProductsAdapter()
-
     private var y = 0
 
     override fun onCreateView(

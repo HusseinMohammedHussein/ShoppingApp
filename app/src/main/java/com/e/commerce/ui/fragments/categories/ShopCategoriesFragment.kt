@@ -1,8 +1,9 @@
 package com.e.commerce.ui.fragments.categories
 
 import android.os.Bundle
-import android.view.*
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,7 +14,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ShopCategoriesFragment : Fragment() {
-    private lateinit var binding: FragmentCategoriesBinding
+    private var _binding: FragmentCategoriesBinding? = null
+    private val binding get() = _binding!!
     private var viewModelShop: ShopCategoriesViewModel = ShopCategoriesViewModel()
 
     private var categoryAdapter: ShopCategoriesAdapter = ShopCategoriesAdapter()
@@ -22,14 +24,13 @@ class ShopCategoriesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCategoriesBinding.inflate(inflater, container, false)
+        _binding = FragmentCategoriesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModelShop =
-            ViewModelProvider(requireActivity()).get(ShopCategoriesViewModel::class.java)
+        viewModelShop = ViewModelProvider(requireActivity()).get(ShopCategoriesViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,6 +46,7 @@ class ShopCategoriesFragment : Fragment() {
 
     private fun init() {
         binding.loading.loading.visibility = View.VISIBLE
+        binding.shopCategoryViewGroup.visibility = View.GONE
 
         binding.rvCategories.apply {
             setHasFixedSize(true)
@@ -54,9 +56,9 @@ class ShopCategoriesFragment : Fragment() {
     }
 
     private fun setupToolbar() {
-        (activity as MainActivity).setSupportActionBar(binding.appbar.toolbar)
-        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as MainActivity).setSupportActionBar(binding.appbar.toolbar)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
         binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
         binding.appbar.tvTitle.text = getString(R.string.Title_ShopCategory)
@@ -64,11 +66,16 @@ class ShopCategoriesFragment : Fragment() {
 
     private fun observerData() {
         viewModelShop.getShopCategories()
-        viewModelShop.shopCategoryMutable.observe(this.requireActivity(), { categories ->
+        viewModelShop.shopCategoryMutable.observe(viewLifecycleOwner, { categories ->
             categoryAdapter.setData(categories.data.categories)
             categoryAdapter.notifyDataSetChanged()
             binding.loading.loading.visibility = View.GONE
             binding.shopCategoryViewGroup.visibility = View.VISIBLE
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

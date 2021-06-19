@@ -3,6 +3,9 @@ package com.e.commerce.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 // Created by Hussein_Mohammad on 5/14/2021.
 @SuppressLint("CommitPrefEdits")
@@ -32,6 +35,21 @@ class SharedPref constructor(context: Context) {
         }
     }
 
+    fun setDouble(key: String, value: Double) {
+        operation.apply {
+            putFloat(key, value.toFloat())
+            apply()
+        }
+    }
+
+    fun setAddressGson(key: String, objectPojo: AddressObjectPojo) {
+        operation.apply {
+            val gson = Gson()
+            val json = gson.toJson(objectPojo)
+            putString(key, json)
+        }
+    }
+
     fun setBoolean(key: String, value: Boolean) {
         operation.apply {
             putBoolean(key, value)
@@ -46,9 +64,18 @@ class SharedPref constructor(context: Context) {
         }
     }
 
+    fun getAddressGson(key: String): AddressObjectPojo {
+        val gson = Gson()
+        val json = preferences.getString(key, null)
+        val type = object : TypeToken<AddressObjectPojo>() {}.type
+        return gson.fromJson(json.toString(), type)
+    }
+
     fun getString(key: String): String? = preferences.getString(key, "")
 
     fun getInt(key: String): Int = preferences.getInt(key, 0)
+
+    fun getDouble(key: String): Double = preferences.getFloat(key, 0F).toDouble()
 
     fun getBoolean(key: String): Boolean = preferences.getBoolean(key, false)
 

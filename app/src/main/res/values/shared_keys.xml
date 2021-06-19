@@ -3,5 +3,13 @@
     <string name="user_token" translatable="false">user_token</string>
     <string name="category_pojo" translatable="false">category_pojo</string>
     <string name="product_pojo" translatable="false">product_pojo</string>
+    <string name="order_pojo" translatable="false">order_pojo</string>
     <string name="is_user" translatable="false">is_user</string>
+    <string name="address_id" translatable="false">address_id</string>
+    <string name="isEditClicked" translatable="false">isEditClicked</string>
+    <string name="edit_address" translatable="false">edit_address</string>
+    <string name="address_parcelable" translatable="false">address_parcelable</string>
+    <string name="total_amount" translatable="false">total_amount</string>
+    <string name="promocode_id">promocode_id</string>
+    <string name="user_points">user_points</string>
 </resources>

@@ -29,10 +29,8 @@ class ShopCategoriesViewModel @Inject constructor() : ViewModel() {
             }
 
             override fun onFailure(call: Call<CategoryPojo>, t: Throwable) {
-                Timber.d("getShopCategories::${t.localizedMessage}")
+                Timber.e("getShopCategories::${t.localizedMessage}")
             }
-
-
         })
     }
 }

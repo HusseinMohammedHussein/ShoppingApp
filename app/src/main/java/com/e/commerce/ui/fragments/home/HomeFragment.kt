@@ -7,10 +7,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.databinding.FragmentHomeBinding
 import com.e.commerce.ui.common.ProductsAdapter
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
@@ -25,13 +23,12 @@ import timber.log.Timber
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private var viewModelOwner: HomeViewModel = HomeViewModel()
     private var viewModel: HomeViewModel = HomeViewModel()
 
     private var productAdapter: ProductsAdapter = ProductsAdapter()
     private var categoriesAdapter: CategoriesAdapter = CategoriesAdapter()
 
-    private lateinit var sliderAdapter: BannerSliderAdapter
+    private var sliderAdapter: BannerSliderAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,8 +40,7 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        retainInstance = true
-        viewModelOwner = ViewModelProvider(this).get(HomeViewModel::class.java)
+//        retainInstance = true
         viewModel = ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
     }
 
@@ -68,7 +64,7 @@ class HomeFragment : Fragment() {
 
     private fun listenerHandle() {
         productAdapter.onItemClick = { productPojo ->
-            viewModelOwner.addOrRemoveFromFavorite(productPojo.id).observe(this.viewLifecycleOwner, { response ->
+            viewModel.addOrRemoveFromFavorite(productPojo.id).observe(this.viewLifecycleOwner, { response ->
                 if (response.status) {
                     DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
                 }
@@ -89,8 +85,10 @@ class HomeFragment : Fragment() {
                 productAdapter.notifyDataSetChanged()
 
                 if (home.homeData.banners.isNotEmpty()) {
-                    sliderAdapter.renewItem(home.homeData.banners)
-                    binding.bannerSlider.imageSlider.setSliderAdapter(sliderAdapter)
+                    sliderAdapter?.let {
+                        it.renewItem(home.homeData.banners)
+                        binding.bannerSlider.imageSlider.setSliderAdapter(it)
+                    }
                     Timber.w("SliderHasData:::${home.homeData.banners.size}")
                 }
                 binding.loading.loading.visibility = View.GONE
@@ -135,12 +133,9 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding.bannerSlider.imageSlider.stopAutoCycle()
+        sliderAdapter = null
+        Timber.i("HomeSliderAdapter::$sliderAdapter")
         _binding = null
         Timber.i("HomeBinding::${_binding}")
-    }
-
-    override fun onResume() {
-        super.onResume()
-
     }
 }

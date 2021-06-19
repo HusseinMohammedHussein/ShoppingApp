@@ -34,6 +34,8 @@ class ProductsAdapter : RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>
     inner class ProductsViewHolder(var binding: ItemProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        val bundle = Bundle()
+
         @SuppressLint("SetTextI18n")
         fun bind(pojo: ProductPojo) {
             binding.tvProductName.text = pojo.name
@@ -65,12 +67,9 @@ class ProductsAdapter : RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>
                 }
             }
 
-            itemView.setOnClickListener {
-                val bundle = Bundle()
-                bundle.putParcelable(it.context.resources.getString(R.string.product_pojo), pojo)
-
-                itemView.findNavController()
-                    .navigate(R.id.action_product_to_productDetails, bundle)
+            itemView.setOnClickListener { view ->
+                bundle.putParcelable(view.context.resources.getString(R.string.product_pojo), pojo)
+                view.findNavController().navigate(R.id.action_product_to_productDetails, bundle)
             }
         }
     }

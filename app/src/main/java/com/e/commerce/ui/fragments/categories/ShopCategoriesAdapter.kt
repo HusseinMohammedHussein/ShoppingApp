@@ -36,7 +36,6 @@ class ShopCategoriesAdapter : RecyclerView.Adapter<ShopCategoriesAdapter.Categor
             itemView.setOnClickListener {
                 val bundle = Bundle()
                 bundle.putParcelable(it.context.resources.getString(R.string.category_pojo), pojoShop)
-
                 itemView.findNavController().navigate(R.id.action_categories_to_catDetails, bundle)
             }
         }

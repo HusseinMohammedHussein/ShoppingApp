@@ -10,7 +10,6 @@ import retrofit2.Call
 
 @ViewModelScoped
 class ShopCategoryRepo {
-
     fun getShopCategory(): Call<CategoryPojo> {
         return ApiControl.apiService().getShopCategory()
     }

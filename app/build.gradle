@@ -110,4 +110,7 @@ dependencies {
     //Imagepicker
     implementation 'com.github.esafirm.android-image-picker:imagepicker:2.0.0'
     implementation 'com.github.esafirm.android-image-picker:rximagepicker:2.0.0'
+
+    // CountryPicker
+    implementation 'com.hbb20:ccp:2.3.1'
 }

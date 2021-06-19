@@ -5,8 +5,6 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.e.commerce.R
 import com.e.commerce.databinding.ActivityMainBinding
@@ -18,15 +16,16 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private var _binding: ActivityMainBinding? = null
+    private val binding get() = _binding!!
     private lateinit var navController: NavController
-    private lateinit var sharedPref: SharedPref
+    private var sharedPref: SharedPref? = null
     private var isUser: Boolean = false
     private lateinit var userToken: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.bottomView.visibility = View.VISIBLE
         init()
@@ -34,15 +33,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun init() {
         sharedPref = SharedPref(this)
-        isUser = sharedPref.getBoolean(resources.getString(R.string.is_user))
-        userToken = sharedPref.getString(resources.getString(R.string.user_token)).toString()
+//        isUser = sharedPref?.getBoolean(resources.getString(R.string.is_user))!!
+        Timber.d("BeforeClickIsUser::${sharedPref?.getBoolean(resources.getString(R.string.is_user))}")
+        userToken = sharedPref?.getString(resources.getString(R.string.user_token)).toString()
 
         binding.bottomView.menu.findItem(R.id.profile).setOnMenuItemClickListener {
-            if (isUser.not()) {
-                Timber.d("isUser::isUser")
+            if (!sharedPref?.getBoolean(resources.getString(R.string.is_user))!!) {
+                Timber.d("AfterClickIsUser::$isUser")
                 navController.navigate(R.id.signup)
             } else {
-                Timber.d("isUser::isUser")
                 navController.navigate(R.id.profile)
             }
             return@setOnMenuItemClickListener true
@@ -95,5 +94,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun hideBottomNav() {
         binding.bottomView.visibility = View.GONE
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

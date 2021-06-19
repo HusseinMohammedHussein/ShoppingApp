@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_offwhite_color"
-    tools:context=".ui.fragments.auth.profile.ProfileFragment">
+    tools:context=".ui.fragments.user.profile.ProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

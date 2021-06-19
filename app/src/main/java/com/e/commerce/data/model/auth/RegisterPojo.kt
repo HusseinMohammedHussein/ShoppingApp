@@ -10,7 +10,7 @@ data class RegisterPojo(
     @SerializedName("message") @Expose val message: String,
     @SerializedName("data") @Expose val data: SignResponsePojo
 ) {
-    data class RequestRegisterPojo(
+    data class RegisterDataPojo(
         @SerializedName("name") @Expose val username: String,
         @SerializedName("phone") @Expose val phone: String,
         @SerializedName("email") @Expose val email: String,

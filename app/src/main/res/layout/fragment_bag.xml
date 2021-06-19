@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_offwhite_color"
-    tools:context=".ui.fragments.auth.bag.BagFragment">
-
+    tools:context=".ui.fragments.user.bag.BagFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -37,7 +36,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/checkout"
@@ -88,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="20dp"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@id/btn_login"
+                app:layout_constraintBottom_toTopOf="@id/btn_check_out"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cv_enter_promo">
@@ -116,7 +114,7 @@
             </RelativeLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_login"
+                android:id="@+id/btn_check_out"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
@@ -136,6 +134,18 @@
                 app:layout_constraintTop_toBottomOf="@id/rl_totalamount" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <View
+            android:id="@+id/v_not_has_products"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#86FFFFFF"
+            android:visibility="gone"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toBottomOf="@id/checkout"
+            app:layout_constraintEnd_toEndOf="@id/checkout"
+            app:layout_constraintStart_toStartOf="@id/checkout"
+            app:layout_constraintTop_toTopOf="@id/checkout"
+            tools:visibility="visible" />
 
         <include
             android:id="@+id/loading"
