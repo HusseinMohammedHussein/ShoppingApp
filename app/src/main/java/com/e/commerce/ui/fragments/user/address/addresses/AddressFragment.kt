@@ -1,8 +1,6 @@
 package com.e.commerce.ui.fragments.user.address.addresses
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,7 +56,8 @@ class AddressFragment : Fragment() {
             val addressBundle = Bundle()
             addressBundle.putBoolean(resources.getString(R.string.isEditClicked), false)
             addressBundle.putParcelable(resources.getString(R.string.edit_address), null)
-            findNavController().navigate(R.id.action_address_to_addAddress, addressBundle)
+            val direction = AddressFragmentDirections.actionAddressToAddAddress().actionId
+            findNavController().navigate(direction, addressBundle)
         }
     }
 
@@ -67,8 +66,8 @@ class AddressFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { (requireActivity() as MainActivity).onBackPressed() }
-        binding.appbar.tvTitle.text = "Shipping Addresses"
+        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        binding.appbar.tvTitle.text = getString(R.string.address_fragment)
     }
 
     private fun init() {
@@ -109,12 +108,9 @@ class AddressFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        binding.srlAddress.isRefreshing = true
-        Handler(Looper.getMainLooper()).postDelayed({
-            binding.srlAddress.isRefreshing = false
-            viewModel.getAddress()
-            addressAdapter?.notifyDataSetChanged()
-        }, 2_000)
+        binding.srlAddress.isRefreshing = false
+        viewModel.getAddress()
+        addressAdapter?.notifyDataSetChanged()
     }
 
     override fun onDestroyView() {

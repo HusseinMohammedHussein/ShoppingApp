@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.e.commerce.R
 import com.e.commerce.databinding.FragmentProfileBinding
+import com.e.commerce.ui.common.ProfileViewModel
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
 import com.squareup.picasso.Picasso
@@ -20,8 +21,8 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private var viewModel: ProfileViewModel = ProfileViewModel()
-    private var sharedPref: SharedPref? = null
 
+    private var sharedPref: SharedPref? = null
     private var isUser: Boolean? = false
     private var userToken: String? = null
 
@@ -92,22 +93,24 @@ class ProfileFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { (requireActivity() as MainActivity).onBackPressed() }
-        binding.appbar.tvTitle.text = ""
+        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
     }
 
 
     private fun onClick() {
         binding.content.contentOption.rlSetting.setOnClickListener {
-            findNavController().navigate(R.id.action_profile_to_updateFragment)
+            val direction = ProfileFragmentDirections.actionProfileToUpdateFragment()
+            findNavController().navigate(direction)
         }
 
         binding.content.contentOption.llMyOrders.setOnClickListener {
-            findNavController().navigate(R.id.action_profile_to_orders)
+            val direction = ProfileFragmentDirections.actionProfileToOrders()
+            findNavController().navigate(direction)
         }
 
         binding.content.contentOption.rlShippingAddress.setOnClickListener {
-            findNavController().navigate(R.id.action_profile_to_address)
+            val directions = ProfileFragmentDirections.actionProfileToAddress(null)
+            findNavController().navigate(directions)
         }
     }
 

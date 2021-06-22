@@ -30,9 +30,6 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -44,15 +41,13 @@ class SettingProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var viewModel: SettingViewModel = SettingViewModel()
-
-    private lateinit var imagePath: String
+    private var imagePath: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingProfileBinding.inflate(inflater, container, false)
-//        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         return binding.root
     }
 
@@ -78,7 +73,8 @@ class SettingProfileFragment : Fragment() {
         viewModel.settingProfileMutableData.observe(viewLifecycleOwner, { updateResponse ->
             if (updateResponse.status) {
                 Timber.d("UpdateStatus::${updateResponse.status}")
-                findNavController().navigate(R.id.action_setting_to_profile)
+                val direction = SettingProfileFragmentDirections.actionSettingToProfile()
+                findNavController().navigate(direction)
             } else {
                 Toast.makeText(requireContext(), updateResponse.message, Toast.LENGTH_SHORT).show()
                 Timber.d("updateResponseMessage::${updateResponse.message}")
@@ -99,8 +95,7 @@ class SettingProfileFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { (requireActivity() as MainActivity).onBackPressed() }
-        binding.appbar.tvTitle.text = ""
+        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
     }
 
     private fun request() {
@@ -121,9 +116,13 @@ class SettingProfileFragment : Fragment() {
         val phone: String = binding.etPhoneSetting.text.toString().trim()
         val email: String = binding.etEmailSetting.text.toString().trim()
 
-        val settingProfilePojo = SettingProfilePojo(fullname, phone, email, imagePath)
+        val settingProfilePojo = imagePath?.let {
+            SettingProfilePojo(fullname, phone, email, it)
+        }
         Timber.d("SendImageHere::$imagePath")
-        viewModel.setSettingProfile(settingProfilePojo)
+        if (settingProfilePojo != null) {
+            viewModel.setSettingProfile(settingProfilePojo)
+        }
     }
 
     private fun chooseImage() {
@@ -157,7 +156,7 @@ class SettingProfileFragment : Fragment() {
         }
     }
 
-    private fun encodeImage(path: String): String {
+    private fun encodeImage(path: String): String? {
         val baos = ByteArrayOutputStream()
         val file = File(path)
         val fileStream = FileInputStream(file)

@@ -14,11 +14,6 @@ class ForgotPasswordFragment : Fragment() {
     private lateinit var binding: FragmentForgotPasswordBinding
     private var viewModel: ForgotPasswordViewModel = ForgotPasswordViewModel()
 
-    companion object {
-        fun newInstance() = ForgotPasswordFragment()
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,18 +34,12 @@ class ForgotPasswordFragment : Fragment() {
 
     private fun methods() {
         initToolbar()
-        initLayout()
-    }
-
-
-    private fun initLayout() {
-
     }
 
     private fun initToolbar() {
-        (activity as MainActivity).setSupportActionBar(binding.toolbar.tool)
-        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as MainActivity).setSupportActionBar(binding.toolbar.tool)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.toolbar.tool.setNavigationIcon(R.drawable.ic_back_row)
         binding.toolbar.tool.setNavigationOnClickListener { requireActivity().onBackPressed() }
     }

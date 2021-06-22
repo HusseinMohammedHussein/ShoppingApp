@@ -1,10 +1,11 @@
-package com.e.commerce.ui.fragments.user.profile
+package com.e.commerce.ui.common
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.ProfilePojo
 import com.e.commerce.data.model.auth.AddressPojo
 import com.e.commerce.data.model.auth.OrderPojo
+import com.e.commerce.ui.fragments.user.profile.ProfileRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,7 +29,7 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
             }
 
             override fun onFailure(call: Call<ProfilePojo>, t: Throwable) {
-                Timber.d("getProfileFailure::${t.localizedMessage}")
+                Timber.e("getProfileFailure::${t.localizedMessage}")
             }
 
         })

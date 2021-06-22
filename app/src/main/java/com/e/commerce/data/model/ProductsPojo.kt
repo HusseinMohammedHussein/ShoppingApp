@@ -14,7 +14,7 @@ data class ProductsPojo(
 ) : Parcelable {
     @Parcelize
     data class ProductDataPojo(
-        @SerializedName("data") @Expose val products: MutableList<ProductPojo>,
+        @SerializedName("data") @Expose val products: ArrayList<ProductPojo>,
         @SerializedName("total") @Expose val total: Int
     ) : Parcelable
 }

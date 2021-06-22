@@ -17,8 +17,7 @@ class ShopCategoriesFragment : Fragment() {
     private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
     private var viewModelShop: ShopCategoriesViewModel = ShopCategoriesViewModel()
-
-    private var categoryAdapter: ShopCategoriesAdapter = ShopCategoriesAdapter()
+    private var categoryAdapter: ShopCategoriesAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,10 +40,12 @@ class ShopCategoriesFragment : Fragment() {
     private fun methods() {
         setupToolbar()
         init()
+        request()
         observerData()
     }
 
     private fun init() {
+        categoryAdapter = ShopCategoriesAdapter()
         binding.loading.loading.visibility = View.VISIBLE
         binding.shopCategoryViewGroup.visibility = View.GONE
 
@@ -61,16 +62,26 @@ class ShopCategoriesFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
         binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
-        binding.appbar.tvTitle.text = getString(R.string.Title_ShopCategory)
+        binding.appbar.tvTitle.text = getString(R.string.shopCategory_fragment)
+    }
+
+    private fun request() {
+        viewModelShop.getShopCategories()
     }
 
     private fun observerData() {
-        viewModelShop.getShopCategories()
         viewModelShop.shopCategoryMutable.observe(viewLifecycleOwner, { categories ->
-            categoryAdapter.setData(categories.data.categories)
-            categoryAdapter.notifyDataSetChanged()
-            binding.loading.loading.visibility = View.GONE
-            binding.shopCategoryViewGroup.visibility = View.VISIBLE
+            if (categories.status) {
+                categoryAdapter?.let { adapter ->
+                    adapter.setData(categories.data.categories)
+                    adapter.notifyDataSetChanged()
+                }
+                binding.loading.loading.visibility = View.GONE
+                binding.shopCategoryViewGroup.visibility = View.VISIBLE
+            } else {
+                binding.loading.loading.visibility = View.GONE
+                binding.shopCategoryViewGroup.visibility = View.GONE
+            }
         })
     }
 

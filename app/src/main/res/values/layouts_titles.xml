@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="checkout_fragment" translatable="false">Checkout</string>
+    <string name="bag_fragment" translatable="false">My Bag</string>
+    <string name="shopCategory_fragment" translatable="false">Categories</string>
+    <string name="add_address_fragment">Add Addresses</string>
+    <string name="address_fragment">Shipping Addresses</string>
+    <string name="favorites_fragment">Favorites</string>
+    <string name="orders_fragment">Order Details</string>
+</resources>

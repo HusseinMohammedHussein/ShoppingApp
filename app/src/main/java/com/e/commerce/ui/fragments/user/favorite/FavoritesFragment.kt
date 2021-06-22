@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
+import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.databinding.FragmentFavoritesBinding
+import com.e.commerce.ui.fragments.user.favorite.FavoritesAdapter.FavoriteItemClick
 import com.e.commerce.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -20,7 +22,7 @@ class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
     private var viewModel: FavoritesViewModel = FavoritesViewModel()
-    private val favoritesAdapter: FavoritesAdapter = FavoritesAdapter()
+    private var favoritesAdapter: FavoritesAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +46,6 @@ class FavoritesFragment : Fragment() {
         setupToolbar()
         init()
         observerData()
-        onClickListener()
     }
 
     private fun setupToolbar() {
@@ -53,10 +54,11 @@ class FavoritesFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
         binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
-        binding.appbar.tvTitle.text = "Favorites"
+        binding.appbar.tvTitle.text = getString(R.string.favorites_fragment)
     }
 
     private fun init() {
+        favoritesAdapter = FavoritesAdapter(onFavoriteClick)
         binding.loading.loading.visibility = View.VISIBLE
         binding.content.rvFavorites.apply {
             setHasFixedSize(true)
@@ -65,9 +67,9 @@ class FavoritesFragment : Fragment() {
         }
     }
 
-    private fun onClickListener() {
-        favoritesAdapter.onItemClick = { itemFavorite ->
-            viewModel.removeFromFavorite(itemFavorite.product.id)
+    private val onFavoriteClick = object : FavoriteItemClick {
+        override fun onFavoriteItemClick(favorite: FavoritePojo.FavoriteResponse.FavoritesResponse) {
+            viewModel.removeFromFavorite(favorite.product.id)
         }
     }
 
@@ -75,8 +77,10 @@ class FavoritesFragment : Fragment() {
         viewModel.getFavorites()
         viewModel.favoriteMData.observe(viewLifecycleOwner, { response ->
             if (response.status) {
-                favoritesAdapter.setData(response.data.productsFavorites)
-                favoritesAdapter.notifyDataSetChanged()
+                favoritesAdapter?.let { adapter ->
+                    adapter.setData(response.data.productsFavorites)
+                    adapter.notifyDataSetChanged()
+                }
             } else {
                 Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
                 binding.content.rvFavorites.adapter = null

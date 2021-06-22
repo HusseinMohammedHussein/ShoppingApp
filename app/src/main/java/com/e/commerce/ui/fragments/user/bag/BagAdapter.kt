@@ -20,7 +20,7 @@ class BagAdapter(private var newQuantity: NewQuantity) : RecyclerView.Adapter<Ba
     lateinit var onRemoveFromBagClick: ((BagItemResponsePojo) -> Unit)
     lateinit var context: Context
 
-    fun setData(pojos: MutableList<BagItemResponsePojo>) {
+    fun setData(pojos: MutableList<BagItemResponsePojo>?) {
         pojos.also { this.pojoList = it }
         notifyDataSetChanged()
     }

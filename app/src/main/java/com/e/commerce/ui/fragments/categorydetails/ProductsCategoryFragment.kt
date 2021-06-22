@@ -8,34 +8,34 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
 import com.e.commerce.data.model.home.CategoryPojo.Data.CategoriesPojo
-import com.e.commerce.databinding.FragmentCategoryDetailsBinding
+import com.e.commerce.databinding.FragmentProductsCategoryBinding
 import com.e.commerce.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 @AndroidEntryPoint
-class CategoryProductsFragment : Fragment() {
-    private var _binding: FragmentCategoryDetailsBinding? = null
+class ProductsCategoryFragment : Fragment() {
+    private var _binding: FragmentProductsCategoryBinding? = null
     private val binding get() = _binding!!
+    private var productsCategoryVM: ProductsCategoryVM = ProductsCategoryVM()
+    private var productsCategoryAdapter: ProductsCategoryAdapter? = null
+
     private var bundle: Bundle? = null
+    private var productsCategoryParcelable: CategoriesPojo? = null
 
-    private var categoryProductsParcelable: CategoriesPojo? = null
-
-    private var viewModel: CategoryDetailsViewModel = CategoryDetailsViewModel()
-    private var productsAdapter: CategoryProductsAdapter = CategoryProductsAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCategoryDetailsBinding.inflate(inflater, container, false)
+        _binding = FragmentProductsCategoryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        viewModel = ViewModelProvider(requireActivity()).get(CategoryDetailsViewModel::class.java)
+        productsCategoryVM = ViewModelProvider(requireActivity()).get(ProductsCategoryVM::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,65 +52,71 @@ class CategoryProductsFragment : Fragment() {
         onCLickListener()
     }
 
-    private fun onCLickListener() {
-        productsAdapter.onItemClick = { product ->
-            viewModel.addRemoveFavorite(product.id)
+    private fun setupToolbar() {
+        (requireActivity() as MainActivity).setSupportActionBar(binding.appbar.toolbar)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
+        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        binding.appbar.tvTitle.text = productsCategoryParcelable?.name
+        Timber.d("Title::${productsCategoryParcelable?.name}")
+    }
+
+    private fun init() {
+        bundle = Bundle()
+        bundle = arguments
+        productsCategoryAdapter = ProductsCategoryAdapter()
+        productsCategoryParcelable = bundle?.getParcelable(getString(R.string.category_pojo))!!
+
+        binding.rvProducts.apply {
+            setHasFixedSize(true)
+            layoutManager =
+                GridLayoutManager(requireContext(), 2, LinearLayoutManager.VERTICAL, false)
+            adapter = productsCategoryAdapter
+            visibility = View.GONE
         }
     }
 
     private fun request() {
-        categoryProductsParcelable?.id?.let { viewModel.getCategoryDetails(it) }
-        Timber.d("categoryId::${categoryProductsParcelable?.id}")
-        Timber.d("categoryName::${categoryProductsParcelable?.name}")
+        productsCategoryParcelable?.id?.let { productsCategoryVM.getCategoryDetails(it) }
+        Timber.d("categoryId::${productsCategoryParcelable?.id}")
+        Timber.d("categoryName::${productsCategoryParcelable?.name}")
+    }
+
+    private fun observeData() {
+        productsCategoryVM.categoryDetailsMutable.observe(viewLifecycleOwner, { response ->
+            productsCategoryAdapter?.let { adapter ->
+                adapter.setData(response.data.Products)
+                adapter.notifyDataSetChanged()
+            }
+            binding.rvProducts.visibility = View.VISIBLE
+            binding.loading.loading.visibility = View.GONE
+        })
+
+        productsCategoryVM.searchProductMutable.observe(viewLifecycleOwner, { response ->
+            binding.loading.loading.visibility = View.GONE
+            binding.rvProducts.visibility = View.VISIBLE
+            productsCategoryAdapter?.let { adapter ->
+                adapter.setData(response.data.products)
+                adapter.notifyDataSetChanged()
+            }
+        })
     }
 
     private fun setupSearch() {
         binding.tvSearch.setOnClickListener {
             val keyword = binding.etSearch.text.toString().trim()
-            viewModel.searchProduct(keyword)
+            productsCategoryVM.searchProduct(keyword)
             Timber.d("KeywordForSearch::${keyword}")
             binding.loading.loading.visibility = View.VISIBLE
             binding.rvProducts.visibility = View.GONE
         }
     }
 
-    private fun setupToolbar() {
-        (requireActivity() as MainActivity).setSupportActionBar(binding.appbar.toolbar)
-        (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { (activity as MainActivity).onBackPressed() }
-        binding.appbar.tvTitle.text = categoryProductsParcelable?.name
-        Timber.d("Title::${categoryProductsParcelable?.name}")
-    }
-
-    private fun init() {
-        bundle = Bundle()
-        bundle = arguments
-        categoryProductsParcelable = bundle?.getParcelable(resources.getString(R.string.category_pojo))!!
-        binding.rvProducts.apply {
-            setHasFixedSize(true)
-            layoutManager =
-                GridLayoutManager(requireContext(), 2, LinearLayoutManager.VERTICAL, false)
-            adapter = productsAdapter
-            visibility = View.GONE
+    private fun onCLickListener() {
+        productsCategoryAdapter?.onItemClick = { product ->
+            productsCategoryVM.addRemoveFavorite(product.id)
         }
-    }
-
-    private fun observeData() {
-        viewModel.categoryDetailsMutable.observe(viewLifecycleOwner, { categoryDetials ->
-            productsAdapter.setData(categoryDetials.data.Products)
-            productsAdapter.notifyDataSetChanged()
-            binding.rvProducts.visibility = View.VISIBLE
-            binding.loading.loading.visibility = View.GONE
-        })
-
-        viewModel.searchProductMutable.observe(viewLifecycleOwner, { searchResponse ->
-            binding.loading.loading.visibility = View.GONE
-            binding.rvProducts.visibility = View.VISIBLE
-            productsAdapter.setData(searchResponse.data.products)
-            productsAdapter.notifyDataSetChanged()
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -121,7 +127,7 @@ class CategoryProductsFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.search -> {
-                productsAdapter.clearData()
+                productsCategoryAdapter?.clearData()
                 binding.rlSearch.visibility = View.VISIBLE
                 return true
             }
@@ -129,13 +135,13 @@ class CategoryProductsFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onResume() {
         super.onResume()
         binding.loading.loading.visibility = View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
 import com.e.commerce.data.model.auth.OrderDetailsPojo
+import com.e.commerce.data.model.auth.OrderDetailsPojo.OrderProductsPojo
 import com.e.commerce.data.model.auth.OrderPojo.OrdersPojo.OrderItemPojo
 import com.e.commerce.databinding.FragmentOrderDetailsBinding
 import com.e.commerce.ui.main.MainActivity
@@ -21,7 +22,7 @@ class OrderDetailsFragment : Fragment() {
     private var _binding: FragmentOrderDetailsBinding? = null
     private val binding get() = _binding!!
     private var viewModel: OrderDetailsViewModel = OrderDetailsViewModel()
-    private var orderProductsAdapter: OrderProductsAdapter = OrderProductsAdapter()
+    private var orderProductsAdapter: OrderProductsAdapter? = null
     private var bundle: Bundle? = null
     private var orderItemPojo: OrderItemPojo? = null
 
@@ -55,13 +56,14 @@ class OrderDetailsFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { (requireActivity() as MainActivity).onBackPressed() }
-        binding.appbar.tvTitle.text = "Order Details"
+        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        binding.appbar.tvTitle.text = getString(R.string.orders_fragment)
     }
 
     private fun init() {
         bundle = Bundle()
         bundle = requireArguments()
+        orderProductsAdapter = OrderProductsAdapter()
         orderItemPojo = bundle!!.getParcelable(resources.getString(R.string.order_pojo))
         Timber.d("OrderDetail::${orderItemPojo?.id}")
 //        orderProductsAdapter = OrderProductsAdapter()
@@ -99,8 +101,8 @@ class OrderDetailsFragment : Fragment() {
         getOrderProducts(order.data.products)
     }
 
-    private fun getOrderProducts(products: MutableList<OrderDetailsPojo.OrderProductsPojo>) {
-        orderProductsAdapter.setData(products)
+    private fun getOrderProducts(products: ArrayList<OrderProductsPojo>) {
+        orderProductsAdapter?.setData(products)
         binding.rvProducts.visibility = View.VISIBLE
     }
 

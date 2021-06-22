@@ -12,6 +12,7 @@ import com.e.commerce.R
 import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
 import com.e.commerce.data.model.auth.OrderPojo.AddOrderPojo
 import com.e.commerce.databinding.FragmentCheckoutBinding
+import com.e.commerce.ui.common.ProfileViewModel
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
@@ -24,6 +25,7 @@ class CheckoutFragment : Fragment() {
     private var _binding: FragmentCheckoutBinding? = null
     private val binding get() = _binding!!
     private var viewModel: CheckoutViewModel = CheckoutViewModel()
+    private var profileVM: ProfileViewModel = ProfileViewModel()
     private var addressParcelable: AddressObjectPojo? = null
     private var sharedPref: SharedPref? = null
     private var getPaymentWay: Int? = 0
@@ -40,6 +42,7 @@ class CheckoutFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity()).get(CheckoutViewModel::class.java)
+        profileVM = ViewModelProvider(requireActivity()).get(ProfileViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,17 +62,22 @@ class CheckoutFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { (requireActivity() as MainActivity).onBackPressed() }
-        binding.appbar.tvTitle.text = "Checkout"
+        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        binding.appbar.tvTitle.text = getString(R.string.checkout_fragment)
     }
 
     private fun init() {
         sharedPref = SharedPref(requireContext())
-        addressParcelable = sharedPref?.getAddressGson(getString(R.string.address_parcelable))
-        Timber.d("getAddressClicked::${sharedPref!!.getAddressGson(getString(R.string.address_parcelable))}")
+        sharedPref?.getAddressGson(getString(R.string.address_parcelable)).let { sharedPref ->
+            addressParcelable = sharedPref
+            Timber.d("getAddressClicked::${sharedPref}")
+        }
 
-        isUserHasPoints = sharedPref?.getInt(getString(R.string.user_points)) != 0
-        Timber.d("isUserHasPoints::$isUserHasPoints")
+        profileVM.getProfile()
+        profileVM.profileMutableLD.observe(viewLifecycleOwner, { response ->
+            isUserHasPoints = response.data.points != 0
+            Timber.d("isUserHasPoints::$isUserHasPoints, UserPointsIs::${response.data.points}")
+        })
     }
 
     private fun setArgumentsData() {
@@ -103,8 +111,6 @@ class CheckoutFragment : Fragment() {
 
         binding.btnSubmitOrder.setOnClickListener {
             val getPromoCodeId = sharedPref?.getInt(getString(R.string.promocode_id))
-            // TODO:: Way to check is user has points without visit profile!!
-            isUserHasPoints = sharedPref?.getInt(getString(R.string.user_points)) != 0
             Timber.d("isUserHasPoints::$isUserHasPoints")
             val orderPojo = addressParcelable?.id?.let { id ->
                 AddOrderPojo(id, getPaymentWay, isUserHasPoints, getPromoCodeId)

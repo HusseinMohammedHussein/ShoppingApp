@@ -24,7 +24,7 @@ data class OrderDetailsPojo(
         @SerializedName("date") @Expose val date: String,
         @SerializedName("status") @Expose val status: String,
         @SerializedName("address") @Expose val address: AddressObjectPojo,
-        @SerializedName("products") @Expose val products: MutableList<OrderProductsPojo>
+        @SerializedName("products") @Expose val products: ArrayList<OrderProductsPojo>
     )
 
     data class OrderProductsPojo(

@@ -14,7 +14,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoryDetailsViewModel @Inject constructor() : ViewModel() {
+class ProductsCategoryVM @Inject constructor() : ViewModel() {
     private val catDetailsRepo = CategoryDetailsRepo()
     private val addRemoveFavoriteRepo = AddRemoveFavoriteRepo()
     var categoryDetailsMutable: MutableLiveData<CategoryDetailsPojo> = MutableLiveData()

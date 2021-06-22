@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_category_to_categoryDetails"
-            app:destination="@id/categoryDetailsFragment" />
+            app:destination="@id/productsCategoryFragment" />
         <action
             android:id="@+id/action_product_to_productDetails"
             app:destination="@id/productDetailsFragment" />
@@ -74,14 +74,14 @@
         tools:layout="@layout/fragment_categories">
         <action
             android:id="@+id/action_categories_to_catDetails"
-            app:destination="@id/categoryDetailsFragment" />
+            app:destination="@id/productsCategoryFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/categoryDetailsFragment"
-        android:name="com.e.commerce.ui.fragments.categorydetails.CategoryProductsFragment"
+        android:id="@+id/productsCategoryFragment"
+        android:name="com.e.commerce.ui.fragments.categorydetails.ProductsCategoryFragment"
         android:label="fragment_category_details"
-        tools:layout="@layout/fragment_category_details">
+        tools:layout="@layout/fragment_products_category">
         <action
             android:id="@+id/action_product_to_productDetails"
             app:destination="@id/productDetailsFragment" />
@@ -188,8 +188,8 @@
     <fragment
         android:id="@+id/checkoutFragment"
         android:name="com.e.commerce.ui.fragments.user.checkout.CheckoutFragment"
-        android:label="fragment_checkout"
-        tools:layout="@layout/fragment_checkout" >
+        android:label="Checkout"
+        tools:layout="@layout/fragment_checkout">
         <action
             android:id="@+id/action_checkout_to_address"
             app:destination="@id/addressFragment" />

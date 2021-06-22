@@ -13,8 +13,8 @@ import com.e.commerce.databinding.ItemCategoryProductsBinding
 import com.squareup.picasso.Picasso
 import timber.log.Timber
 
-class CategoryProductsAdapter :
-    RecyclerView.Adapter<CategoryProductsAdapter.CategoryProductsViewHolder>() {
+class ProductsCategoryAdapter :
+    RecyclerView.Adapter<ProductsCategoryAdapter.CategoryProductsViewHolder>() {
 
     private lateinit var pojoList: MutableList<ProductPojo>
     lateinit var onItemClick: ((ProductPojo) -> Unit)

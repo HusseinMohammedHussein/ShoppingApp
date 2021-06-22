@@ -31,10 +31,8 @@ class CategoriesAdapter : RecyclerView.Adapter<CategoriesAdapter.CategoryViewHol
 
             itemView.setOnClickListener {
                 val bundle = Bundle()
-                bundle.putParcelable(it.context.resources.getString(R.string.category_pojo), pojo)
-
+                bundle.putParcelable(it.context.getString(R.string.category_pojo), pojo)
                 Timber.d("itemCategory::${pojo.id}")
-
                 itemView.findNavController().navigate(R.id.action_category_to_categoryDetails, bundle)
             }
         }

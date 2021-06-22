@@ -11,5 +11,4 @@
     <string name="dollar_sign" translatable="false"><strike>$</strike></string>
     <string name="price" translatable="false">2500$</string>
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
-    <string name="Title_ShopCategory" translatable="false">Categories</string>
 </resources>

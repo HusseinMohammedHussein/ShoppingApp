@@ -10,6 +10,6 @@
     <string name="edit_address" translatable="false">edit_address</string>
     <string name="address_parcelable" translatable="false">address_parcelable</string>
     <string name="total_amount" translatable="false">total_amount</string>
-    <string name="promocode_id">promocode_id</string>
-    <string name="user_points">user_points</string>
+    <string name="promocode_id" translatable="false">promocode_id</string>
+    <string name="user_points" translatable="false">user_points</string>
 </resources>

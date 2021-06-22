@@ -63,15 +63,14 @@ class BagFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { (requireActivity() as MainActivity).onBackPressed() }
-        binding.appbar.tvTitle.text = "My Bag"
+        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        binding.appbar.tvTitle.text = getString(R.string.bag_fragment)
     }
 
     private fun init() {
         bagAdapter = BagAdapter(newQuantity)
         sharedPref = SharedPref(requireContext())
         binding.loading.loading.visibility = View.VISIBLE
-        binding.content.rvBag.visibility = View.GONE
         binding.srContent.isRefreshing = false
 
         binding.srContent.setOnRefreshListener {
@@ -83,6 +82,7 @@ class BagFragment : Fragment() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = bagAdapter
+
         }
     }
 
@@ -98,23 +98,22 @@ class BagFragment : Fragment() {
         viewModel.bagMutableData.observe(viewLifecycleOwner, { bagDataResponse ->
             binding.srContent.isRefreshing = false
             binding.loading.loading.visibility = View.GONE
-            if (bagDataResponse.bagResponseData.cartItems.isNotEmpty()) {
+            if (bagDataResponse.status) {
                 bagAdapter?.setData(bagDataResponse.bagResponseData.cartItems)
                 Timber.d("BagProductsSize:: ${bagDataResponse.bagResponseData.cartItems.size}")
+                binding.tvTotalamount.text = String.format("${bagDataResponse.bagResponseData.total}$")
+                sharedPref?.setDouble(getString(R.string.total_amount), bagDataResponse.bagResponseData.total)
+                bagAdapter?.notifyDataSetChanged()
+
                 binding.etPromocode.isEnabled = true
                 binding.vNotHasProducts.visibility = View.GONE
                 binding.content.rvBag.visibility = View.VISIBLE
             } else {
-                Timber.d("BagProductsSize:: ${bagDataResponse.bagResponseData.cartItems.size}")
                 binding.vNotHasProducts.visibility = View.VISIBLE
                 binding.etPromocode.isEnabled = false
                 binding.vNotHasProducts.isFocusable = false
                 binding.content.rvBag.visibility = View.GONE
             }
-
-            binding.tvTotalamount.text = String.format("${bagDataResponse.bagResponseData.total}$")
-            sharedPref?.setDouble(getString(R.string.total_amount), bagDataResponse.bagResponseData.total)
-            bagAdapter?.notifyDataSetChanged()
         })
 
         viewModel.quantityBagUpdateMutableData.observe(viewLifecycleOwner, { bagUpdateResponse ->
@@ -161,12 +160,9 @@ class BagFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        binding.srContent.isRefreshing = true
-        binding.srContent.postDelayed({
-            binding.srContent.isRefreshing = false
-            viewModel.getBag()
-            bagAdapter?.notifyDataSetChanged()
-        }, 1_000)
+        binding.srContent.isRefreshing = false
+        viewModel.getBag()
+        bagAdapter?.notifyDataSetChanged()
     }
 
     override fun onDestroyView() {

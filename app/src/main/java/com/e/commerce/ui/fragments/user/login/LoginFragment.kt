@@ -58,13 +58,18 @@ class LoginFragment : Fragment() {
         (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.toolbar.tool.setNavigationIcon(R.drawable.ic_back_row)
-        binding.toolbar.tool.setNavigationOnClickListener { findNavController().navigate(R.id.action_login_to_signup) }
+        binding.toolbar.tool.setNavigationOnClickListener {
+            val direction = LoginFragmentDirections.actionLoginToSignup()
+            findNavController().navigate(direction)
+        }
     }
 
     private fun initLayout() {
         binding.tvForgotPassword.setOnClickListener {
-            findNavController().navigate(R.id.action_login_to_forgot_password)
+            val direction = LoginFragmentDirections.actionLoginToForgotPassword()
+            findNavController().navigate(direction)
         }
+
         binding.btnLogin.setOnClickListener {
             if (validateEmail() && validatePassword()) {
                 loginData()

@@ -45,7 +45,6 @@ object ApiControl {
             }.apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
-//            protocols(Collections.singletonList(Protocol.HTTP_1_1))
 
             connectTimeout(REQUEST_TIMEOUT.toLong(), TimeUnit.SECONDS)
             readTimeout(REQUEST_TIMEOUT.toLong(), TimeUnit.SECONDS)

@@ -10,11 +10,10 @@ import com.squareup.picasso.Picasso
 import timber.log.Timber
 
 
-class FavoritesAdapter : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
-    private lateinit var favoritesPojoList: MutableList<FavoritesResponse>
-    lateinit var onItemClick: ((FavoritesResponse) -> Unit)
+class FavoritesAdapter(private val onFavoriteClick: FavoriteItemClick) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
+    private var favoritesPojoList =  ArrayList<FavoritesResponse>()
 
-    fun setData(favoritesPojos: MutableList<FavoritesResponse>) {
+    fun setData(favoritesPojos: ArrayList<FavoritesResponse>) {
         favoritesPojos.also { this.favoritesPojoList = it }
     }
 
@@ -30,33 +29,6 @@ class FavoritesAdapter : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHold
         notifyDataSetChanged()
     }
 
-    inner class FavoritesViewHolder(var binding: ItemFavoriteBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(pojo: FavoritesResponse, index: Int) {
-            binding.tvProductName.text = pojo.product.name
-            binding.tvProductPrice.text = String.format("${pojo.product.price} $")
-            binding.tvProductOldPrice.text = String.format("${pojo.product.old_price} $")
-            binding.tvDiscount.text = String.format("- ${pojo.product.discount}%%")
-            Picasso.get()
-                .load(pojo.product.image)
-                .into(binding.imgProduct)
-
-            // favorite_products Response Data without in_cart field___________________________!!
-            Timber.d("Product::${pojo.product.name} is in cart ${pojo.product.in_cart}")
-            if (pojo.product.in_cart) {
-                Picasso.get()
-                    .load(R.drawable.ic_in_cart)
-                    .into(binding.icInCart)
-            } else {
-                binding.icInCart.visibility = ViewGroup.GONE
-            }
-            //__________________________________________________________________________________//
-
-            binding.icRemoveItem.setOnClickListener { onItemClick.invoke(pojo); removeItem(index) }
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
         return FavoritesViewHolder(ItemFavoriteBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
@@ -67,4 +39,39 @@ class FavoritesAdapter : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHold
     }
 
     override fun getItemCount(): Int = favoritesPojoList.size
+
+
+    inner class FavoritesViewHolder(var binding: ItemFavoriteBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(favoritesPojo: FavoritesResponse, index: Int) {
+            binding.tvProductName.text = favoritesPojo.product.name
+            binding.tvProductPrice.text = String.format("${favoritesPojo.product.price} $")
+            binding.tvProductOldPrice.text = String.format("${favoritesPojo.product.old_price} $")
+            binding.tvDiscount.text = String.format("- ${favoritesPojo.product.discount}%%")
+            Picasso.get()
+                .load(favoritesPojo.product.image)
+                .into(binding.imgProduct)
+
+            // favorite_products Response Data without in_cart field___________________________!!
+            Timber.d("Product::${favoritesPojo.product.name} is in cart ${favoritesPojo.product.in_cart}")
+            if (favoritesPojo.product.in_cart) {
+                Picasso.get()
+                    .load(R.drawable.ic_in_cart)
+                    .into(binding.icInCart)
+            } else {
+                binding.icInCart.visibility = ViewGroup.GONE
+            }
+            //__________________________________________________________________________________//
+
+            binding.icRemoveItem.setOnClickListener {
+//                onItemClick.invoke(favoritesResponse)
+                onFavoriteClick.onFavoriteItemClick(favoritesPojo)
+                removeItem(index)
+            }
+        }
+    }
+
+    interface FavoriteItemClick {
+        fun onFavoriteItemClick(favorite: FavoritesResponse)
+    }
 }

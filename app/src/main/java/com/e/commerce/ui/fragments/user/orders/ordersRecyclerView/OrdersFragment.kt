@@ -72,7 +72,7 @@ class OrdersFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { (requireActivity() as MainActivity).onBackPressed() }
+        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
         binding.appbar.tvTitle.text = ""
     }
 

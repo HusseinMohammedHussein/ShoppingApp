@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.home -> showBottomNav()
                 R.id.shop -> showBottomNav()
                 R.id.profile -> showBottomNav()
-                R.id.categoryDetailsFragment -> showBottomNav()
+                R.id.productsCategoryFragment -> showBottomNav()
                 R.id.favorites -> showBottomNav()
                 R.id.bag -> showBottomNav()
                 else -> hideBottomNav()

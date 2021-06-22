@@ -17,6 +17,7 @@ import com.e.commerce.data.model.ProductPojo
 import com.e.commerce.data.model.ProductsPojo
 import com.e.commerce.databinding.FragmentProductDetailsBinding
 import com.e.commerce.ui.common.ProductsAdapter
+import com.e.commerce.ui.common.ProductsAdapter.ProductOnClick
 import com.e.commerce.ui.main.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -27,10 +28,11 @@ class ProductDetailsFragment : Fragment() {
     private var _binding: FragmentProductDetailsBinding? = null
     private val binding get() = _binding!!
     private lateinit var productPojoParcelable: ProductPojo
-    private lateinit var bundle: Bundle
+
+    private var bundle: Bundle? = null
     private var viewModel: ProductDetailsViewModel = ProductDetailsViewModel()
-    private var imagesAdapter: ProductImageAdapter = ProductImageAdapter()
-    private var productsAdapter: ProductsAdapter = ProductsAdapter()
+    private var imagesAdapter: ProductImageAdapter? = null
+    private var productsAdapter: ProductsAdapter? = null
     private var y = 0
 
     override fun onCreateView(
@@ -71,7 +73,9 @@ class ProductDetailsFragment : Fragment() {
     private fun init() {
         bundle = Bundle()
         bundle = requireArguments()
-        productPojoParcelable = bundle.getParcelable(resources.getString(R.string.product_pojo))!!
+        imagesAdapter = ProductImageAdapter()
+        productsAdapter = ProductsAdapter(onProductClick)
+        productPojoParcelable = bundle?.getParcelable(resources.getString(R.string.product_pojo))!!
         setupViewPager()
         binding.content.rvProducts.apply {
             setHasFixedSize(true)
@@ -110,7 +114,7 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun productsList(products: ProductsPojo) {
-        productsAdapter.setData(products.data.products)
+        productsAdapter?.setData(products.data.products)
         binding.content.rvProducts.adapter = productsAdapter
         binding.content.rvProducts.visibility = View.VISIBLE
         binding.content.tvCountItems.text = String.format("${products.data.total} items")
@@ -135,10 +139,9 @@ class ProductDetailsFragment : Fragment() {
             binding.content.btnAddCart.text = "Add To Cart"
         }
 
-        imagesAdapter.setData(productDetails.data.images)
+        imagesAdapter?.setData(productDetails.data.images)
         binding.content.vpProImages.adapter = imagesAdapter
         binding.content.dotsIndicator.setViewPager2(binding.content.vpProImages)
-
     }
 
     private fun onClickListener() {
@@ -164,18 +167,20 @@ class ProductDetailsFragment : Fragment() {
             }
         }
 
-        productsAdapter.onItemClick = {
+        binding.content.cvFavorite.setOnClickListener {
             viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
         }
+    }
 
-        binding.content.cvFavorite.setOnClickListener {
+    private val onProductClick = object : ProductOnClick {
+        override fun onProductItemClick(product: ProductPojo) {
             viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        productsAdapter.clearList()
+        productsAdapter?.clearList()
     }
 
     override fun onDestroyView() {
@@ -183,7 +188,6 @@ class ProductDetailsFragment : Fragment() {
         _binding = null
         Timber.d("_Binding::${_binding}")
     }
-
 
     override fun onResume() {
         super.onResume()

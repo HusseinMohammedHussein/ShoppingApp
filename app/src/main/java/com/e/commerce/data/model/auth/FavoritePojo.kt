@@ -18,7 +18,7 @@ data class FavoritePojo(
         @SerializedName("id") @Expose val id: Int,
         @SerializedName("total") @Expose val total: Int,
         @SerializedName("product") @Expose val product: ProductPojo,
-        @SerializedName("data") @Expose val productsFavorites: MutableList<FavoritesResponse>
+        @SerializedName("data") @Expose val productsFavorites: ArrayList<FavoritesResponse>
     ) : Parcelable {
         @Parcelize
         data class FavoritesResponse(

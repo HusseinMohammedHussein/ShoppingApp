@@ -9,8 +9,10 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.e.commerce.data.model.ProductPojo
 import com.e.commerce.databinding.FragmentHomeBinding
 import com.e.commerce.ui.common.ProductsAdapter
+import com.e.commerce.ui.common.ProductsAdapter.ProductOnClick
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType
 import com.smarteist.autoimageslider.SliderAnimations
@@ -25,9 +27,8 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private var viewModel: HomeViewModel = HomeViewModel()
 
-    private var productAdapter: ProductsAdapter = ProductsAdapter()
-    private var categoriesAdapter: CategoriesAdapter = CategoriesAdapter()
-
+    private var productAdapter: ProductsAdapter? = null
+    private var categoriesAdapter: CategoriesAdapter? = null
     private var sliderAdapter: BannerSliderAdapter? = null
 
     override fun onCreateView(
@@ -54,7 +55,28 @@ class HomeFragment : Fragment() {
         request()
         observerData()
         setupBannerSlider()
-        listenerHandle()
+    }
+
+    private fun init() {
+        productAdapter = ProductsAdapter(onProductClick)
+        categoriesAdapter = CategoriesAdapter()
+        sliderAdapter = BannerSliderAdapter(requireContext())
+        binding.loading.loading.visibility = View.VISIBLE
+
+        binding.rvProduct.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            adapter = productAdapter
+            ViewCompat.setNestedScrollingEnabled(binding.rvProduct, false)
+        }
+
+        binding.rvCategories.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            adapter = categoriesAdapter
+            ViewCompat.setNestedScrollingEnabled(binding.rvCategories, false)
+        }
+
     }
 
     private fun request() {
@@ -62,32 +84,27 @@ class HomeFragment : Fragment() {
         viewModel.getCategoriesLiveData()
     }
 
-    private fun listenerHandle() {
-        productAdapter.onItemClick = { productPojo ->
-            viewModel.addOrRemoveFromFavorite(productPojo.id).observe(this.viewLifecycleOwner, { response ->
-                if (response.status) {
-                    DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                }
-                Timber.d("productFavoriteMessage::${response.message}")
-                Timber.d("productFavoriteStatus::${response.status}")
-            })
-        }
-    }
-
-
     private fun observerData() {
         viewModel.categoryPojoMutable.observe(viewLifecycleOwner, { categories ->
-            categoriesAdapter.setData(categories.data.categories)
-            categoriesAdapter.notifyDataSetChanged()
+            if (categories.status) {
+                categoriesAdapter?.let { adapter ->
+                    adapter.setData(categories.data.categories)
+                    adapter.notifyDataSetChanged()
+                }
+            }
 
             viewModel.homePojoMutable.observe(viewLifecycleOwner, { home ->
-                productAdapter.setData(home.homeData.products)
-                productAdapter.notifyDataSetChanged()
+                if (home.status) {
+                    productAdapter?.let { adapter ->
+                        adapter.setData(home.homeData.products)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
 
                 if (home.homeData.banners.isNotEmpty()) {
-                    sliderAdapter?.let {
-                        it.renewItem(home.homeData.banners)
-                        binding.bannerSlider.imageSlider.setSliderAdapter(it)
+                    sliderAdapter?.let { adapter ->
+                        adapter.renewItem(home.homeData.banners)
+                        binding.bannerSlider.imageSlider.setSliderAdapter(adapter)
                     }
                     Timber.w("SliderHasData:::${home.homeData.banners.size}")
                 }
@@ -97,37 +114,27 @@ class HomeFragment : Fragment() {
         })
     }
 
-
-    private fun init() {
-        binding.loading.loading.visibility = View.VISIBLE
-        sliderAdapter = BannerSliderAdapter(requireContext())
-
-        binding.rvProduct.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
-            adapter = productAdapter
+    private val onProductClick = object : ProductOnClick {
+        override fun onProductItemClick(product: ProductPojo) {
+            viewModel.addOrRemoveFromFavorite(product.id).observe(viewLifecycleOwner, { response ->
+                if (response.status) {
+                    DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                }
+                Timber.d("productFavoriteMessage::${response.message}")
+                Timber.d("productFavoriteStatus::${response.status}")
+            })
         }
-
-        binding.rvCategories.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
-            adapter = categoriesAdapter
-        }
-
-        ViewCompat.setNestedScrollingEnabled(binding.rvProduct, false)
-        ViewCompat.setNestedScrollingEnabled(binding.rvCategories, false)
     }
 
     private fun setupBannerSlider() {
         binding.bannerSlider.imageSlider.setIndicatorAnimation(IndicatorAnimationType.WORM) //set indicator animation by using IndicatorAnimationType. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
         binding.bannerSlider.imageSlider.setSliderTransformAnimation(SliderAnimations.FADETRANSFORMATION)
-//       Best_Animation ->  CUBEINDEPTHTRANSFORMATION, CUBEINROTATIONTRANSFORMATION, FADETRANSFORMATION, CUBEOUTROTATIONTRANSFORMATION, DEPTHTRANSFORMATION
-        binding.bannerSlider.imageSlider.autoCycleDirection =
-            SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH
-//        binding.bannerSlider.imageSlider.indicatorSelectedColor = R.color.primary
-//        binding.bannerSlider.imageSlider.indicatorUnselectedColor = R.color.white
+        binding.bannerSlider.imageSlider.autoCycleDirection = SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH
         binding.bannerSlider.imageSlider.scrollTimeInSec = 5 //set scroll delay in seconds :
         binding.bannerSlider.imageSlider.startAutoCycle()
+//       Best_Animation ->  CUBEINDEPTHTRANSFORMATION, CUBEINROTATIONTRANSFORMATION, FADETRANSFORMATION, CUBEOUTROTATIONTRANSFORMATION, DEPTHTRANSFORMATION
+//        binding.bannerSlider.imageSlider.indicatorSelectedColor = R.color.primary
+//        binding.bannerSlider.imageSlider.indicatorUnselectedColor = R.color.white
     }
 
     override fun onDestroyView() {

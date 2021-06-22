@@ -66,8 +66,8 @@ class AddAddressFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { (requireActivity() as MainActivity).onBackPressed() }
-        binding.appbar.tvTitle.text = "Add Addresses"
+        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        binding.appbar.tvTitle.text = getString(R.string.add_address_fragment)
     }
 
     private fun init() {
@@ -86,18 +86,6 @@ class AddAddressFragment : Fragment() {
                 Timber.d("Selected Country Name::${ccp?.selectedCountryEnglishName}")
             }
         }
-        /*        binding.btnSubmitAddAddress.setOnClickListener {
-        if (fullNameValidate() &&
-            addressDetailsValidate() &&
-            cityValidate() &&
-            regionValidate() &&
-            chooseCountryValidate()
-        ) {
-            addNewAddressMode()
-        } else {
-            Timber.d("${fullNameValidate() && addressDetailsValidate() && regionValidate() && chooseCountryValidate()}")
-        }
-    }*/
 
         Timber.d("isEditClicked::$isEditClick")
         if (isEditClick == true) {
@@ -122,8 +110,7 @@ class AddAddressFragment : Fragment() {
         if (fullNameValidate() &&
             addressDetailsValidate() &&
             cityValidate() &&
-            regionValidate() &&
-            chooseCountryValidate()
+            regionValidate()
         ) {
             mEditAddressSubmit()
         } else {
@@ -171,7 +158,7 @@ class AddAddressFragment : Fragment() {
         binding.etAddressDetailsAddaddress.setText(addressPojo.details)
         binding.etCityAddaddress.setText(addressPojo.city)
         binding.etRegionAddaddress.setText(addressPojo.region)
-        binding.etNotesAddaddress.setText(if (addressPojo.notes.isEmpty()) "Add First Note" else addressPojo.notes)
+        binding.etNotesAddaddress.setText(addressPojo.notes)
     }
 
     private fun mEditAddressSubmit() {
