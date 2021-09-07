@@ -12,7 +12,7 @@ data class HomePojo(
     @SerializedName("data") @Expose val homeData: HomeData
 ) : CommonResponse(mStatus, mMessage) {
     data class HomeData(
-        @SerializedName("banners") @Expose val banners: MutableList<BannerPojo>,
+        @SerializedName("banners") @Expose val banners: ArrayList<BannerPojo>,
         @SerializedName("products") @Expose val products: ArrayList<ProductPojo>,
     )
 }

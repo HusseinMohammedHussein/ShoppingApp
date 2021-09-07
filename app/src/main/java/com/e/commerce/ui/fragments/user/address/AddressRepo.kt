@@ -4,12 +4,11 @@ import com.e.commerce.data.model.auth.AddressPojo
 import com.e.commerce.data.model.auth.AddressPojo.AddAddressPojo
 import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
 import com.e.commerce.data.remote.retrofit.ApiControl
-import dagger.hilt.android.scopes.ViewModelScoped
 import retrofit2.Call
 
 // Created by Hussein_Mohammad on 6/8/2021.
 
-@ViewModelScoped
+//@ViewModelScoped
 class AddressRepo {
 
     fun getAddresses(): Call<AddressPojo> {

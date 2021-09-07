@@ -18,10 +18,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.e.commerce.R
+import com.e.commerce.data.model.ProfilePojo.ProfileResponsePojo
 import com.e.commerce.data.model.auth.SettingProfilePojo
 import com.e.commerce.databinding.FragmentSettingProfileBinding
 import com.e.commerce.ui.main.MainActivity
+import com.e.commerce.util.SharedPref
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.features.ReturnMode
 import com.karumi.dexter.Dexter
@@ -29,19 +32,20 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 
-@AndroidEntryPoint
 class SettingProfileFragment : Fragment() {
     private var _binding: FragmentSettingProfileBinding? = null
     private val binding get() = _binding!!
 
     private var viewModel: SettingViewModel = SettingViewModel()
-    private var imagePath: String? = null
+    private var imagePath: String = ""
+    private var profileResponse: ProfileResponsePojo? = null
+    private var bundle = Bundle()
+    private var sharedPref: SharedPref? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,13 +67,26 @@ class SettingProfileFragment : Fragment() {
 
     private fun methods() {
         initTextWatcher()
+        init()
         initToolbar()
         chooseImage()
         request()
-        response()
+        observerData()
     }
 
-    private fun response() {
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.clear()
+    }
+
+    private fun init() {
+        sharedPref = SharedPref(requireContext())
+        bundle = requireArguments()
+        profileResponse = bundle.getParcelable(getString(R.string.profilePojo))
+        Timber.d("ProfilePojo::$profileResponse")
+    }
+
+    private fun observerData() {
         viewModel.settingProfileMutableData.observe(viewLifecycleOwner, { updateResponse ->
             if (updateResponse.status) {
                 Timber.d("UpdateStatus::${updateResponse.status}")
@@ -82,6 +99,13 @@ class SettingProfileFragment : Fragment() {
             Timber.d("UpdateStatusAgain::${updateResponse.status}")
             Timber.d("UpdateMessageAgain::${updateResponse.message}")
         })
+
+        profileResponse?.let {
+            binding.etFullnameSetting.setText(it.name)
+            binding.etPhoneSetting.setText(it.phone)
+            binding.etEmailSetting.setText(it.email)
+            Glide.with(this).load(it.image).into(binding.imgPerson)
+        }
     }
 
     private fun initTextWatcher() {
@@ -105,7 +129,6 @@ class SettingProfileFragment : Fragment() {
                 Timber.d("ButtonOnClick::AfterValidation")
                 update()
             } else {
-                Timber.d("ButtonOnClick::ElseValidation")
                 Timber.d("validatePhoneSetting::${validatePhoneSetting()} | validateEmailSetting::${validateEmailSetting()} |  validateFullnameSetting::${validateFullnameSetting()}")
             }
         }
@@ -116,13 +139,9 @@ class SettingProfileFragment : Fragment() {
         val phone: String = binding.etPhoneSetting.text.toString().trim()
         val email: String = binding.etEmailSetting.text.toString().trim()
 
-        val settingProfilePojo = imagePath?.let {
-            SettingProfilePojo(fullname, phone, email, it)
-        }
-        Timber.d("SendImageHere::$imagePath")
-        if (settingProfilePojo != null) {
-            viewModel.setSettingProfile(settingProfilePojo)
-        }
+        val settingProfilePojo = SettingProfilePojo(fullname, phone, email, imagePath)
+        Timber.d("SendNewImage::$imagePath")
+        viewModel.setSettingProfile(settingProfilePojo)
     }
 
     private fun chooseImage() {
@@ -156,7 +175,7 @@ class SettingProfileFragment : Fragment() {
         }
     }
 
-    private fun encodeImage(path: String): String? {
+    private fun encodeImage(path: String): String {
         val baos = ByteArrayOutputStream()
         val file = File(path)
         val fileStream = FileInputStream(file)
@@ -194,18 +213,6 @@ class SettingProfileFragment : Fragment() {
                 requestFocus(binding.etFullnameSetting)
                 return false
             }
-
-//            binding.etFullnameSetting.text.toString().trim().length > 30 -> {
-//                binding.tilFullnameSetting.isErrorEnabled = true
-//                binding.tilFullnameSetting.error = "It should be 30 characters"
-//                requestFocus(binding.etFullnameSetting)
-//                return false
-//            }
-//
-//            binding.etFullnameSetting.text.toString().trim().length <= 30 -> {
-//                binding.tilFullnameSetting.isErrorEnabled = false
-//                return false
-//            }
             else -> binding.tilFullnameSetting.isErrorEnabled = false
         }
         return true
@@ -263,12 +270,9 @@ class SettingProfileFragment : Fragment() {
     }
 
     inner class EditTextWatcher constructor(val view: View) : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-        }
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        }
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
         override fun afterTextChanged(s: Editable?) {
             when (view.id) {
@@ -279,9 +283,8 @@ class SettingProfileFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
-        Timber.d("SettingBindingIs::$_binding")
     }
 }

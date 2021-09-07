@@ -16,10 +16,8 @@ import com.e.commerce.ui.common.ProfileViewModel
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
-@AndroidEntryPoint
 class CheckoutFragment : Fragment() {
 
     private var _binding: FragmentCheckoutBinding? = null
@@ -53,8 +51,11 @@ class CheckoutFragment : Fragment() {
     private fun methods() {
         initToolbar()
         init()
+        request()
+        observerData()
         setArgumentsData()
         onClick()
+        handleNoDataSelected()
     }
 
     private fun initToolbar() {
@@ -72,8 +73,14 @@ class CheckoutFragment : Fragment() {
             addressParcelable = sharedPref
             Timber.d("getAddressClicked::${sharedPref}")
         }
+    }
 
+
+    private fun request() {
         profileVM.getProfile()
+    }
+
+    private fun observerData() {
         profileVM.profileMutableLD.observe(viewLifecycleOwner, { response ->
             isUserHasPoints = response.data.points != 0
             Timber.d("isUserHasPoints::$isUserHasPoints, UserPointsIs::${response.data.points}")
@@ -81,9 +88,16 @@ class CheckoutFragment : Fragment() {
     }
 
     private fun setArgumentsData() {
-        addressParcelable?.let { address ->
-            binding.tvFullnameAddress.text = address.name
-            binding.tvAddressDetails.text = String.format("${address.details}, ${address.region}, ${address.city}")
+        if (addressParcelable != null) {
+            binding.tvAddAddress.visibility = View.GONE
+            binding.tvChangeAddress.visibility = View.VISIBLE
+            binding.tvFullnameAddress.text = addressParcelable?.name
+            binding.tvAddressDetails.text = String.format("${addressParcelable?.details}, ${addressParcelable?.region}, ${addressParcelable?.city}")
+        } else {
+            binding.tvAddAddress.visibility = View.VISIBLE
+            binding.tvChangeAddress.visibility = View.GONE
+            binding.tvFullnameAddress.visibility = View.GONE
+            binding.tvAddressDetails.visibility = View.GONE
         }
 
         binding.tvTotalamount.text = String.format("${sharedPref?.getDouble(getString(R.string.total_amount))}$")
@@ -91,22 +105,26 @@ class CheckoutFragment : Fragment() {
     }
 
     private fun onClick() {
+        val direction = CheckoutFragmentDirections.actionCheckoutToAddress(null)
+
         binding.tvChangeAddress.setOnClickListener {
-            findNavController().navigate(R.id.action_checkout_to_address)
+            findNavController().navigate(direction)
         }
 
         binding.cvCashPayment.setOnClickListener {
             binding.imgCashPaymentDisactive.visibility = View.GONE
             binding.imgOnlinePaymentDisactive.visibility = View.VISIBLE
-            binding.btnSubmitOrder.isEnabled = true
             getPaymentWay = 1
         }
 
         binding.cvOnlinePayment.setOnClickListener {
-            binding.btnSubmitOrder.isEnabled = true
             binding.imgCashPaymentDisactive.visibility = View.VISIBLE
             binding.imgOnlinePaymentDisactive.visibility = View.GONE
             getPaymentWay = 2
+        }
+
+        binding.tvAddAddress.setOnClickListener {
+            findNavController().navigate(direction)
         }
 
         binding.btnSubmitOrder.setOnClickListener {
@@ -126,6 +144,13 @@ class CheckoutFragment : Fragment() {
                 })
             }
         }
+    }
+
+    private fun handleNoDataSelected() {
+        if (binding.tvFullnameAddress.text.isNotEmpty() && binding.tvAddressDetails.text.isNotEmpty()) {
+            binding.btnSubmitOrder.isEnabled = true
+        } else binding.btnSubmitOrder.isEnabled =
+            binding.imgCashPaymentDisactive.visibility == View.VISIBLE || binding.imgOnlinePaymentDisactive.visibility == View.VISIBLE
     }
 
     override fun onDestroyView() {

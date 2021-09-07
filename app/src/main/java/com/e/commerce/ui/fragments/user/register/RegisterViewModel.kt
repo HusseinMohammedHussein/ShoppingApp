@@ -2,18 +2,18 @@ package com.e.commerce.ui.fragments.user.register
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.e.commerce.data.model.auth.FCMTokenPojo
 import com.e.commerce.data.model.auth.RegisterPojo
 import com.e.commerce.data.model.auth.RegisterPojo.RegisterDataPojo
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.e.commerce.ui.common.FCMTokenRepo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class RegisterViewModel @Inject constructor() : ViewModel() {
+class RegisterViewModel : ViewModel() {
     private val registerRepo = RegisterRepo()
+    private val fcmTokenRepo = FCMTokenRepo()
 
 
     fun requestRegister(registerDataPojo: RegisterDataPojo): MutableLiveData<RegisterPojo> {
@@ -31,5 +31,21 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
 
         })
         return responseRegisterMutable
+    }
+
+    fun setFCMToken(fcmToken: String): MutableLiveData<FCMTokenPojo> {
+        val fcmTokenMutableLD: MutableLiveData<FCMTokenPojo> = MutableLiveData()
+        fcmTokenRepo.setFCMToken(fcmToken).enqueue(object : Callback<FCMTokenPojo> {
+            override fun onResponse(call: Call<FCMTokenPojo>, response: Response<FCMTokenPojo>) {
+                if (response.isSuccessful && response.body() != null) {
+                    fcmTokenMutableLD.value = response.body()
+                }
+            }
+
+            override fun onFailure(call: Call<FCMTokenPojo>, t: Throwable) {
+                Timber.e("FCMTokenFailure::${t.localizedMessage}")
+            }
+        })
+        return fcmTokenMutableLD
     }
 }

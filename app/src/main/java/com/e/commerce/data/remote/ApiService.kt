@@ -52,6 +52,15 @@ interface ApiService {
     @POST("login")
     fun login(@Body loginPojo: LoginDataPojo): Call<LoginPojo>
 
+    @POST("notifications")
+    fun getNotifies() : Call<NotificationsPojo>
+
+    @POST("logout")
+    fun logout(@Query("fcm_token") fcmToken: String): Call<LogoutPojo>
+
+    @POST("fcm-token")
+    fun setFCMToken(@Query("token") token: String): Call<FCMTokenPojo>
+
     @GET("profile")
     fun getProfile(): Call<ProfilePojo>
 

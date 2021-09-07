@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,10 +14,9 @@ import com.e.commerce.data.model.auth.OrderDetailsPojo.OrderProductsPojo
 import com.e.commerce.data.model.auth.OrderPojo.OrdersPojo.OrderItemPojo
 import com.e.commerce.databinding.FragmentOrderDetailsBinding
 import com.e.commerce.ui.main.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import timber.log.Timber
 
-@AndroidEntryPoint
 class OrderDetailsFragment : Fragment() {
 
     private var _binding: FragmentOrderDetailsBinding? = null
@@ -66,19 +66,27 @@ class OrderDetailsFragment : Fragment() {
         orderProductsAdapter = OrderProductsAdapter()
         orderItemPojo = bundle!!.getParcelable(resources.getString(R.string.order_pojo))
         Timber.d("OrderDetail::${orderItemPojo?.id}")
-//        orderProductsAdapter = OrderProductsAdapter()
         binding.rvProducts.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = orderProductsAdapter
             visibility = View.GONE
         }
+        binding.loading.loading.visibility = View.VISIBLE
     }
 
     private fun getOrderDetails() {
         orderItemPojo?.id?.let {
             viewModel.getOrderDetails(it).observe(viewLifecycleOwner, { response ->
-                initOrderDetailsViews(response)
+                if (response.status) {
+                    binding.loading.loading.visibility = View.GONE
+                    initOrderDetailsViews(response)
+                    binding.clOrderDetails.visibility = View.VISIBLE
+                } else {
+                    binding.loading.loading.visibility = View.GONE
+                    binding.clOrderDetails.visibility = View.VISIBLE
+                    DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_LONG).show()
+                }
             })
         }
     }
@@ -89,7 +97,7 @@ class OrderDetailsFragment : Fragment() {
         binding.tvPaymentMethod.text = order.data.payment_method
         binding.tvStatusOrder.text = order.data.status
         binding.tvTotalProduct.text = String.format("${order.data.products.size} Items")
-        binding.tvAddress.text = order.data.address.region
+        binding.tvAddress.text = order.data.address.city
         binding.tvCost.text = String.format("${order.data.cost}$")
         binding.tvVat.text = String.format("${order.data.vat}$")
         binding.tvPoints.text = order.data.points.toString()

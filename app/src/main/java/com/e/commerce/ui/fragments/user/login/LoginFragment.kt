@@ -17,11 +17,10 @@ import com.e.commerce.data.model.auth.LoginPojo.LoginDataPojo
 import com.e.commerce.databinding.FragmentLoginBinding
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
+import com.google.firebase.messaging.FirebaseMessaging
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
-@AndroidEntryPoint
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
@@ -44,8 +43,8 @@ class LoginFragment : Fragment() {
 
     private fun methods() {
         initToolbar()
-        initLayout()
         initClasses()
+        initLayout()
         initTextWatcher()
     }
 
@@ -54,9 +53,9 @@ class LoginFragment : Fragment() {
     }
 
     private fun initToolbar() {
-        (activity as MainActivity).setSupportActionBar(binding.toolbar.tool)
-        (activity as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        (activity as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (requireActivity() as MainActivity).setSupportActionBar(binding.toolbar.tool)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+        (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.toolbar.tool.setNavigationIcon(R.drawable.ic_back_row)
         binding.toolbar.tool.setNavigationOnClickListener {
             val direction = LoginFragmentDirections.actionLoginToSignup()
@@ -80,15 +79,30 @@ class LoginFragment : Fragment() {
     private fun loginData() {
         val getEmail = binding.etEmailLogin.text.toString().trim()
         val getPassword = binding.etPasswordLogin.text.toString().trim()
+
         val loginData = LoginDataPojo(getEmail, getPassword)
         viewModel.login(loginData).observe(viewLifecycleOwner, { response ->
             if (response.status) {
-                Timber.d("ResponseMessage::${response.data.token}")
+                Timber.d("ResponseMessage::${response.message}")
                 Timber.d("ResponseStatus::${response.status}")
-                sharedPref?.setString(resources.getString(R.string.user_token), response.data.token)
-                sharedPref?.setBoolean(resources.getString(R.string.is_user), response.status)
-                DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                findNavController().navigate(R.id.action_login_to_profile) // TODO:: TestLogin_____
+                sharedPref?.let {
+                    it.setString(resources.getString(R.string.user_token), response.data.token)
+                    it.setBoolean(resources.getString(R.string.is_user), response.status)
+                }
+
+                FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Timber.e("FCM Token Error!::${task.result}")
+                        return@addOnCompleteListener
+                    } else {
+                        val getFCMToken = task.result.toString()
+                        Timber.d("FCMTokenResult::$getFCMToken")
+                        viewModel.setFCMToken(getFCMToken)
+                        sharedPref?.setString(getString(R.string.user_fcm_token), getFCMToken)
+                        Timber.d("FCMTokenResponseApi::$getFCMToken")
+                        findNavController().navigate(R.id.action_login_to_profile)
+                    }
+                }
             } else {
                 DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_SHORT).show()
             }
@@ -97,7 +111,6 @@ class LoginFragment : Fragment() {
             Timber.d("ResponseLoginMessage::${response.message}")
         })
     }
-
 
     private fun initTextWatcher() {
         binding.etEmailLogin.addTextChangedListener(EditTextWatcher(binding.etEmailLogin))

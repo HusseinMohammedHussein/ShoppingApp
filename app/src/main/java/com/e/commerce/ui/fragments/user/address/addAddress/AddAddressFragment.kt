@@ -16,6 +16,7 @@ import com.e.commerce.data.model.auth.AddressPojo.AddAddressPojo
 import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
 import com.e.commerce.databinding.FragmentAddAddressBinding
 import com.e.commerce.ui.main.MainActivity
+import com.e.commerce.util.SharedPref
 import com.hbb20.CountryCodePicker
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import timber.log.Timber
@@ -28,6 +29,7 @@ class AddAddressFragment : Fragment() {
     private var getAddressDataPojo: AddressObjectPojo? = null
     private var isEditClick: Boolean? = false
     private var addressBundle: Bundle? = Bundle()
+    private var sharedPref: SharedPref? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,6 +73,7 @@ class AddAddressFragment : Fragment() {
     }
 
     private fun init() {
+        sharedPref = SharedPref(requireContext())
         ccp = CountryCodePicker(requireContext())
         addressBundle = arguments
         Timber.d(addressBundle?.getParcelable<AddressObjectPojo>(resources.getString(R.string.edit_address)).toString())
@@ -113,7 +116,9 @@ class AddAddressFragment : Fragment() {
             regionValidate()
         ) {
             mEditAddressSubmit()
+            sharedPref?.setBoolean(getString(R.string.isHasNewAddressAdded), true)
         } else {
+            sharedPref?.setBoolean(getString(R.string.isHasNewAddressAdded), false)
             Timber.e("${fullNameValidate() && addressDetailsValidate() && regionValidate() && chooseCountryValidate()}")
         }
     }
@@ -126,7 +131,9 @@ class AddAddressFragment : Fragment() {
             chooseCountryValidate()
         ) {
             addNewAddressMode()
+            sharedPref?.setBoolean(getString(R.string.isHasNewAddressAdded), true)
         } else {
+            sharedPref?.setBoolean(getString(R.string.isHasNewAddressAdded), false)
             Timber.e("${fullNameValidate() && addressDetailsValidate() && regionValidate() && chooseCountryValidate()}")
         }
     }

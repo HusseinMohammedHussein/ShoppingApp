@@ -2,18 +2,18 @@ package com.e.commerce.ui.fragments.user.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.e.commerce.data.model.auth.FCMTokenPojo
 import com.e.commerce.data.model.auth.LoginPojo
 import com.e.commerce.data.model.auth.LoginPojo.LoginDataPojo
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.e.commerce.ui.common.FCMTokenRepo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel : ViewModel() {
     private val loginRepo = LoginRepo()
+    private val fcmTokenRepo = FCMTokenRepo()
 
     fun login(loginPojo: LoginDataPojo): MutableLiveData<LoginPojo> {
         val loginMutableLD: MutableLiveData<LoginPojo> = MutableLiveData()
@@ -29,5 +29,21 @@ class LoginViewModel @Inject constructor() : ViewModel() {
             }
         })
         return loginMutableLD
+    }
+
+    fun setFCMToken(token: String): MutableLiveData<FCMTokenPojo> {
+        val fcmResponseMutableLD: MutableLiveData<FCMTokenPojo> = MutableLiveData()
+        fcmTokenRepo.setFCMToken(token).enqueue(object : Callback<FCMTokenPojo> {
+            override fun onResponse(call: Call<FCMTokenPojo>, response: Response<FCMTokenPojo>) {
+                if (response.isSuccessful && response.body() != null) {
+                    fcmResponseMutableLD.value = response.body()
+                }
+            }
+
+            override fun onFailure(call: Call<FCMTokenPojo>, t: Throwable) {
+                Timber.e("SetFCMTokenFailure::${t.localizedMessage}")
+            }
+        })
+        return fcmResponseMutableLD
     }
 }

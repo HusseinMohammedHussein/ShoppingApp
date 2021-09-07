@@ -8,15 +8,12 @@ import com.e.commerce.data.model.auth.bag.BagPojo
 import com.e.commerce.data.model.auth.bag.BagResponsePojo
 import com.e.commerce.data.model.auth.bag.BagUpdateResponsePojo
 import com.e.commerce.ui.common.AddRemoveFavoriteRepo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class BagViewModel @Inject constructor() : ViewModel() {
+class BagViewModel : ViewModel() {
     private val bagRepo = BagRepo()
     private val addRemoveFavoriteRepo = AddRemoveFavoriteRepo()
     val bagMutableData: MutableLiveData<BagResponsePojo> = MutableLiveData()

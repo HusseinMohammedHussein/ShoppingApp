@@ -17,11 +17,11 @@ import com.e.commerce.data.model.auth.RegisterPojo.RegisterDataPojo
 import com.e.commerce.databinding.FragmentRegisterBinding
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
-import dagger.hilt.android.AndroidEntryPoint
+import com.google.firebase.messaging.FirebaseMessaging
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import timber.log.Timber
 import java.util.regex.Pattern
 
-@AndroidEntryPoint
 class RegisterFragment : Fragment() {
 
     private var _binding: FragmentRegisterBinding? = null
@@ -88,14 +88,36 @@ class RegisterFragment : Fragment() {
         Timber.d("Username:: ${registerPojo.username} | Email:: ${registerPojo.email} | Phone:: ${registerPojo.phone} | Password:: ${registerPojo.password}")
         viewModel.requestRegister(registerPojo).observe(viewLifecycleOwner, { response ->
             if (response.status) {
-                sharedPref?.setString(resources.getString(R.string.user_token), response.data.token)
-                sharedPref?.setBoolean(resources.getString(R.string.is_user), response.status)
+                sharedPref?.let {
+                    it.setString(resources.getString(R.string.user_token), response.data.token)
+                    it.setBoolean(resources.getString(R.string.is_user), response.status)
+                }
+                FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Timber.e("FCM Token Error!::${task.result}")
+                        return@addOnCompleteListener
+                    } else {
+                        val getFCMToken = task.result.toString()
+                        Timber.d("FCMTokenResult::$getFCMToken")
+                        viewModel.setFCMToken(getFCMToken).observe(viewLifecycleOwner, { response ->
+                            if (response.status) {
+                                sharedPref?.let {
+                                    it.setString(getString(R.string.user_fcm_token), response.data.token)
+                                    Timber.d("FCMTokenResponseApi::${response.data.token}")
+                                }
+                            } else {
+                                Timber.e("FCMResponseError::${response.message}")
+                            }
+                        })
+                    }
+                }
 
                 Timber.d("UserToken::${sharedPref?.getString(resources.getString(R.string.user_token))}")
                 Timber.d("Is_User::${sharedPref?.getBoolean(resources.getString(R.string.is_user))}")
-                findNavController().navigate(R.id.action_signup_to_profile)
+                val direction = RegisterFragmentDirections.actionSignupToProfile()
+                findNavController().navigate(direction)
             } else {
-                Toast.makeText(this.context, response.message, Toast.LENGTH_LONG).show()
+                DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_LONG).show()
             }
         })
     }
@@ -215,7 +237,7 @@ class RegisterFragment : Fragment() {
                 R.id.et_name_register -> validateUsername()
                 R.id.et_phone_register -> validatePhone()
                 R.id.et_email_register -> validateEmail()
-                R.id.et_password_login -> validatePassword()
+                R.id.et_password_register -> validatePassword()
             }
         }
     }
@@ -232,7 +254,5 @@ class RegisterFragment : Fragment() {
         binding.tilEmailRegister.isErrorEnabled = false
         binding.tilPhoneRegister.isErrorEnabled = false
         binding.tilPasswordRegister.isErrorEnabled = false
-
-        Timber.i("RegisterBindingOnResume::$_binding")
     }
 }

@@ -16,18 +16,20 @@ import com.e.commerce.data.model.ProductDetailsPojo
 import com.e.commerce.data.model.ProductPojo
 import com.e.commerce.data.model.ProductsPojo
 import com.e.commerce.databinding.FragmentProductDetailsBinding
+import com.e.commerce.ui.common.CustomAlertDialog
 import com.e.commerce.ui.common.ProductsAdapter
 import com.e.commerce.ui.common.ProductsAdapter.ProductOnClick
 import com.e.commerce.ui.main.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
+import com.e.commerce.util.SharedPref
 import timber.log.Timber
 
-@AndroidEntryPoint
 @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n")
 class ProductDetailsFragment : Fragment() {
     private var _binding: FragmentProductDetailsBinding? = null
     private val binding get() = _binding!!
     private lateinit var productPojoParcelable: ProductPojo
+    private var sharedPref: SharedPref? = null
+    private var getUserToken: Boolean = false
 
     private var bundle: Bundle? = null
     private var viewModel: ProductDetailsViewModel = ProductDetailsViewModel()
@@ -73,8 +75,11 @@ class ProductDetailsFragment : Fragment() {
     private fun init() {
         bundle = Bundle()
         bundle = requireArguments()
+        sharedPref = SharedPref(requireContext())
+        getUserToken = sharedPref?.getBoolean(getString(R.string.is_user))!!
+        Timber.d("getUserToken::$getUserToken")
         imagesAdapter = ProductImageAdapter()
-        productsAdapter = ProductsAdapter(onProductClick)
+        productsAdapter = ProductsAdapter(onProductClick, requireContext())
         productPojoParcelable = bundle?.getParcelable(resources.getString(R.string.product_pojo))!!
         setupViewPager()
         binding.content.rvProducts.apply {
@@ -103,14 +108,14 @@ class ProductDetailsFragment : Fragment() {
             //  Handler(Looper.getMainLooper()).postDelayed({}, 5000)
         })
 
-        viewModel.addToBagLiveData.observe(viewLifecycleOwner, { cartResponse ->
-            Toast.makeText(requireContext(), cartResponse.message, Toast.LENGTH_SHORT).show()
-            viewModel.getProductDetails(productPojoParcelable.id)
-        })
-
-        viewModel.addToFavoriteLiveData.observe(viewLifecycleOwner, { response ->
-            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-        })
+//        viewModel.addToBagLiveData.observe(viewLifecycleOwner, { cartResponse ->
+//            Toast.makeText(requireContext(), cartResponse.message, Toast.LENGTH_SHORT).show()
+////            viewModel.getProductDetails(productPojoParcelable.id)
+//        })
+//
+//        viewModel.addToFavoriteLiveData.observe(viewLifecycleOwner, { response ->
+//            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+//        })
     }
 
     private fun productsList(products: ProductsPojo) {
@@ -145,25 +150,35 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun onClickListener() {
+        val direction = ProductDetailsFragmentDirections.actionProductDetailsToSignup()
+        Timber.d("getUserToken::$getUserToken")
         binding.content.btnAddCart.setOnClickListener {
-            if (binding.content.btnAddCart.text.equals("Add To Cart")) {
-                viewModel.addOrRemoveFromCart(productPojoParcelable.id)
-                binding.content.btnAddCart.text = "Remove From Cart"
-            } else if (binding.content.btnAddCart.text.equals("Remove From Cart")) {
-                viewModel.addOrRemoveFromCart(productPojoParcelable.id)
-                binding.content.btnAddCart.text = "Add To Cart"
+            if (!getUserToken) {
+                CustomAlertDialog.alertDialog(requireContext(), this@ProductDetailsFragment, direction)
+            } else {
+                if (binding.content.btnAddCart.text.equals("Add To Cart")) {
+                    viewModel.addOrRemoveFromCart(productPojoParcelable.id)
+                    binding.content.btnAddCart.text = "Remove From Cart"
+                } else if (binding.content.btnAddCart.text.equals("Remove From Cart")) {
+                    viewModel.addOrRemoveFromCart(productPojoParcelable.id)
+                    binding.content.btnAddCart.text = "Add To Cart"
+                }
             }
         }
 
         binding.content.icFavorite.setOnClickListener {
-            if (y == 0) {
-                viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
-                binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_active)
-                y++
-            } else if (y == 1) {
-                viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
-                binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_disactive)
-                y = 0
+            if (!getUserToken) {
+                CustomAlertDialog.alertDialog(requireContext(), this@ProductDetailsFragment, direction)
+            } else {
+                if (y == 0) {
+                    viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
+                    binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_active)
+                    y++
+                } else if (y == 1) {
+                    viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
+                    binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_disactive)
+                    y = 0
+                }
             }
         }
 

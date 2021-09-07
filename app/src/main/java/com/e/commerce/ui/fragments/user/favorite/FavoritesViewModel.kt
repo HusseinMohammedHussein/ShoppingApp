@@ -4,15 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.ui.common.AddRemoveFavoriteRepo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class FavoritesViewModel @Inject constructor() : ViewModel() {
+class FavoritesViewModel : ViewModel() {
     private val favoritesRepo = FavoritesRepo()
     private val addRemoveFavoriteRepo = AddRemoveFavoriteRepo()
     val favoriteMData: MutableLiveData<FavoritePojo> = MutableLiveData()

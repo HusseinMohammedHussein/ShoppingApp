@@ -14,16 +14,17 @@ import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectP
 import com.e.commerce.databinding.FragmentAddressBinding
 import com.e.commerce.ui.fragments.user.address.addresses.AddressAdapter.AddressInterface
 import com.e.commerce.ui.main.MainActivity
+import com.e.commerce.util.SharedPref
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
-@AndroidEntryPoint
 class AddressFragment : Fragment() {
     private var _binding: FragmentAddressBinding? = null
     private val binding get() = _binding!!
     private var viewModel: AddressViewModel = AddressViewModel()
     private var addressAdapter: AddressAdapter? = null
+    private var sharedPref: SharedPref? = null
+    private var isHasNewAddressAdded: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,6 +73,9 @@ class AddressFragment : Fragment() {
 
     private fun init() {
         addressAdapter = AddressAdapter(onDeleteAddress)
+        sharedPref = SharedPref(requireContext())
+        isHasNewAddressAdded = sharedPref!!.getBoolean(getString(R.string.isHasNewAddressAdded))
+        Timber.d("isHasNewAddressAdded::$isHasNewAddressAdded")
         binding.srlAddress.isRefreshing = false
         binding.srlAddress.setOnRefreshListener {
             viewModel.getAddress()
@@ -106,11 +110,17 @@ class AddressFragment : Fragment() {
         })
     }
 
+    private fun isHasNewAddressAdded() {
+        binding.srlAddress.isRefreshing = true
+        if (isHasNewAddressAdded) {
+            Timber.d("if(isHasNewAddressAdded)::$isHasNewAddressAdded")
+            observerData()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        binding.srlAddress.isRefreshing = false
-        viewModel.getAddress()
-        addressAdapter?.notifyDataSetChanged()
+        isHasNewAddressAdded()
     }
 
     override fun onDestroyView() {

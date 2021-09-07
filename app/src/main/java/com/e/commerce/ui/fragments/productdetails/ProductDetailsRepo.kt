@@ -2,15 +2,13 @@ package com.e.commerce.ui.fragments.productdetails
 
 import com.e.commerce.data.model.ProductDetailsPojo
 import com.e.commerce.data.model.ProductsPojo
-import com.e.commerce.data.model.auth.bag.BagPojo
 import com.e.commerce.data.model.auth.FavoritePojo
+import com.e.commerce.data.model.auth.bag.BagPojo
 import com.e.commerce.data.remote.retrofit.ApiControl
-import dagger.hilt.android.scopes.ViewModelScoped
 import retrofit2.Call
 
 // Created by Hussein_Mohammad on 5/10/2021.
 
-@ViewModelScoped
 class ProductDetailsRepo {
 
     fun getProductDetails(id: Int): Call<ProductDetailsPojo> {

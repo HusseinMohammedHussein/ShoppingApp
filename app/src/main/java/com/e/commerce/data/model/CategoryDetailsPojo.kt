@@ -9,6 +9,6 @@ data class CategoryDetailsPojo(
     @SerializedName("data") @Expose val data: Data
 ) {
     data class Data(
-        @SerializedName("data") @Expose val Products: MutableList<ProductPojo>
+        @SerializedName("data") @Expose val Products: ArrayList<ProductPojo>
     )
 }

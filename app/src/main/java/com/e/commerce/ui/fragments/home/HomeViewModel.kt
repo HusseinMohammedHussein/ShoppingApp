@@ -5,15 +5,12 @@ import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.data.model.home.CategoryPojo
 import com.e.commerce.data.model.home.HomePojo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel  : ViewModel() {
     private val homeRepo = HomeRepo()
     val homePojoMutable: MutableLiveData<HomePojo> = MutableLiveData()
     val categoryPojoMutable: MutableLiveData<CategoryPojo> = MutableLiveData()

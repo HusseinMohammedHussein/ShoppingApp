@@ -42,11 +42,15 @@ class SharedPref constructor(context: Context) {
         }
     }
 
-    fun setAddressGson(key: String, objectPojo: AddressObjectPojo) {
+    fun setAddressGson(key: String, objectPojo: AddressObjectPojo?) {
         operation.apply {
             val gson = Gson()
-            val json = gson.toJson(objectPojo)
-            putString(key, json)
+            if (objectPojo != null) {
+                val json = gson.toJson(objectPojo)
+                putString(key, json)
+            } else {
+                putString(key, null)
+            }
         }
     }
 
@@ -64,11 +68,11 @@ class SharedPref constructor(context: Context) {
         }
     }
 
-    fun getAddressGson(key: String): AddressObjectPojo {
+    fun getAddressGson(key: String): AddressObjectPojo? {
         val gson = Gson()
         val json = preferences.getString(key, null)
         val type = object : TypeToken<AddressObjectPojo>() {}.type
-        return gson.fromJson(json.toString(), type)
+        return if (json != null) gson.fromJson(json.toString(), type) else null
     }
 
     fun getString(key: String): String? = preferences.getString(key, "")

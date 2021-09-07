@@ -4,17 +4,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.ProductDetailsPojo
 import com.e.commerce.data.model.ProductsPojo
-import com.e.commerce.data.model.auth.bag.BagPojo
 import com.e.commerce.data.model.auth.FavoritePojo
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.e.commerce.data.model.auth.bag.BagPojo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class ProductDetailsViewModel @Inject constructor() : ViewModel() {
+class ProductDetailsViewModel : ViewModel() {
 
     private val productDetailsRepo = ProductDetailsRepo()
     val productDetailsLiveData: MutableLiveData<ProductDetailsPojo> = MutableLiveData()

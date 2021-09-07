@@ -10,10 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
 import com.e.commerce.databinding.FragmentOrdersBinding
 import com.e.commerce.ui.main.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
-@AndroidEntryPoint
 class OrdersFragment : Fragment() {
     private var _binding: FragmentOrdersBinding? = null
     private val binding get() = _binding!!

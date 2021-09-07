@@ -4,17 +4,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.ProfilePojo
 import com.e.commerce.data.model.auth.AddressPojo
+import com.e.commerce.data.model.auth.LogoutPojo
 import com.e.commerce.data.model.auth.OrderPojo
 import com.e.commerce.ui.fragments.user.profile.ProfileRepo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class ProfileViewModel @Inject constructor() : ViewModel() {
+class ProfileViewModel : ViewModel() {
     private val profileRepo = ProfileRepo()
     var profileMutableLD: MutableLiveData<ProfilePojo> = MutableLiveData()
     var totalOrdersMutableLD: MutableLiveData<OrderPojo> = MutableLiveData()
@@ -50,7 +48,7 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
     }
 
     fun getAddress() {
-        profileRepo.getAddress().enqueue(object: Callback<AddressPojo>{
+        profileRepo.getAddress().enqueue(object : Callback<AddressPojo> {
             override fun onResponse(call: Call<AddressPojo>, response: Response<AddressPojo>) {
                 if (response.isSuccessful && response.body() != null) {
                     addressMutableLD.value = response.body()
@@ -61,5 +59,21 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
                 Timber.e("getAddressFailure::${t.localizedMessage}")
             }
         })
+    }
+
+    fun logout(fcmToken: String): MutableLiveData<LogoutPojo> {
+        val logoutMutableLD: MutableLiveData<LogoutPojo> = MutableLiveData()
+        profileRepo.logout(fcmToken).enqueue(object : Callback<LogoutPojo> {
+            override fun onResponse(call: Call<LogoutPojo>, response: Response<LogoutPojo>) {
+                if (response.isSuccessful && response.body() != null) {
+                    logoutMutableLD.value = response.body()
+                }
+            }
+
+            override fun onFailure(call: Call<LogoutPojo>, t: Throwable) {
+                Timber.e("LogoutFailure::${t.localizedMessage}")
+            }
+        })
+        return logoutMutableLD
     }
 }

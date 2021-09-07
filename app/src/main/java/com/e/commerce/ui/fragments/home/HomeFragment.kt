@@ -5,31 +5,34 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.e.commerce.R
 import com.e.commerce.data.model.ProductPojo
 import com.e.commerce.databinding.FragmentHomeBinding
+import com.e.commerce.ui.common.CustomAlertDialog
 import com.e.commerce.ui.common.ProductsAdapter
 import com.e.commerce.ui.common.ProductsAdapter.ProductOnClick
+import com.e.commerce.util.SharedPref
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType
 import com.smarteist.autoimageslider.SliderAnimations
 import com.smarteist.autoimageslider.SliderView
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
-
-@AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private var viewModel: HomeViewModel = HomeViewModel()
+    private var sharedPref: SharedPref? = null
 
     private var productAdapter: ProductsAdapter? = null
-    private var categoriesAdapter: CategoriesAdapter? = null
     private var sliderAdapter: BannerSliderAdapter? = null
+    private var categoriesAdapter: CategoriesAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +44,6 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        retainInstance = true
         viewModel = ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
     }
 
@@ -58,7 +60,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun init() {
-        productAdapter = ProductsAdapter(onProductClick)
+        sharedPref = SharedPref(requireContext())
+        productAdapter = ProductsAdapter(onProductClick, requireContext())
         categoriesAdapter = CategoriesAdapter()
         sliderAdapter = BannerSliderAdapter(requireContext())
         binding.loading.loading.visibility = View.VISIBLE
@@ -76,7 +79,6 @@ class HomeFragment : Fragment() {
             adapter = categoriesAdapter
             ViewCompat.setNestedScrollingEnabled(binding.rvCategories, false)
         }
-
     }
 
     private fun request() {
@@ -116,25 +118,28 @@ class HomeFragment : Fragment() {
 
     private val onProductClick = object : ProductOnClick {
         override fun onProductItemClick(product: ProductPojo) {
-            viewModel.addOrRemoveFromFavorite(product.id).observe(viewLifecycleOwner, { response ->
-                if (response.status) {
-                    DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                }
-                Timber.d("productFavoriteMessage::${response.message}")
-                Timber.d("productFavoriteStatus::${response.status}")
-            })
+            val getUserToken = sharedPref?.getBoolean(getString(R.string.is_user))!!
+            if (!getUserToken) {
+                val direction = HomeFragmentDirections.actionHomeToSignup()
+                CustomAlertDialog.alertDialog(requireContext(), this@HomeFragment, direction)
+            } else {
+                viewModel.addOrRemoveFromFavorite(product.id).observe(viewLifecycleOwner, { response ->
+                    Timber.d("productFavoriteMessage::${response.message}")
+                    Timber.d("productFavoriteStatus::${response.status}")
+                })
+            }
         }
     }
 
     private fun setupBannerSlider() {
-        binding.bannerSlider.imageSlider.setIndicatorAnimation(IndicatorAnimationType.WORM) //set indicator animation by using IndicatorAnimationType. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
+        binding.bannerSlider.imageSlider.setIndicatorAnimation(IndicatorAnimationType.WORM) // set indicator animation by using IndicatorAnimationType. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
         binding.bannerSlider.imageSlider.setSliderTransformAnimation(SliderAnimations.FADETRANSFORMATION)
         binding.bannerSlider.imageSlider.autoCycleDirection = SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH
-        binding.bannerSlider.imageSlider.scrollTimeInSec = 5 //set scroll delay in seconds :
+        binding.bannerSlider.imageSlider.scrollTimeInSec = 5 //set scroll delay in seconds:
         binding.bannerSlider.imageSlider.startAutoCycle()
-//       Best_Animation ->  CUBEINDEPTHTRANSFORMATION, CUBEINROTATIONTRANSFORMATION, FADETRANSFORMATION, CUBEOUTROTATIONTRANSFORMATION, DEPTHTRANSFORMATION
-//        binding.bannerSlider.imageSlider.indicatorSelectedColor = R.color.primary
-//        binding.bannerSlider.imageSlider.indicatorUnselectedColor = R.color.white
+        // Best_Animation ->  CUBEINDEPTHTRANSFORMATION, CUBEINROTATIONTRANSFORMATION, FADETRANSFORMATION, CUBEOUTROTATIONTRANSFORMATION, DEPTHTRANSFORMATION
+        //  binding.bannerSlider.imageSlider.indicatorSelectedColor = R.color.primary
+        //   binding.bannerSlider.imageSlider.indicatorUnselectedColor = R.color.white
     }
 
     override fun onDestroyView() {

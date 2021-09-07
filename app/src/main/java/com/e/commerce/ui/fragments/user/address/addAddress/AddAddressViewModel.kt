@@ -6,15 +6,12 @@ import com.e.commerce.data.model.auth.AddressPojo
 import com.e.commerce.data.model.auth.AddressPojo.AddAddressPojo
 import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
 import com.e.commerce.ui.fragments.user.address.AddressRepo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class AddAddressViewModel @Inject constructor() : ViewModel() {
+class AddAddressViewModel : ViewModel() {
     private val addressRepo = AddressRepo()
 
     fun addAddress(addAddress: AddAddressPojo): MutableLiveData<AddressPojo> {

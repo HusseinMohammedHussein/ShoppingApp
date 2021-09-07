@@ -12,4 +12,7 @@
     <string name="total_amount" translatable="false">total_amount</string>
     <string name="promocode_id" translatable="false">promocode_id</string>
     <string name="user_points" translatable="false">user_points</string>
+    <string name="user_fcm_token" translatable="false">token</string>
+    <string name="profilePojo" translatable="false">profile_pojo</string>
+    <string name="isHasNewAddressAdded" translatable="false">isHasNewAddressAdded</string>
 </resources>

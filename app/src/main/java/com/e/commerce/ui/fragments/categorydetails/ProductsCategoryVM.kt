@@ -6,15 +6,13 @@ import com.e.commerce.data.model.CategoryDetailsPojo
 import com.e.commerce.data.model.ProductsPojo
 import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.ui.common.AddRemoveFavoriteRepo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class ProductsCategoryVM @Inject constructor() : ViewModel() {
+//@HiltViewModel
+class ProductsCategoryVM : ViewModel() {
     private val catDetailsRepo = CategoryDetailsRepo()
     private val addRemoveFavoriteRepo = AddRemoveFavoriteRepo()
     var categoryDetailsMutable: MutableLiveData<CategoryDetailsPojo> = MutableLiveData()
@@ -41,7 +39,7 @@ class ProductsCategoryVM @Inject constructor() : ViewModel() {
     }
 
     fun searchProduct(keyword: String) {
-        catDetailsRepo.searchProduct(keyword).enqueue(object: Callback<ProductsPojo>{
+        catDetailsRepo.searchProduct(keyword).enqueue(object : Callback<ProductsPojo> {
             override fun onResponse(call: Call<ProductsPojo>, response: Response<ProductsPojo>) {
                 if (response.isSuccessful && response.body() != null) {
                     searchProductMutable.value = response.body()
@@ -56,7 +54,7 @@ class ProductsCategoryVM @Inject constructor() : ViewModel() {
     }
 
     fun addRemoveFavorite(productId: Int) {
-        addRemoveFavoriteRepo.addOrRemoveFavorite(productId).enqueue(object: Callback<FavoritePojo>{
+        addRemoveFavoriteRepo.addOrRemoveFavorite(productId).enqueue(object : Callback<FavoritePojo> {
             override fun onResponse(call: Call<FavoritePojo>, response: Response<FavoritePojo>) {
                 if (response.isSuccessful && response.body() != null) {
                     addRemoveFavoriteMutable.value = response.body()

@@ -2,20 +2,16 @@ package com.e.commerce.ui.fragments.categories
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.ShopCategoryPojo
 import com.e.commerce.data.model.home.CategoryPojo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class ShopCategoriesViewModel @Inject constructor() : ViewModel() {
+class ShopCategoriesViewModel : ViewModel() {
+
     private var shopCategoryRepo = ShopCategoryRepo()
     var shopCategoryMutable: MutableLiveData<CategoryPojo> = MutableLiveData()
-
 
     fun getShopCategories() {
         shopCategoryRepo.getShopCategory().enqueue(object : Callback<CategoryPojo> {

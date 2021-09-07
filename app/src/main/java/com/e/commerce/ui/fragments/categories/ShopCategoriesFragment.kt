@@ -10,9 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
 import com.e.commerce.databinding.FragmentCategoriesBinding
 import com.e.commerce.ui.main.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class ShopCategoriesFragment : Fragment() {
     private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
@@ -51,7 +49,7 @@ class ShopCategoriesFragment : Fragment() {
 
         binding.rvCategories.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = categoryAdapter
         }
     }

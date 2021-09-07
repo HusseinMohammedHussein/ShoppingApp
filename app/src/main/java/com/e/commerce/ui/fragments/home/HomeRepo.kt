@@ -4,12 +4,10 @@ import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.data.model.home.CategoryPojo
 import com.e.commerce.data.model.home.HomePojo
 import com.e.commerce.data.remote.retrofit.ApiControl
-import dagger.hilt.android.scopes.ViewModelScoped
 import retrofit2.Call
 
 // Created by Hussein_Mohammad on 5/2/2021.
 
-@ViewModelScoped
 class HomeRepo {
 
     fun getHome(): Call<HomePojo> {

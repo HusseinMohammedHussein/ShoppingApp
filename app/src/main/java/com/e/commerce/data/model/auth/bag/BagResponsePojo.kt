@@ -16,7 +16,7 @@ data class BagResponsePojo(
 
     @Parcelize
     data class BagResponsePojo(
-        @SerializedName("cart_items") @Expose val cartItems: MutableList<BagItemResponsePojo>,
+        @SerializedName("cart_items") @Expose val cartItems: ArrayList<BagItemResponsePojo>,
         @SerializedName("sub_total") @Expose val sub_total: Double,
         @SerializedName("total") @Expose val total: Double
     ) : Parcelable

@@ -4,19 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.e.commerce.R
+import com.e.commerce.data.model.ProfilePojo.ProfileResponsePojo
 import com.e.commerce.databinding.FragmentProfileBinding
 import com.e.commerce.ui.common.ProfileViewModel
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
-import com.squareup.picasso.Picasso
-import dagger.hilt.android.AndroidEntryPoint
+import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import timber.log.Timber
 
-@AndroidEntryPoint
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
@@ -25,6 +26,7 @@ class ProfileFragment : Fragment() {
     private var sharedPref: SharedPref? = null
     private var isUser: Boolean? = false
     private var userToken: String? = null
+    private var bundle = Bundle()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,13 +62,19 @@ class ProfileFragment : Fragment() {
 
     private fun observerData() {
         viewModel.profileMutableLD.observe(viewLifecycleOwner, { response ->
-            binding.content.tvUsername.text = response.data.name
-            Timber.d("getUserName::${response.data.name}")
-            binding.content.tvEmail.text = response.data.email
-            sharedPref?.setInt(getString(R.string.user_points), response.data.points)
-            Picasso.get()
-                .load(response.data.image)
-                .into(binding.content.imgProfile)
+            if (response.status) {
+                bundle.putParcelable(getString(R.string.profilePojo), response.data)
+                Timber.d("ProfilePojoBundle::${bundle.getParcelable<ProfileResponsePojo>(getString(R.string.profilePojo))}")
+                binding.content.tvUsername.text = response.data.name
+                Timber.d("getUserName::${response.data.name}")
+                binding.content.tvEmail.text = response.data.email
+                sharedPref?.setInt(getString(R.string.user_points), response.data.points)
+                Glide.with(requireContext())
+                    .load(response.data.image)
+                    .into(binding.content.imgProfile)
+            } else {
+                DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_LONG).show()
+            }
         })
 
         viewModel.totalOrdersMutableLD.observe(viewLifecycleOwner, { orderResponse ->
@@ -93,14 +101,16 @@ class ProfileFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         (requireActivity() as MainActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
         binding.appbar.toolbar.setNavigationIcon(R.drawable.ic_back_row)
-        binding.appbar.toolbar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        binding.appbar.toolbar.setNavigationOnClickListener {
+            val direction = ProfileFragmentDirections.actionProfileToHome()
+            findNavController().navigate(direction)
+        }
     }
-
 
     private fun onClick() {
         binding.content.contentOption.rlSetting.setOnClickListener {
-            val direction = ProfileFragmentDirections.actionProfileToUpdateFragment()
-            findNavController().navigate(direction)
+            val direction = ProfileFragmentDirections.actionProfileToSettingProfile().actionId
+            findNavController().navigate(direction, bundle)
         }
 
         binding.content.contentOption.llMyOrders.setOnClickListener {
@@ -112,12 +122,33 @@ class ProfileFragment : Fragment() {
             val directions = ProfileFragmentDirections.actionProfileToAddress(null)
             findNavController().navigate(directions)
         }
+
+        binding.content.btnLogout.setOnClickListener {
+            val getFCMToken = sharedPref?.getString(getString(R.string.user_fcm_token))
+            if (getFCMToken != null) {
+                viewModel.logout(getFCMToken).observe(viewLifecycleOwner, { response ->
+                    if (response.status) {
+                        sharedPref?.let {
+                            it.setString(getString(R.string.user_token), response.data.token)
+                            it.setBoolean(getString(R.string.is_user), false)
+                            it.clear()
+                        }
+
+                        val direction = ProfileFragmentDirections.actionProfileToHome()
+                        findNavController().navigate(direction)
+                    } else {
+                        DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                    }
+                })
+            } else {
+                viewModel.logout("FCMTokenNULL")
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-        Timber.w("ProfileBindingIs::$_binding")
     }
 
     override fun onResume() {

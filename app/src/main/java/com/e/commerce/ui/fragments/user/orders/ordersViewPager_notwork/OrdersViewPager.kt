@@ -8,10 +8,8 @@ import androidx.fragment.app.Fragment
 import com.e.commerce.databinding.FragmentOrdersViewpagerBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
-@AndroidEntryPoint
 class OrdersViewPager : Fragment() {
     private var _binding: FragmentOrdersViewpagerBinding? = null
     private val binding get() = _binding!!

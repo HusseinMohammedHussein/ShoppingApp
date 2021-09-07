@@ -15,11 +15,9 @@ import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.NewQuantity
 import com.e.commerce.util.SharedPref
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import kotlin.collections.set
 
-@AndroidEntryPoint
 class BagFragment : Fragment() {
     private var _binding: FragmentBagBinding? = null
     private val binding get() = _binding!!
@@ -95,14 +93,17 @@ class BagFragment : Fragment() {
     }
 
     private fun responseData() {
-        viewModel.bagMutableData.observe(viewLifecycleOwner, { bagDataResponse ->
+        viewModel.bagMutableData.observe(viewLifecycleOwner, { response ->
             binding.srContent.isRefreshing = false
             binding.loading.loading.visibility = View.GONE
-            if (bagDataResponse.status) {
-                bagAdapter?.setData(bagDataResponse.bagResponseData.cartItems)
-                Timber.d("BagProductsSize:: ${bagDataResponse.bagResponseData.cartItems.size}")
-                binding.tvTotalamount.text = String.format("${bagDataResponse.bagResponseData.total}$")
-                sharedPref?.setDouble(getString(R.string.total_amount), bagDataResponse.bagResponseData.total)
+            if (response.status) {
+                binding.noauth.tvNoAuthMsg.visibility = View.GONE
+                binding.noauth.tvNoAuthMsg.text
+
+                bagAdapter?.setData(response.bagResponseData.cartItems)
+                Timber.d("BagProductsSize:: ${response.bagResponseData.cartItems.size}")
+                binding.tvTotalamount.text = String.format("${response.bagResponseData.total}$")
+                sharedPref?.setDouble(getString(R.string.total_amount), response.bagResponseData.total)
                 bagAdapter?.notifyDataSetChanged()
 
                 binding.etPromocode.isEnabled = true
@@ -110,6 +111,8 @@ class BagFragment : Fragment() {
                 binding.content.rvBag.visibility = View.VISIBLE
             } else {
                 binding.vNotHasProducts.visibility = View.VISIBLE
+                binding.noauth.tvNoAuthMsg.visibility = View.VISIBLE
+                binding.noauth.tvNoAuthMsg.text = response.message
                 binding.etPromocode.isEnabled = false
                 binding.vNotHasProducts.isFocusable = false
                 binding.content.rvBag.visibility = View.GONE
@@ -145,7 +148,7 @@ class BagFragment : Fragment() {
         }
 
 
-        binding.btnCheckOut.setOnClickListener { v ->
+        binding.btnCheckOut.setOnClickListener {
             val getCodeText = binding.etPromocode.text.toString().trim()
             viewModel.checkPromoCode(getCodeText).observe(viewLifecycleOwner, { response ->
                 if (response.status) {

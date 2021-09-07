@@ -8,26 +8,24 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.e.commerce.R
 import com.e.commerce.data.model.ProductPojo
 import com.e.commerce.databinding.ItemProductBinding
-import com.squareup.picasso.Picasso
 import timber.log.Timber
 
-class ProductsAdapter(private val onProductClick: ProductOnClick) : RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
+class ProductsAdapter(private val onProductClick: ProductOnClick, private var context: Context) :
+    RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
 
     private var pojoList = ArrayList<ProductPojo>()
-    private var context: Context? = null
 
     fun setData(pojos: ArrayList<ProductPojo>) {
         pojos.also { this.pojoList = it }
     }
 
     fun clearList() {
-        pojoList.let {
-            pojoList.clear()
-            notifyDataSetChanged()
-        }
+        pojoList.clear()
+        notifyDataSetChanged()
     }
 
     inner class ProductsViewHolder(var binding: ItemProductBinding) :
@@ -44,7 +42,7 @@ class ProductsAdapter(private val onProductClick: ProductOnClick) : RecyclerView
             binding.tvDiscount.text = String.format("- ${productPojo.discount}%%")
             Timber.d("DiscountAdapter::${productPojo.discount}")
 
-            Picasso.get()
+            Glide.with(itemView)
                 .load(productPojo.image)
                 .into(binding.imgProduct)
 
@@ -56,13 +54,11 @@ class ProductsAdapter(private val onProductClick: ProductOnClick) : RecyclerView
 
             binding.btnFavorite.icFavorite.setOnClickListener {
                 if (i == 0) {
-//                    onItemClick.invoke(pojo)
                     onProductClick.onProductItemClick(productPojo)
                     binding.btnFavorite.icFavorite.setImageResource(R.drawable.ic_favorite_active)
                     i++
                 } else if (i == 1) {
                     onProductClick.onProductItemClick(productPojo)
-//                    onItemClick.invoke(productPojo)
                     binding.btnFavorite.icFavorite.setImageResource(R.drawable.ic_favorite_disactive)
                     i = 0
                 }

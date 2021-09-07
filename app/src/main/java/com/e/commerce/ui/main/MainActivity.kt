@@ -9,16 +9,14 @@ import androidx.navigation.ui.NavigationUI
 import com.e.commerce.R
 import com.e.commerce.databinding.ActivityMainBinding
 import com.e.commerce.util.SharedPref
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 // Created by Hussein_Mohammad on 5/1/2021.
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-    private lateinit var navController: NavController
+    private var navController: NavController? = null
     private var sharedPref: SharedPref? = null
     private var isUser: Boolean = false
     private lateinit var userToken: String
@@ -40,9 +38,9 @@ class MainActivity : AppCompatActivity() {
         binding.bottomView.menu.findItem(R.id.profile).setOnMenuItemClickListener {
             if (!sharedPref?.getBoolean(resources.getString(R.string.is_user))!!) {
                 Timber.d("AfterClickIsUser::$isUser")
-                navController.navigate(R.id.signup)
+                navController?.navigate(R.id.signup)
             } else {
-                navController.navigate(R.id.profile)
+                navController?.navigate(R.id.profile)
             }
             return@setOnMenuItemClickListener true
         }
@@ -59,9 +57,9 @@ class MainActivity : AppCompatActivity() {
 //            AppBarConfiguration.Builder(R.id.home, R.id.shop).build()
 
         navController = Navigation.findNavController(this, R.id.nav_host)
-        NavigationUI.setupWithNavController(binding.bottomView, navController)
+        navController?.let { NavigationUI.setupWithNavController(binding.bottomView, it) }
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+        navController?.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.home -> showBottomNav()
                 R.id.shop -> showBottomNav()

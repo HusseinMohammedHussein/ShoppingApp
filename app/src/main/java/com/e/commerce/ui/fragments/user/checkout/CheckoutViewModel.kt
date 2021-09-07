@@ -4,15 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.auth.OrderPojo.AddOrderPojo
 import com.e.commerce.data.model.auth.OrderPojo.OrderResponsePojo
-import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
-import javax.inject.Inject
 
-@HiltViewModel
-class CheckoutViewModel @Inject constructor() : ViewModel() {
+class CheckoutViewModel : ViewModel() {
     private val checkRepo = CheckoutRepo()
 
     fun addOrder(order: AddOrderPojo): MutableLiveData<OrderResponsePojo> {

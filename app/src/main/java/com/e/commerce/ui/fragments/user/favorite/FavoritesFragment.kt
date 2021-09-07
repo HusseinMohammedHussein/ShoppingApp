@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,10 +13,8 @@ import com.e.commerce.data.model.auth.FavoritePojo
 import com.e.commerce.databinding.FragmentFavoritesBinding
 import com.e.commerce.ui.fragments.user.favorite.FavoritesAdapter.FavoriteItemClick
 import com.e.commerce.ui.main.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
-@AndroidEntryPoint
 class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
@@ -82,7 +79,8 @@ class FavoritesFragment : Fragment() {
                     adapter.notifyDataSetChanged()
                 }
             } else {
-                Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                binding.noauth.tvNoAuthMsg.text = response.message
+                binding.noauth.tvNoAuthMsg.visibility = View.VISIBLE
                 binding.content.rvFavorites.adapter = null
             }
             binding.content.rvFavorites.visibility = View.VISIBLE

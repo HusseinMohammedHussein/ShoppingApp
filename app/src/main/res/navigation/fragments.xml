@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_product_to_productDetails"
             app:destination="@id/productDetailsFragment" />
+        <action
+            android:id="@+id/action_home_to_signup"
+            app:destination="@id/signup" />
     </fragment>
 
     <fragment
@@ -85,6 +88,9 @@
         <action
             android:id="@+id/action_product_to_productDetails"
             app:destination="@id/productDetailsFragment" />
+        <action
+            android:id="@+id/action_productsCategory_to_signup"
+            app:destination="@id/signup" />
     </fragment>
 
     <fragment
@@ -95,6 +101,9 @@
         <action
             android:id="@+id/action_product_to_productDetails"
             app:destination="@id/productDetailsFragment" />
+        <action
+            android:id="@+id/action_productDetails_to_signup"
+            app:destination="@id/signup" />
     </fragment>
 
     <fragment
@@ -103,14 +112,17 @@
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile">
         <action
-            android:id="@+id/action_profile_to_updateFragment"
-            app:destination="@id/settingProfileFragment" />
-        <action
             android:id="@+id/action_profile_to_orders"
             app:destination="@id/ordersFragment" />
         <action
             android:id="@+id/action_profile_to_address"
             app:destination="@id/addressFragment" />
+        <action
+            android:id="@+id/action_profile_to_home"
+            app:destination="@id/home" />
+        <action
+            android:id="@+id/action_profile_to_settingProfile"
+            app:destination="@id/settingProfileFragment" />
     </fragment>
 
     <fragment

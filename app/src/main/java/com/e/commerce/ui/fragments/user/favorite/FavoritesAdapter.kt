@@ -3,15 +3,15 @@ package com.e.commerce.ui.fragments.user.favorite;
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.e.commerce.R
 import com.e.commerce.data.model.auth.FavoritePojo.FavoriteResponse.FavoritesResponse
 import com.e.commerce.databinding.ItemFavoriteBinding
-import com.squareup.picasso.Picasso
 import timber.log.Timber
 
 
 class FavoritesAdapter(private val onFavoriteClick: FavoriteItemClick) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
-    private var favoritesPojoList =  ArrayList<FavoritesResponse>()
+    private var favoritesPojoList = ArrayList<FavoritesResponse>()
 
     fun setData(favoritesPojos: ArrayList<FavoritesResponse>) {
         favoritesPojos.also { this.favoritesPojoList = it }
@@ -48,14 +48,14 @@ class FavoritesAdapter(private val onFavoriteClick: FavoriteItemClick) : Recycle
             binding.tvProductPrice.text = String.format("${favoritesPojo.product.price} $")
             binding.tvProductOldPrice.text = String.format("${favoritesPojo.product.old_price} $")
             binding.tvDiscount.text = String.format("- ${favoritesPojo.product.discount}%%")
-            Picasso.get()
+            Glide.with(itemView)
                 .load(favoritesPojo.product.image)
                 .into(binding.imgProduct)
 
             // favorite_products Response Data without in_cart field___________________________!!
             Timber.d("Product::${favoritesPojo.product.name} is in cart ${favoritesPojo.product.in_cart}")
             if (favoritesPojo.product.in_cart) {
-                Picasso.get()
+                Glide.with(itemView)
                     .load(R.drawable.ic_in_cart)
                     .into(binding.icInCart)
             } else {

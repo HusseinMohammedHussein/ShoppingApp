@@ -16,7 +16,7 @@ data class ProductPojo(
     @SerializedName("discount") @Expose val discount: Int,
     @SerializedName("name") @Expose val name: String,
     @SerializedName("image") @Expose val image: String,
-    @SerializedName("images") @Expose val images: List<String>,
+    @SerializedName("images") @Expose val images: ArrayList<String>,
     @SerializedName("description") @Expose val description: String,
     @SerializedName("price") @Expose val price: Double,
     @SerializedName("old_price") @Expose val old_price: Double,

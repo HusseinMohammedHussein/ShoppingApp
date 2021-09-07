@@ -7,18 +7,23 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
+import com.e.commerce.data.model.ProductPojo
 import com.e.commerce.data.model.home.CategoryPojo.Data.CategoriesPojo
 import com.e.commerce.databinding.FragmentProductsCategoryBinding
+import com.e.commerce.ui.common.CustomAlertDialog
+import com.e.commerce.ui.fragments.categorydetails.ProductsCategoryAdapter.OnCategoryProductClick
 import com.e.commerce.ui.main.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
+import com.e.commerce.util.SharedPref
 import timber.log.Timber
 
-@AndroidEntryPoint
+//@AndroidEntryPoint
 class ProductsCategoryFragment : Fragment() {
     private var _binding: FragmentProductsCategoryBinding? = null
     private val binding get() = _binding!!
     private var productsCategoryVM: ProductsCategoryVM = ProductsCategoryVM()
     private var productsCategoryAdapter: ProductsCategoryAdapter? = null
+    private var sharedPref: SharedPref? = null
+    private var isUserLogin: Boolean = false
 
     private var bundle: Bundle? = null
     private var productsCategoryParcelable: CategoriesPojo? = null
@@ -49,7 +54,6 @@ class ProductsCategoryFragment : Fragment() {
         request()
         observeData()
         setupSearch()
-        onCLickListener()
     }
 
     private fun setupToolbar() {
@@ -65,8 +69,12 @@ class ProductsCategoryFragment : Fragment() {
     private fun init() {
         bundle = Bundle()
         bundle = arguments
-        productsCategoryAdapter = ProductsCategoryAdapter()
+        productsCategoryAdapter = ProductsCategoryAdapter(onCategoryProductClick)
         productsCategoryParcelable = bundle?.getParcelable(getString(R.string.category_pojo))!!
+        sharedPref = SharedPref(requireContext())
+        isUserLogin = sharedPref?.getBoolean(getString(R.string.is_user))!!
+        Timber.d("isUserLogin::$isUserLogin")
+
 
         binding.rvProducts.apply {
             setHasFixedSize(true)
@@ -113,9 +121,14 @@ class ProductsCategoryFragment : Fragment() {
         }
     }
 
-    private fun onCLickListener() {
-        productsCategoryAdapter?.onItemClick = { product ->
-            productsCategoryVM.addRemoveFavorite(product.id)
+    private val onCategoryProductClick = object : OnCategoryProductClick {
+        override fun onItemClick(product: ProductPojo) {
+            if (!isUserLogin) {
+                val direction = ProductsCategoryFragmentDirections.actionProductsCategoryToSignup()
+                CustomAlertDialog.alertDialog(requireContext(), this@ProductsCategoryFragment, direction)
+            } else {
+                productsCategoryVM.addRemoveFavorite(product.id)
+            }
         }
     }
 

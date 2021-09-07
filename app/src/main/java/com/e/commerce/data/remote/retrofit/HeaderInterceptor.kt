@@ -14,8 +14,8 @@ class HeaderInterceptor : Interceptor {
 
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val sharedPref = SharedPref(CommerceApplication.getContext())
-        val getUserToken = sharedPref.getString(CommerceApplication.getContext().resources.getString(R.string.user_token))
+        val sharedPref = CommerceApplication.getContext()?.let { SharedPref(it) }
+        val getUserToken = CommerceApplication.getContext()?.resources?.getString(R.string.user_token)?.let { sharedPref?.getString(it) }
 
 
         val request: Request = chain.request()

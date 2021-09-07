@@ -5,16 +5,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.e.commerce.R
 import com.e.commerce.data.model.home.CategoryPojo.Data.CategoriesPojo
 import com.e.commerce.databinding.ItemShopCategoryBinding
-import com.squareup.picasso.Picasso
 
 class ShopCategoriesAdapter : RecyclerView.Adapter<ShopCategoriesAdapter.CategoriesViewHolder>() {
 
-    private lateinit var pojoListShop: MutableList<CategoriesPojo>
+    private var pojoListShop =  ArrayList<CategoriesPojo>()
 
-    fun setData(pojoShops: MutableList<CategoriesPojo>) {
+    fun setData(pojoShops: ArrayList<CategoriesPojo>) {
         pojoShops.also { this.pojoListShop = it }
     }
 
@@ -29,7 +29,7 @@ class ShopCategoriesAdapter : RecyclerView.Adapter<ShopCategoriesAdapter.Categor
         fun bind(pojoShop: CategoriesPojo) {
             binding.tvCategoryName.text = pojoShop.name
 
-            Picasso.get()
+            Glide.with(itemView)
                 .load(pojoShop.image)
                 .into(binding.imgShopCategory)
 
@@ -53,6 +53,7 @@ class ShopCategoriesAdapter : RecyclerView.Adapter<ShopCategoriesAdapter.Categor
 
     override fun onBindViewHolder(holder: CategoriesViewHolder, position: Int) {
         holder.bind(pojoListShop[position])
+
     }
 
     override fun getItemCount(): Int = pojoListShop.size

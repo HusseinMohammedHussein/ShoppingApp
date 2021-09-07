@@ -56,7 +56,7 @@ class AddressAdapter(val addressInterface: AddressInterface) : RecyclerView.Adap
             binding.tvAddressName.text = addressPojo.name
             binding.tvAddressDetails.text = String.format("${addressPojo.details}, ${addressPojo.region}, ${addressPojo.city}")
 
-            val onClick = View.OnClickListener { v ->
+            val onClick = View.OnClickListener {
                 selected = position
                 addressObject.add(addressPojo.toString())
                 context?.getString(R.string.address_parcelable).let { context ->

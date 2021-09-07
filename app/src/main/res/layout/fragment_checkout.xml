@@ -96,6 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:ellipsize="end"
+                    android:padding="5dp"
                     android:maxLines="5"
                     android:textColor="@color/black"
                     android:textSize="17sp"
@@ -103,6 +104,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_change_address"
                     tools:text="Address Details" />
+
+                <TextView
+                    android:id="@+id/tv_add_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:text="Add Address"
+                    android:textColor="@color/primary"
+                    android:textSize="17sp"
+                    android:visibility="gone"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 

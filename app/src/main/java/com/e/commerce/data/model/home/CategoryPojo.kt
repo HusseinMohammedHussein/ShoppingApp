@@ -14,7 +14,7 @@ data class CategoryPojo(
 ) : CommonResponse(mStatus, mMessage), Parcelable {
     @Parcelize
     data class Data(
-        @SerializedName("data") @Expose val categories: MutableList<CategoriesPojo>,
+        @SerializedName("data") @Expose val categories: ArrayList<CategoriesPojo>,
     ) : Parcelable {
         @Parcelize
         data class CategoriesPojo(
