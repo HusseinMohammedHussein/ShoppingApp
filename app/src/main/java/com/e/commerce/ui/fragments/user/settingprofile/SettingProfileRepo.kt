@@ -1,7 +1,7 @@
 package com.e.commerce.ui.fragments.user.settingprofile
 
 import com.e.commerce.data.model.auth.SettingProfilePojo
-import com.e.commerce.data.model.auth.common.SignResponsePojo
+import com.e.commerce.data.model.common.SignResponsePojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import retrofit2.Call
 import timber.log.Timber

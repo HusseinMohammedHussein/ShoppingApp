@@ -1,5 +1,6 @@
 package com.e.commerce.ui.fragments.categorydetails;
 
+import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,22 +10,24 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.e.commerce.R
-import com.e.commerce.data.model.ProductPojo
+import com.e.commerce.data.model.product.ProductPojo
 import com.e.commerce.databinding.ItemCategoryProductsBinding
+import com.e.commerce.interfaces.OnCategoryProductClick
 import timber.log.Timber
 
-class ProductsCategoryAdapter(private val onCategoryProductClick: OnCategoryProductClick) :
+@SuppressLint("NotifyDataSetChanged")
+class ProductsCategoryAdapter(val onCategoryProductClick: OnCategoryProductClick) :
     RecyclerView.Adapter<ProductsCategoryAdapter.CategoryProductsViewHolder>() {
 
-    private var pojoList = ArrayList<ProductPojo>()
+    private var products = ArrayList<ProductPojo>()
 
-    fun setData(pojos: ArrayList<ProductPojo>) {
-        pojos.also { this.pojoList = it }
+    fun setData(products: ArrayList<ProductPojo>) {
+        this.products = products
     }
 
     fun clearData() {
-        pojoList.clear()
-//        notifyDataSetChanged()
+        products.clear()
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryProductsViewHolder {
@@ -37,11 +40,9 @@ class ProductsCategoryAdapter(private val onCategoryProductClick: OnCategoryProd
         )
     }
 
-    override fun onBindViewHolder(holder: CategoryProductsViewHolder, position: Int) {
-        holder.bind(pojoList[position])
-    }
+    override fun onBindViewHolder(holder: CategoryProductsViewHolder, position: Int) = holder.bind(products[position])
 
-    override fun getItemCount(): Int = pojoList.size
+    override fun getItemCount(): Int = products.size
 
 
     inner class CategoryProductsViewHolder(var binding: ItemCategoryProductsBinding) :
@@ -89,9 +90,5 @@ class ProductsCategoryAdapter(private val onCategoryProductClick: OnCategoryProd
                     .navigate(R.id.action_product_to_productDetails, bundle)
             }
         }
-    }
-
-    interface OnCategoryProductClick {
-        fun onItemClick(product: ProductPojo)
     }
 }

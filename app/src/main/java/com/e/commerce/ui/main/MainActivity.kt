@@ -16,10 +16,12 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-    private var navController: NavController? = null
-    private var sharedPref: SharedPref? = null
-    private var isUser: Boolean = false
+
+    private lateinit var navController: NavController
+    private lateinit var sharedPref: SharedPref
     private lateinit var userToken: String
+
+    private var isUser: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,15 +34,15 @@ class MainActivity : AppCompatActivity() {
     private fun init() {
         sharedPref = SharedPref(this)
 //        isUser = sharedPref?.getBoolean(resources.getString(R.string.is_user))!!
-        Timber.d("BeforeClickIsUser::${sharedPref?.getBoolean(resources.getString(R.string.is_user))}")
-        userToken = sharedPref?.getString(resources.getString(R.string.user_token)).toString()
+        Timber.d("BeforeClickIsUser::${sharedPref.getBoolean(resources.getString(R.string.is_user))}")
+        userToken = sharedPref.getString(resources.getString(R.string.user_token)).toString()
 
         binding.bottomView.menu.findItem(R.id.profile).setOnMenuItemClickListener {
-            if (!sharedPref?.getBoolean(resources.getString(R.string.is_user))!!) {
+            if (!sharedPref.getBoolean(resources.getString(R.string.is_user))) {
                 Timber.d("AfterClickIsUser::$isUser")
-                navController?.navigate(R.id.signup)
+                navController.navigate(R.id.signup)
             } else {
-                navController?.navigate(R.id.profile)
+                navController.navigate(R.id.profile)
             }
             return@setOnMenuItemClickListener true
         }
@@ -57,9 +59,9 @@ class MainActivity : AppCompatActivity() {
 //            AppBarConfiguration.Builder(R.id.home, R.id.shop).build()
 
         navController = Navigation.findNavController(this, R.id.nav_host)
-        navController?.let { NavigationUI.setupWithNavController(binding.bottomView, it) }
+        navController.let { NavigationUI.setupWithNavController(binding.bottomView, it) }
 
-        navController?.addOnDestinationChangedListener { _, destination, _ ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.home -> showBottomNav()
                 R.id.shop -> showBottomNav()

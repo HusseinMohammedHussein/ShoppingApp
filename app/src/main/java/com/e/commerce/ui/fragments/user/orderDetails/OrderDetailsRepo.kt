@@ -1,6 +1,6 @@
 package com.e.commerce.ui.fragments.user.orderDetails
 
-import com.e.commerce.data.model.auth.OrderDetailsPojo
+import com.e.commerce.data.model.auth.order.OrderDetailsPojo
 import com.e.commerce.data.model.auth.PromocodePojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import retrofit2.Call

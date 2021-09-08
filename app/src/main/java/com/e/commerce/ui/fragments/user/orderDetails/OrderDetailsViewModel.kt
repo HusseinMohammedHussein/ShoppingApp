@@ -2,7 +2,7 @@ package com.e.commerce.ui.fragments.user.orderDetails
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.auth.OrderDetailsPojo
+import com.e.commerce.data.model.auth.order.OrderDetailsPojo
 import com.e.commerce.data.model.auth.PromocodePojo
 import retrofit2.Call
 import retrofit2.Callback

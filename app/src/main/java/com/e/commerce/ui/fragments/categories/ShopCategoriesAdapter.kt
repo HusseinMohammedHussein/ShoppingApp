@@ -7,26 +7,29 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.e.commerce.R
-import com.e.commerce.data.model.home.CategoryPojo.Data.CategoriesPojo
+import com.e.commerce.data.model.category.CategoryItemPojo
 import com.e.commerce.databinding.ItemShopCategoryBinding
 
-class ShopCategoriesAdapter : RecyclerView.Adapter<ShopCategoriesAdapter.CategoriesViewHolder>() {
+class ShopCategoriesAdapter(val pojoShops: ArrayList<CategoryItemPojo>) : RecyclerView.Adapter<ShopCategoriesAdapter.CategoriesViewHolder>() {
 
-    private var pojoListShop =  ArrayList<CategoriesPojo>()
-
-    fun setData(pojoShops: ArrayList<CategoriesPojo>) {
-        pojoShops.also { this.pojoListShop = it }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoriesViewHolder {
+        return CategoriesViewHolder(
+            ItemShopCategoryBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    fun clearData() {
-        pojoListShop.clear()
-        notifyDataSetChanged()
-    }
+    override fun onBindViewHolder(holder: CategoriesViewHolder, position: Int) = holder.bind(pojoShops[position])
+
+    override fun getItemCount(): Int = pojoShops.size
 
     inner class CategoriesViewHolder(var binding: ItemShopCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(pojoShop: CategoriesPojo) {
+        fun bind(pojoShop: CategoryItemPojo) {
             binding.tvCategoryName.text = pojoShop.name
 
             Glide.with(itemView)
@@ -40,21 +43,4 @@ class ShopCategoriesAdapter : RecyclerView.Adapter<ShopCategoriesAdapter.Categor
             }
         }
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoriesViewHolder {
-        return CategoriesViewHolder(
-            ItemShopCategoryBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
-    }
-
-    override fun onBindViewHolder(holder: CategoriesViewHolder, position: Int) {
-        holder.bind(pojoListShop[position])
-
-    }
-
-    override fun getItemCount(): Int = pojoListShop.size
 }

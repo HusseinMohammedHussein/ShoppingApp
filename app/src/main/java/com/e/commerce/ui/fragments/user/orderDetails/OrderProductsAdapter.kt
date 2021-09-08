@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.e.commerce.data.model.auth.OrderDetailsPojo.OrderProductsPojo
+import com.e.commerce.data.model.auth.order.OrderProductsPojo
 import com.e.commerce.databinding.ItemOrderProductBinding
 
 class OrderProductsAdapter : RecyclerView.Adapter<OrderProductsAdapter.OrderProductsViewHolder>() {

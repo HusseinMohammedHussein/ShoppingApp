@@ -6,19 +6,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.e.commerce.R
-import com.e.commerce.data.model.ProductDetailsPojo
-import com.e.commerce.data.model.ProductPojo
-import com.e.commerce.data.model.ProductsPojo
+import com.e.commerce.data.model.product.ProductDetailsPojo
+import com.e.commerce.data.model.product.ProductPojo
+import com.e.commerce.data.model.product.ProductsPojo
 import com.e.commerce.databinding.FragmentProductDetailsBinding
-import com.e.commerce.ui.common.CustomAlertDialog
-import com.e.commerce.ui.common.ProductsAdapter
-import com.e.commerce.ui.common.ProductsAdapter.ProductOnClick
+import com.e.commerce.interfaces.ProductOnClick
+import com.e.commerce.ui.component.CustomAlertDialog
+import com.e.commerce.ui.component.ProductsAdapter
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
 import timber.log.Timber
@@ -27,14 +26,15 @@ import timber.log.Timber
 class ProductDetailsFragment : Fragment() {
     private var _binding: FragmentProductDetailsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var productPojoParcelable: ProductPojo
-    private var sharedPref: SharedPref? = null
-    private var getUserToken: Boolean = false
 
-    private var bundle: Bundle? = null
-    private var viewModel: ProductDetailsViewModel = ProductDetailsViewModel()
-    private var imagesAdapter: ProductImageAdapter? = null
-    private var productsAdapter: ProductsAdapter? = null
+    private lateinit var productPojoParcelable: ProductPojo
+    private lateinit var sharedPref: SharedPref
+    private lateinit var viewModel: ProductDetailsViewModel
+    private lateinit var imagesAdapter: ProductImageAdapter
+    private lateinit var productsAdapter: ProductsAdapter
+
+    private var getUserToken: Boolean = false
+    private var bundle: Bundle = Bundle()
     private var y = 0
 
     override fun onCreateView(
@@ -73,15 +73,13 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun init() {
-        bundle = Bundle()
         bundle = requireArguments()
         sharedPref = SharedPref(requireContext())
-        getUserToken = sharedPref?.getBoolean(getString(R.string.is_user))!!
+        getUserToken = sharedPref.getBoolean(getString(R.string.is_user))
         Timber.d("getUserToken::$getUserToken")
-        imagesAdapter = ProductImageAdapter()
-        productsAdapter = ProductsAdapter(onProductClick, requireContext())
-        productPojoParcelable = bundle?.getParcelable(resources.getString(R.string.product_pojo))!!
+        productPojoParcelable = bundle.getParcelable(resources.getString(R.string.product_pojo))!!
         setupViewPager()
+
         binding.content.rvProducts.apply {
             setHasFixedSize(true)
             layoutManager =
@@ -119,32 +117,32 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private fun productsList(products: ProductsPojo) {
-        productsAdapter?.setData(products.data.products)
+        productsAdapter = ProductsAdapter(requireContext(), onProductClick, products.productsData.products)
         binding.content.rvProducts.adapter = productsAdapter
         binding.content.rvProducts.visibility = View.VISIBLE
-        binding.content.tvCountItems.text = String.format("${products.data.total} items")
+        binding.content.tvCountItems.text = String.format("${products.productsData.total} items")
     }
 
     private fun productDetailsViews(productDetails: ProductDetailsPojo) {
-        binding.content.tvProName.text = productDetails.data.name
-        binding.content.tvProPrice.text = String.format("${productDetails.data.price} $")
+        binding.content.tvProName.text = productDetails.productDetailsData.name
+        binding.content.tvProPrice.text = String.format("${productDetails.productDetailsData.price} $")
         binding.content.tvProOldprice.text =
-            String.format("${productDetails.data.old_price} $")
+            String.format("${productDetails.productDetailsData.old_price} $")
         binding.content.tvProOldprice.paintFlags = STRIKE_THRU_TEXT_FLAG
-        binding.content.tvProDesc.text = productDetails.data.description
-        if (productDetails.data.in_favorites) {
+        binding.content.tvProDesc.text = productDetails.productDetailsData.description
+        if (productDetails.productDetailsData.in_favorites) {
             binding.content.icFavorite.setImageResource(R.drawable.ic_favorite_active)
             y++
         }
 
-        Timber.d("ThisInCart::${productDetails.data.in_cart}")
-        if (productDetails.data.in_cart) {
+        Timber.d("ThisInCart::${productDetails.productDetailsData.in_cart}")
+        if (productDetails.productDetailsData.in_cart) {
             binding.content.btnAddCart.text = "Remove From Cart"
         } else {
             binding.content.btnAddCart.text = "Add To Cart"
         }
 
-        imagesAdapter?.setData(productDetails.data.images)
+        imagesAdapter = ProductImageAdapter(productDetails.productDetailsData.images)
         binding.content.vpProImages.adapter = imagesAdapter
         binding.content.dotsIndicator.setViewPager2(binding.content.vpProImages)
     }
@@ -188,14 +186,14 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private val onProductClick = object : ProductOnClick {
-        override fun onProductItemClick(product: ProductPojo) {
+        override fun onAddRemoveProductFavoriteClick(product: ProductPojo) {
             viewModel.addOrRemoveFromFavorites(productPojoParcelable.id)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        productsAdapter?.clearList()
+        productsAdapter.clearList()
     }
 
     override fun onDestroyView() {

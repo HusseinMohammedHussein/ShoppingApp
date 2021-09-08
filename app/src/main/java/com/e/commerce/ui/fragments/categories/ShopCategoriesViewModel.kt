@@ -2,7 +2,7 @@ package com.e.commerce.ui.fragments.categories
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.home.CategoryPojo
+import com.e.commerce.data.model.category.CategoryPojo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -10,11 +10,11 @@ import timber.log.Timber
 
 class ShopCategoriesViewModel : ViewModel() {
 
-    private var shopCategoryRepo = ShopCategoryRepo()
+    private var shopCategoryRepo = ShopCategoriesRepo()
     var shopCategoryMutable: MutableLiveData<CategoryPojo> = MutableLiveData()
 
     fun getShopCategories() {
-        shopCategoryRepo.getShopCategory().enqueue(object : Callback<CategoryPojo> {
+        shopCategoryRepo.getShopCategories().enqueue(object : Callback<CategoryPojo> {
             override fun onResponse(
                 call: Call<CategoryPojo>,
                 response: Response<CategoryPojo>

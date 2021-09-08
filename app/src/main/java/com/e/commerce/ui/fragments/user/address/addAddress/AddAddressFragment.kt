@@ -12,8 +12,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.AddressPojo.AddAddressPojo
-import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
+import com.e.commerce.data.model.auth.address.AddAddressPojo
+import com.e.commerce.data.model.auth.address.AddressesDataPojo.AddressDataPojo
 import com.e.commerce.databinding.FragmentAddAddressBinding
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
@@ -24,12 +24,14 @@ import timber.log.Timber
 class AddAddressFragment : Fragment() {
     private var _binding: FragmentAddAddressBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: AddAddressViewModel = AddAddressViewModel()
-    private var ccp: CountryCodePicker? = null
-    private var getAddressDataPojo: AddressObjectPojo? = null
+
+    private lateinit var viewModel: AddAddressViewModel
+    private lateinit var ccp: CountryCodePicker
+    private lateinit var getAddressDataPojo: AddressDataPojo
+    private lateinit var addressBundle: Bundle
+    private lateinit var sharedPref: SharedPref
+
     private var isEditClick: Boolean? = false
-    private var addressBundle: Bundle? = Bundle()
-    private var sharedPref: SharedPref? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,24 +77,25 @@ class AddAddressFragment : Fragment() {
     private fun init() {
         sharedPref = SharedPref(requireContext())
         ccp = CountryCodePicker(requireContext())
-        addressBundle = arguments
-        Timber.d(addressBundle?.getParcelable<AddressObjectPojo>(resources.getString(R.string.edit_address)).toString())
-        getAddressDataPojo = addressBundle?.getParcelable(resources.getString(R.string.edit_address))
-        isEditClick = addressBundle?.getBoolean("isEditClicked")
+        addressBundle = Bundle()
+        addressBundle = requireArguments()
+        Timber.d(addressBundle.getParcelable<AddressDataPojo>(resources.getString(R.string.edit_address)).toString())
+        isEditClick = addressBundle.getBoolean("isEditClicked")
     }
 
     private fun onCLickListener() {
         binding.flChooseCountry.setOnClickListener {
-            ccp?.launchCountrySelectionDialog()
-            ccp?.setOnCountryChangeListener {
-                binding.tvChooseCountryAddaddress.text = ccp?.selectedCountryEnglishName
-                Timber.d("Selected Country Name::${ccp?.selectedCountryEnglishName}")
+            ccp.launchCountrySelectionDialog()
+            ccp.setOnCountryChangeListener {
+                binding.tvChooseCountryAddaddress.text = ccp.selectedCountryEnglishName
+                Timber.d("Selected Country Name::${ccp.selectedCountryEnglishName}")
             }
         }
 
         Timber.d("isEditClicked::$isEditClick")
         if (isEditClick == true) {
-            getAddressDataPojo?.let {
+            getAddressDataPojo = addressBundle.getParcelable(resources.getString(R.string.edit_address))!!
+            getAddressDataPojo.let {
                 binding.btnSubmitEditAddress.setOnClickListener(editAddressSubmit)
                 binding.btnSubmitEditAddress.visibility = View.VISIBLE
                 binding.btnSubmitAddAddress.visibility = View.GONE
@@ -116,9 +119,9 @@ class AddAddressFragment : Fragment() {
             regionValidate()
         ) {
             mEditAddressSubmit()
-            sharedPref?.setBoolean(getString(R.string.isHasNewAddressAdded), true)
+            sharedPref.setBoolean(getString(R.string.isHasNewAddressAdded), true)
         } else {
-            sharedPref?.setBoolean(getString(R.string.isHasNewAddressAdded), false)
+            sharedPref.setBoolean(getString(R.string.isHasNewAddressAdded), false)
             Timber.e("${fullNameValidate() && addressDetailsValidate() && regionValidate() && chooseCountryValidate()}")
         }
     }
@@ -131,9 +134,9 @@ class AddAddressFragment : Fragment() {
             chooseCountryValidate()
         ) {
             addNewAddressMode()
-            sharedPref?.setBoolean(getString(R.string.isHasNewAddressAdded), true)
+            sharedPref.setBoolean(getString(R.string.isHasNewAddressAdded), true)
         } else {
-            sharedPref?.setBoolean(getString(R.string.isHasNewAddressAdded), false)
+            sharedPref.setBoolean(getString(R.string.isHasNewAddressAdded), false)
             Timber.e("${fullNameValidate() && addressDetailsValidate() && regionValidate() && chooseCountryValidate()}")
         }
     }
@@ -146,7 +149,7 @@ class AddAddressFragment : Fragment() {
         val getNotes = binding.etNotesAddaddress.text.toString().trim()
 
         val addAddress = AddAddressPojo(
-            getFullname, getCity, getRegion, getAddressDetails, getNotes, 0, 0
+            getFullname, getCity, getNotes, getRegion, getAddressDetails, 0, 0
         )
 
         viewModel.addAddress(addAddress).observe(viewLifecycleOwner, { response ->
@@ -159,8 +162,7 @@ class AddAddressFragment : Fragment() {
         })
     }
 
-
-    private fun editAddressMode(addressPojo: AddressObjectPojo) {
+    private fun editAddressMode(addressPojo: AddressDataPojo) {
         binding.etFullnameAddaddress.setText(addressPojo.name)
         binding.etAddressDetailsAddaddress.setText(addressPojo.details)
         binding.etCityAddaddress.setText(addressPojo.city)
@@ -169,7 +171,7 @@ class AddAddressFragment : Fragment() {
     }
 
     private fun mEditAddressSubmit() {
-        val getAddressId = getAddressDataPojo?.id
+        val getAddressId = getAddressDataPojo.id
         val getFullname = binding.etFullnameAddaddress.text.toString().trim()
         val getAddressDetails = binding.etAddressDetailsAddaddress.text.toString().trim()
         val getCity = binding.etCityAddaddress.text.toString().trim()
@@ -177,22 +179,18 @@ class AddAddressFragment : Fragment() {
         val getNotes = binding.etNotesAddaddress.text.toString().trim()
 
         val editAddressPojo =
-            getAddressId?.let {
-                AddressObjectPojo(
-                    it, getFullname, getCity, getNotes, getRegion, getAddressDetails, 0.0, 0.0
-                )
-            }
+            AddressDataPojo(
+                getAddressId, getFullname, getCity, getNotes, getRegion, getAddressDetails, 0.0, 0.0
+            )
         Timber.i("$getAddressId, $getFullname, $getCity, $getRegion, $getAddressDetails")
 
-        if (getAddressId != null && editAddressPojo != null) {
-            viewModel.updateAddress(getAddressId, editAddressPojo).observe(viewLifecycleOwner, { response ->
-                if (response.status) {
-                    requireActivity().onBackPressed()
-                } else {
-                    DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                }
-            })
-        }
+        viewModel.updateAddress(getAddressId, editAddressPojo).observe(viewLifecycleOwner, { response ->
+            if (response.status) {
+                requireActivity().onBackPressed()
+            } else {
+                DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun fullNameValidate(): Boolean {

@@ -5,15 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.FavoritePojo.FavoriteResponse.FavoritesResponse
+import com.e.commerce.data.model.auth.favorite.FavoritesDataPojo.FavoriteDataPojo
 import com.e.commerce.databinding.ItemFavoriteBinding
 import timber.log.Timber
 
 
 class FavoritesAdapter(private val onFavoriteClick: FavoriteItemClick) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
-    private var favoritesPojoList = ArrayList<FavoritesResponse>()
+    private var favoritesPojoList = ArrayList<FavoriteDataPojo>()
 
-    fun setData(favoritesPojos: ArrayList<FavoritesResponse>) {
+    fun setData(favoritesPojos: ArrayList<FavoriteDataPojo>) {
         favoritesPojos.also { this.favoritesPojoList = it }
     }
 
@@ -34,7 +34,7 @@ class FavoritesAdapter(private val onFavoriteClick: FavoriteItemClick) : Recycle
     }
 
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
-        val favoritesPojos: FavoritesResponse = favoritesPojoList[position]
+        val favoritesPojos: FavoriteDataPojo = favoritesPojoList[position]
         holder.bind(favoritesPojos, position)
     }
 
@@ -43,7 +43,7 @@ class FavoritesAdapter(private val onFavoriteClick: FavoriteItemClick) : Recycle
 
     inner class FavoritesViewHolder(var binding: ItemFavoriteBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(favoritesPojo: FavoritesResponse, index: Int) {
+        fun bind(favoritesPojo: FavoriteDataPojo, index: Int) {
             binding.tvProductName.text = favoritesPojo.product.name
             binding.tvProductPrice.text = String.format("${favoritesPojo.product.price} $")
             binding.tvProductOldPrice.text = String.format("${favoritesPojo.product.old_price} $")
@@ -64,7 +64,6 @@ class FavoritesAdapter(private val onFavoriteClick: FavoriteItemClick) : Recycle
             //__________________________________________________________________________________//
 
             binding.icRemoveItem.setOnClickListener {
-//                onItemClick.invoke(favoritesResponse)
                 onFavoriteClick.onFavoriteItemClick(favoritesPojo)
                 removeItem(index)
             }
@@ -72,6 +71,6 @@ class FavoritesAdapter(private val onFavoriteClick: FavoriteItemClick) : Recycle
     }
 
     interface FavoriteItemClick {
-        fun onFavoriteItemClick(favorite: FavoritesResponse)
+        fun onFavoriteItemClick(favorite: FavoriteDataPojo)
     }
 }

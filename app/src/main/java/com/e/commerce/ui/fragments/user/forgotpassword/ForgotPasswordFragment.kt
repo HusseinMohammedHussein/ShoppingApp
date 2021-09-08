@@ -11,14 +11,16 @@ import com.e.commerce.databinding.FragmentForgotPasswordBinding
 import com.e.commerce.ui.main.MainActivity
 
 class ForgotPasswordFragment : Fragment() {
-    private lateinit var binding: FragmentForgotPasswordBinding
-    private var viewModel: ForgotPasswordViewModel = ForgotPasswordViewModel()
+    private var _binding: FragmentForgotPasswordBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var viewModel: ForgotPasswordViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentForgotPasswordBinding.inflate(inflater, container, false)
+        _binding = FragmentForgotPasswordBinding.inflate(inflater, container, false)
         return binding.root
     }
 

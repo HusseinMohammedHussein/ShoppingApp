@@ -2,8 +2,8 @@ package com.e.commerce.ui.fragments.user.favorite
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.auth.FavoritePojo
-import com.e.commerce.ui.common.AddRemoveFavoriteRepo
+import com.e.commerce.data.model.auth.favorite.FavoritePojo
+import com.e.commerce.ui.component.AddRemoveFavoriteRepo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

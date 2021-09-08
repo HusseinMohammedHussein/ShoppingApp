@@ -1,5 +1,6 @@
 package com.e.commerce.ui.fragments.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,17 +8,13 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.e.commerce.R
-import com.e.commerce.data.model.home.CategoryPojo.Data.CategoriesPojo
+import com.e.commerce.data.model.category.CategoryItemPojo
 import com.e.commerce.databinding.ItemCategoryBinding
 import timber.log.Timber
 
-class CategoriesAdapter : RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>() {
+@SuppressLint("NotifyDataSetChanged")
+class CategoriesAdapter(val categoryItems: ArrayList<CategoryItemPojo>) : RecyclerView.Adapter<CategoriesAdapter.CategoryViewHolder>() {
 
-    private var pojoList = ArrayList<CategoriesPojo>()
-
-    fun setData(pojos: ArrayList<CategoriesPojo>) {
-        pojos.also { this.pojoList = it }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         return CategoryViewHolder(
@@ -29,13 +26,13 @@ class CategoriesAdapter : RecyclerView.Adapter<CategoriesAdapter.CategoryViewHol
         )
     }
 
-    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) = holder.bind(pojoList[position])
+    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) = holder.bind(categoryItems[position])
 
-    override fun getItemCount(): Int = pojoList.size
+    override fun getItemCount(): Int = categoryItems.size
 
     inner class CategoryViewHolder(var binding: ItemCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(pojo: CategoriesPojo) {
+        fun bind(pojo: CategoryItemPojo) {
             binding.tvCategoryName.text = pojo.name
 
             Glide.with(itemView)

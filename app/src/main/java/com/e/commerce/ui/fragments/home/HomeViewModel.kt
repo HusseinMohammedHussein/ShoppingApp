@@ -2,8 +2,8 @@ package com.e.commerce.ui.fragments.home
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.auth.FavoritePojo
-import com.e.commerce.data.model.home.CategoryPojo
+import com.e.commerce.data.model.auth.favorite.FavoritePojo
+import com.e.commerce.data.model.category.CategoryPojo
 import com.e.commerce.data.model.home.HomePojo
 import retrofit2.Call
 import retrofit2.Callback

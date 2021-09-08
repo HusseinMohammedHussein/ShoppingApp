@@ -3,7 +3,7 @@ package com.e.commerce.ui.fragments.user.settingprofile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.auth.SettingProfilePojo
-import com.e.commerce.data.model.auth.common.SignResponsePojo
+import com.e.commerce.data.model.common.SignResponsePojo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

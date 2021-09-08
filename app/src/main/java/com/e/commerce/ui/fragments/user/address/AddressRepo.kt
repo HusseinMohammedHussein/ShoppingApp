@@ -1,8 +1,8 @@
 package com.e.commerce.ui.fragments.user.address
 
-import com.e.commerce.data.model.auth.AddressPojo
-import com.e.commerce.data.model.auth.AddressPojo.AddAddressPojo
-import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
+import com.e.commerce.data.model.auth.address.AddAddressPojo
+import com.e.commerce.data.model.auth.address.AddressPojo
+import com.e.commerce.data.model.auth.address.AddressesDataPojo.AddressDataPojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import retrofit2.Call
 
@@ -23,7 +23,7 @@ class AddressRepo {
         return ApiControl.apiService().deleteAddresses(addressId)
     }
 
-    fun updateAddress(addressId: Int, updateAddress: AddressObjectPojo): Call<AddressPojo> {
+    fun updateAddress(addressId: Int, updateAddress: AddressDataPojo): Call<AddressPojo> {
         return ApiControl.apiService().updateAddresses(addressId, updateAddress)
     }
 }

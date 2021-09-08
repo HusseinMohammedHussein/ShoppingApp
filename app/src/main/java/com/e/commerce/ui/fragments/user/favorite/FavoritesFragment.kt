@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.FavoritePojo
+import com.e.commerce.data.model.auth.favorite.FavoritesDataPojo.FavoriteDataPojo
 import com.e.commerce.databinding.FragmentFavoritesBinding
 import com.e.commerce.ui.fragments.user.favorite.FavoritesAdapter.FavoriteItemClick
 import com.e.commerce.ui.main.MainActivity
@@ -18,8 +18,9 @@ import timber.log.Timber
 class FavoritesFragment : Fragment() {
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: FavoritesViewModel = FavoritesViewModel()
-    private var favoritesAdapter: FavoritesAdapter? = null
+
+    private lateinit var viewModel: FavoritesViewModel
+    private lateinit var favoritesAdapter: FavoritesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,7 +66,7 @@ class FavoritesFragment : Fragment() {
     }
 
     private val onFavoriteClick = object : FavoriteItemClick {
-        override fun onFavoriteItemClick(favorite: FavoritePojo.FavoriteResponse.FavoritesResponse) {
+        override fun onFavoriteItemClick(favorite: FavoriteDataPojo) {
             viewModel.removeFromFavorite(favorite.product.id)
         }
     }
@@ -74,8 +75,8 @@ class FavoritesFragment : Fragment() {
         viewModel.getFavorites()
         viewModel.favoriteMData.observe(viewLifecycleOwner, { response ->
             if (response.status) {
-                favoritesAdapter?.let { adapter ->
-                    adapter.setData(response.data.productsFavorites)
+                favoritesAdapter.let { adapter ->
+                    adapter.setData(response.favoriteDataPojo.favoriteProductsData)
                     adapter.notifyDataSetChanged()
                 }
             } else {

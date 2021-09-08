@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.RegisterPojo.RegisterDataPojo
+import com.e.commerce.data.model.auth.register.RegisterDataPojo
 import com.e.commerce.databinding.FragmentRegisterBinding
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
@@ -23,11 +23,11 @@ import timber.log.Timber
 import java.util.regex.Pattern
 
 class RegisterFragment : Fragment() {
-
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: RegisterViewModel = RegisterViewModel()
-    private var sharedPref: SharedPref? = null
+
+    private lateinit var viewModel: RegisterViewModel
+    private lateinit var sharedPref: SharedPref
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,8 +88,8 @@ class RegisterFragment : Fragment() {
         Timber.d("Username:: ${registerPojo.username} | Email:: ${registerPojo.email} | Phone:: ${registerPojo.phone} | Password:: ${registerPojo.password}")
         viewModel.requestRegister(registerPojo).observe(viewLifecycleOwner, { response ->
             if (response.status) {
-                sharedPref?.let {
-                    it.setString(resources.getString(R.string.user_token), response.data.token)
+                sharedPref.let {
+                    it.setString(resources.getString(R.string.user_token), response.registerData.token)
                     it.setBoolean(resources.getString(R.string.is_user), response.status)
                 }
                 FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
@@ -101,7 +101,7 @@ class RegisterFragment : Fragment() {
                         Timber.d("FCMTokenResult::$getFCMToken")
                         viewModel.setFCMToken(getFCMToken).observe(viewLifecycleOwner, { response ->
                             if (response.status) {
-                                sharedPref?.let {
+                                sharedPref.let {
                                     it.setString(getString(R.string.user_fcm_token), response.data.token)
                                     Timber.d("FCMTokenResponseApi::${response.data.token}")
                                 }
@@ -112,8 +112,8 @@ class RegisterFragment : Fragment() {
                     }
                 }
 
-                Timber.d("UserToken::${sharedPref?.getString(resources.getString(R.string.user_token))}")
-                Timber.d("Is_User::${sharedPref?.getBoolean(resources.getString(R.string.is_user))}")
+                Timber.d("UserToken::${sharedPref.getString(resources.getString(R.string.user_token))}")
+                Timber.d("Is_User::${sharedPref.getBoolean(resources.getString(R.string.is_user))}")
                 val direction = RegisterFragmentDirections.actionSignupToProfile()
                 findNavController().navigate(direction)
             } else {

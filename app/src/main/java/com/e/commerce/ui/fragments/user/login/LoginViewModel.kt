@@ -3,9 +3,9 @@ package com.e.commerce.ui.fragments.user.login
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.e.commerce.data.model.auth.FCMTokenPojo
-import com.e.commerce.data.model.auth.LoginPojo
-import com.e.commerce.data.model.auth.LoginPojo.LoginDataPojo
-import com.e.commerce.ui.common.FCMTokenRepo
+import com.e.commerce.data.model.auth.login.LoginDataPojo
+import com.e.commerce.data.model.auth.login.LoginPojo
+import com.e.commerce.ui.component.FCMTokenRepo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

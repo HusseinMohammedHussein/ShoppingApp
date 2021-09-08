@@ -1,5 +1,6 @@
 package com.e.commerce.ui.fragments.user.bag
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,31 +8,28 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.common.BagItemResponsePojo
+import com.e.commerce.data.model.auth.bag.BagItemPojo
 import com.e.commerce.databinding.ItemBagBinding
-import com.e.commerce.util.NewQuantity
+import com.e.commerce.interfaces.AddRemoveBagItemInterface
+import com.e.commerce.interfaces.NewQuantityInterface
 import timber.log.Timber
 
-class BagAdapter(private var newQuantity: NewQuantity) : RecyclerView.Adapter<BagAdapter.BagViewHolder>() {
+@SuppressLint("NotifyDataSetChanged")
+class BagAdapter(
+    var context: Context,
+    var newQuantityInterface: NewQuantityInterface,
+    var bagItemInterface: AddRemoveBagItemInterface
+) :
+    RecyclerView.Adapter<BagAdapter.BagViewHolder>() {
 
-    private var pojoList = ArrayList<BagItemResponsePojo>()
+    private var bagItems = ArrayList<BagItemPojo>()
 
-    lateinit var onAddRemoveFavoriteClick: ((BagItemResponsePojo) -> Unit)
-    lateinit var onRemoveFromBagClick: ((BagItemResponsePojo) -> Unit)
-    lateinit var context: Context
-
-    fun setData(pojos: ArrayList<BagItemResponsePojo>) {
-        pojos.also { this.pojoList = it }
-        notifyDataSetChanged()
-    }
-
-    fun clearData() {
-        pojoList.clear()
-        notifyDataSetChanged()
+    fun setData(bagItems: ArrayList<BagItemPojo>) {
+        this.bagItems = bagItems
     }
 
     fun removeProduct(index: Int) {
-        pojoList.removeAt(index)
+        bagItems.removeAt(index)
         notifyDataSetChanged()
     }
 
@@ -40,39 +38,36 @@ class BagAdapter(private var newQuantity: NewQuantity) : RecyclerView.Adapter<Ba
         return BagViewHolder(ItemBagBinding.inflate(LayoutInflater.from(context), parent, false))
     }
 
-    override fun onBindViewHolder(holder: BagViewHolder, position: Int) {
-        val bagItems: BagItemResponsePojo = pojoList[position]
-        bagItems.let { holder.bind(it, position) }
-    }
+    override fun onBindViewHolder(holder: BagViewHolder, position: Int) = holder.bind(bagItems[position], position)
 
-    override fun getItemCount(): Int = pojoList.size
+    override fun getItemCount(): Int = bagItems.size
 
     inner class BagViewHolder(var binding: ItemBagBinding) : RecyclerView.ViewHolder(binding.root) {
 
         var isAddedToFavorite: Boolean = false
-        fun bind(bagPojo: BagItemResponsePojo, index: Int) {
+        fun bind(bagPojo: BagItemPojo, index: Int) {
             binding.tvProductName.text = bagPojo.product.name
             binding.tvProductPrice.text = String.format("${bagPojo.product.price}$")
-            binding.tvProductQuantity.text = bagPojo.quantity.toString()
+            binding.tvProductQuantity.text = bagPojo.productItemQuantity.toString()
 
             Glide.with(itemView)
                 .load(bagPojo.product.image)
                 .into(binding.imgProduct)
 
-            binding.cvMinus.isEnabled = bagPojo.quantity != 1
+            binding.cvMinus.isEnabled = bagPojo.productItemQuantity != 1
 
             binding.cvPlus.setOnClickListener {
-                bagPojo.quantity++
-                newQuantity.newQuantity(bagPojo.id, bagPojo.quantity)
+                bagPojo.productItemQuantity++
+                newQuantityInterface.newQuantity(bagPojo.id, bagPojo.productItemQuantity)
                 notifyDataSetChanged()
-                Timber.d("quantityAfterUpdate_Plus is ${bagPojo.quantity}")
+                Timber.d("quantityAfterUpdate_Plus is ${bagPojo.productItemQuantity}")
             }
 
             binding.cvMinus.setOnClickListener {
-                bagPojo.quantity--
-                newQuantity.newQuantity(bagPojo.id, bagPojo.quantity)
+                bagPojo.productItemQuantity--
+                newQuantityInterface.newQuantity(bagPojo.id, bagPojo.productItemQuantity)
                 notifyDataSetChanged()
-                Timber.d("quantityAfterUpdate_Minus is ${bagPojo.quantity}")
+                Timber.d("quantityAfterUpdate_Minus is ${bagPojo.productItemQuantity}")
             }
 
 
@@ -87,18 +82,17 @@ class BagAdapter(private var newQuantity: NewQuantity) : RecyclerView.Adapter<Ba
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.add_to_favorite -> {
-                        onAddRemoveFavoriteClick.invoke(bagPojo)
-                        isAddedToFavorite = true
+                        bagItemInterface.onAddRemoveFavoriteBagItem(bagPojo)
                         return@setOnMenuItemClickListener true
                     }
                     R.id.remove_from_favorite -> {
-                        onAddRemoveFavoriteClick.invoke(bagPojo)
+                        bagItemInterface.onAddRemoveFavoriteBagItem(bagPojo)
                         isAddedToFavorite = false
                         return@setOnMenuItemClickListener true
                     }
 
                     R.id.delete -> {
-                        onRemoveFromBagClick.invoke(bagPojo)
+                        bagItemInterface.onAddRemoveBagItem(bagPojo)
                         removeProduct(index)
                         return@setOnMenuItemClickListener true
                     }

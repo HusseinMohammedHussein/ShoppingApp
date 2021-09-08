@@ -1,5 +1,6 @@
 package com.e.commerce.data.model.home
 
+import com.e.commerce.data.model.category.CategoryItemPojo
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -8,11 +9,5 @@ import com.google.gson.annotations.SerializedName
 data class BannerPojo(
     @SerializedName("id") @Expose val id: Int,
     @SerializedName("image") @Expose val image: String,
-    @SerializedName("category") @Expose val category: Category,
-) {
-    data class Category(
-        @SerializedName("id") @Expose val id: Int,
-        @SerializedName("image") @Expose val image: String,
-        @SerializedName("name") @Expose val name: String
-    )
-}
+    @SerializedName("category") @Expose val category: CategoryItemPojo,
+)

@@ -9,24 +9,25 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
-import com.e.commerce.data.model.auth.OrderPojo.AddOrderPojo
+import com.e.commerce.data.model.auth.address.AddressesDataPojo.AddressDataPojo
+import com.e.commerce.data.model.auth.order.AddOrderPojo
 import com.e.commerce.databinding.FragmentCheckoutBinding
-import com.e.commerce.ui.common.ProfileViewModel
+import com.e.commerce.ui.component.ProfileViewModel
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import timber.log.Timber
 
 class CheckoutFragment : Fragment() {
-
     private var _binding: FragmentCheckoutBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: CheckoutViewModel = CheckoutViewModel()
-    private var profileVM: ProfileViewModel = ProfileViewModel()
-    private var addressParcelable: AddressObjectPojo? = null
-    private var sharedPref: SharedPref? = null
-    private var getPaymentWay: Int? = 0
+
+    private lateinit var viewModel: CheckoutViewModel
+    private lateinit var profileVM: ProfileViewModel
+    private var addressParcelable: AddressDataPojo? = null
+    private lateinit var sharedPref: SharedPref
+
+    private var getPaymentWay: Int = 0
     private var isUserHasPoints: Boolean? = false
 
     override fun onCreateView(
@@ -69,10 +70,9 @@ class CheckoutFragment : Fragment() {
 
     private fun init() {
         sharedPref = SharedPref(requireContext())
-        sharedPref?.getAddressGson(getString(R.string.address_parcelable)).let { sharedPref ->
-            addressParcelable = sharedPref
-            Timber.d("getAddressClicked::${sharedPref}")
-        }
+        Timber.d("getAddressClicked::${sharedPref}")
+        addressParcelable = sharedPref.getAddressGson(getString(R.string.address_parcelable))
+        Timber.d("getAddressClicked::${addressParcelable}")
     }
 
 
@@ -82,17 +82,20 @@ class CheckoutFragment : Fragment() {
 
     private fun observerData() {
         profileVM.profileMutableLD.observe(viewLifecycleOwner, { response ->
-            isUserHasPoints = response.data.points != 0
-            Timber.d("isUserHasPoints::$isUserHasPoints, UserPointsIs::${response.data.points}")
+            isUserHasPoints = response.profileData.points != 0
+            Timber.d("isUserHasPoints::$isUserHasPoints, UserPointsIs::${response.profileData.points}")
         })
     }
 
     private fun setArgumentsData() {
         if (addressParcelable != null) {
-            binding.tvAddAddress.visibility = View.GONE
-            binding.tvChangeAddress.visibility = View.VISIBLE
-            binding.tvFullnameAddress.text = addressParcelable?.name
-            binding.tvAddressDetails.text = String.format("${addressParcelable?.details}, ${addressParcelable?.region}, ${addressParcelable?.city}")
+            addressParcelable?.let {
+                binding.tvAddAddress.visibility = View.GONE
+                binding.tvChangeAddress.visibility = View.VISIBLE
+                binding.tvFullnameAddress.text = it.name
+                binding.tvAddressDetails.text =
+                    String.format("${it.details}, ${it.region}, ${it.city}")
+            }
         } else {
             binding.tvAddAddress.visibility = View.VISIBLE
             binding.tvChangeAddress.visibility = View.GONE
@@ -100,8 +103,8 @@ class CheckoutFragment : Fragment() {
             binding.tvAddressDetails.visibility = View.GONE
         }
 
-        binding.tvTotalamount.text = String.format("${sharedPref?.getDouble(getString(R.string.total_amount))}$")
-        Timber.d("TotalAmount::${sharedPref?.getDouble(getString(R.string.total_amount))}")
+        binding.tvTotalamount.text = String.format("${sharedPref.getDouble(getString(R.string.total_amount))}$")
+        Timber.d("TotalAmount::${sharedPref.getDouble(getString(R.string.total_amount))}")
     }
 
     private fun onClick() {
@@ -128,21 +131,17 @@ class CheckoutFragment : Fragment() {
         }
 
         binding.btnSubmitOrder.setOnClickListener {
-            val getPromoCodeId = sharedPref?.getInt(getString(R.string.promocode_id))
+            val getPromoCodeId = sharedPref.getInt(getString(R.string.promocode_id))
             Timber.d("isUserHasPoints::$isUserHasPoints")
-            val orderPojo = addressParcelable?.id?.let { id ->
-                AddOrderPojo(id, getPaymentWay, isUserHasPoints, getPromoCodeId)
-            }
-            if (orderPojo != null) {
-                viewModel.addOrder(orderPojo).observe(viewLifecycleOwner, { response ->
-                    if (response.status) {
-                        DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                        requireActivity().onBackPressed()
-                    } else {
-                        DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                    }
-                })
-            }
+            val orderPojo = AddOrderPojo(addressParcelable?.id!!, getPaymentWay, isUserHasPoints, getPromoCodeId)
+            viewModel.addOrder(orderPojo).observe(viewLifecycleOwner, { response ->
+                if (response.status) {
+                    DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                    requireActivity().onBackPressed()
+                } else {
+                    DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 

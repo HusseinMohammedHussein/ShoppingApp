@@ -1,38 +1,37 @@
 package com.e.commerce.ui.fragments.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
-import com.e.commerce.data.model.ProductPojo
+import com.e.commerce.data.model.product.ProductPojo
 import com.e.commerce.databinding.FragmentHomeBinding
-import com.e.commerce.ui.common.CustomAlertDialog
-import com.e.commerce.ui.common.ProductsAdapter
-import com.e.commerce.ui.common.ProductsAdapter.ProductOnClick
+import com.e.commerce.interfaces.ProductOnClick
+import com.e.commerce.ui.component.CustomAlertDialog
+import com.e.commerce.ui.component.ProductsAdapter
 import com.e.commerce.util.SharedPref
-import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType
 import com.smarteist.autoimageslider.SliderAnimations
 import com.smarteist.autoimageslider.SliderView
 import timber.log.Timber
 
+@SuppressLint("NotifyDataSetChanged")
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: HomeViewModel = HomeViewModel()
-    private var sharedPref: SharedPref? = null
 
-    private var productAdapter: ProductsAdapter? = null
+    private lateinit var sharedPref: SharedPref
+    private lateinit var viewModel: HomeViewModel
+    private lateinit var productAdapter: ProductsAdapter
+    private lateinit var categoriesAdapter: CategoriesAdapter
+
     private var sliderAdapter: BannerSliderAdapter? = null
-    private var categoriesAdapter: CategoriesAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,22 +60,16 @@ class HomeFragment : Fragment() {
 
     private fun init() {
         sharedPref = SharedPref(requireContext())
-        productAdapter = ProductsAdapter(onProductClick, requireContext())
-        categoriesAdapter = CategoriesAdapter()
-        sliderAdapter = BannerSliderAdapter(requireContext())
         binding.loading.loading.visibility = View.VISIBLE
-
         binding.rvProduct.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = productAdapter
             ViewCompat.setNestedScrollingEnabled(binding.rvProduct, false)
         }
 
         binding.rvCategories.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = categoriesAdapter
             ViewCompat.setNestedScrollingEnabled(binding.rvCategories, false)
         }
     }
@@ -89,25 +82,19 @@ class HomeFragment : Fragment() {
     private fun observerData() {
         viewModel.categoryPojoMutable.observe(viewLifecycleOwner, { categories ->
             if (categories.status) {
-                categoriesAdapter?.let { adapter ->
-                    adapter.setData(categories.data.categories)
-                    adapter.notifyDataSetChanged()
-                }
+                categoriesAdapter = CategoriesAdapter(categories.categoriesData.categoriesData)
+                binding.rvCategories.adapter = categoriesAdapter
             }
 
             viewModel.homePojoMutable.observe(viewLifecycleOwner, { home ->
                 if (home.status) {
-                    productAdapter?.let { adapter ->
-                        adapter.setData(home.homeData.products)
-                        adapter.notifyDataSetChanged()
-                    }
+                    productAdapter = ProductsAdapter(requireContext(), onProductClick, home.homeData.products)
+                    binding.rvProduct.adapter = productAdapter
                 }
 
                 if (home.homeData.banners.isNotEmpty()) {
-                    sliderAdapter?.let { adapter ->
-                        adapter.renewItem(home.homeData.banners)
-                        binding.bannerSlider.imageSlider.setSliderAdapter(adapter)
-                    }
+                    sliderAdapter = BannerSliderAdapter(requireContext(), home.homeData.banners)
+                    binding.bannerSlider.imageSlider.setSliderAdapter(sliderAdapter!!)
                     Timber.w("SliderHasData:::${home.homeData.banners.size}")
                 }
                 binding.loading.loading.visibility = View.GONE
@@ -117,8 +104,8 @@ class HomeFragment : Fragment() {
     }
 
     private val onProductClick = object : ProductOnClick {
-        override fun onProductItemClick(product: ProductPojo) {
-            val getUserToken = sharedPref?.getBoolean(getString(R.string.is_user))!!
+        override fun onAddRemoveProductFavoriteClick(product: ProductPojo) {
+            val getUserToken = sharedPref.getBoolean(getString(R.string.is_user))
             if (!getUserToken) {
                 val direction = HomeFragmentDirections.actionHomeToSignup()
                 CustomAlertDialog.alertDialog(requireContext(), this@HomeFragment, direction)

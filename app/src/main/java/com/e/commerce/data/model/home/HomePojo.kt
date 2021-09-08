@@ -1,7 +1,7 @@
 package com.e.commerce.data.model.home
 
-import com.e.commerce.data.model.ProductPojo
-import com.e.commerce.data.model.auth.common.CommonResponse
+import com.e.commerce.data.model.product.ProductPojo
+import com.e.commerce.data.model.common.CommonResponse
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 

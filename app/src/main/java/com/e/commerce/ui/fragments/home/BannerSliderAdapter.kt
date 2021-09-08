@@ -1,5 +1,6 @@
 package com.e.commerce.ui.fragments.home
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,19 +11,9 @@ import com.smarteist.autoimageslider.SliderViewAdapter
 
 // Created by Hussein_Mohammad on 5/7/2021.
 
-class BannerSliderAdapter(var context: Context) : SliderViewAdapter<BannerSliderAdapter.SliderAdapterVH>() {
-
-    private var bannerImagesList = ArrayList<BannerPojo>()
-
-    fun renewItem(bannerItems: ArrayList<BannerPojo>) {
-        bannerItems.also { bannerImagesList = it }
-        notifyDataSetChanged()
-    }
-
-    fun clearItem() {
-        bannerImagesList.clear()
-        notifyDataSetChanged()
-    }
+@SuppressLint("NotifyDataSetChanged")
+class BannerSliderAdapter(var context: Context, var bannerImagesList: ArrayList<BannerPojo>) :
+    SliderViewAdapter<BannerSliderAdapter.SliderAdapterVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup): SliderAdapterVH {
         context = parent.context
@@ -35,9 +26,7 @@ class BannerSliderAdapter(var context: Context) : SliderViewAdapter<BannerSlider
         )
     }
 
-    override fun onBindViewHolder(viewHolder: SliderAdapterVH, position: Int) {
-        viewHolder.bind(bannerImagesList[position])
-    }
+    override fun onBindViewHolder(viewHolder: SliderAdapterVH, position: Int) = viewHolder.bind(bannerImagesList[position])
 
     override fun getCount(): Int = if (bannerImagesList.isNotEmpty()) bannerImagesList.size else 0
 

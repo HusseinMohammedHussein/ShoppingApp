@@ -1,9 +1,7 @@
 package com.e.commerce.data.model.auth
 
-import com.e.commerce.data.model.auth.common.CommonResponse
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import okhttp3.MultipartBody
 
 // Created by Hussein_Mohammad on 5/31/2021.
 data class SettingProfilePojo(

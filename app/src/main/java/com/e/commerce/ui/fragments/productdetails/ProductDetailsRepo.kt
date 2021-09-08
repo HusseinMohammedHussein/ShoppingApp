@@ -1,9 +1,9 @@
 package com.e.commerce.ui.fragments.productdetails
 
-import com.e.commerce.data.model.ProductDetailsPojo
-import com.e.commerce.data.model.ProductsPojo
-import com.e.commerce.data.model.auth.FavoritePojo
-import com.e.commerce.data.model.auth.bag.BagPojo
+import com.e.commerce.data.model.product.ProductDetailsPojo
+import com.e.commerce.data.model.product.ProductsPojo
+import com.e.commerce.data.model.auth.favorite.FavoritePojo
+import com.e.commerce.data.model.auth.bag.BagItemAddRemovePojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import retrofit2.Call
 
@@ -19,7 +19,7 @@ class ProductDetailsRepo {
         return ApiControl.apiService().getProducts()
     }
 
-    fun addOrRemoveFromBag(productId: Int): Call<BagPojo> {
+    fun addOrRemoveFromBag(productId: Int): Call<BagItemAddRemovePojo> {
         return  ApiControl.apiService().addOrRemoveBag(productId)
     }
 

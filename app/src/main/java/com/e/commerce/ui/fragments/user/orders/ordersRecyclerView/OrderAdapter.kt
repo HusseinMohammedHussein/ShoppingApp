@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.OrderPojo.OrdersPojo.OrderItemPojo
+import com.e.commerce.data.model.auth.order.OrderItemPojo
 import com.e.commerce.databinding.ItemOrderBinding
 
 class OrderAdapter : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {

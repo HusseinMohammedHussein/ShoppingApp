@@ -3,7 +3,7 @@ package com.e.commerce.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
+import com.e.commerce.data.model.auth.address.AddressesDataPojo.AddressDataPojo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -42,11 +42,11 @@ class SharedPref constructor(context: Context) {
         }
     }
 
-    fun setAddressGson(key: String, objectPojo: AddressObjectPojo?) {
+    fun setAddressGson(key: String, dataPojo: AddressDataPojo?) {
         operation.apply {
             val gson = Gson()
-            if (objectPojo != null) {
-                val json = gson.toJson(objectPojo)
+            if (dataPojo != null) {
+                val json = gson.toJson(dataPojo)
                 putString(key, json)
             } else {
                 putString(key, null)
@@ -68,10 +68,10 @@ class SharedPref constructor(context: Context) {
         }
     }
 
-    fun getAddressGson(key: String): AddressObjectPojo? {
+    fun getAddressGson(key: String): AddressDataPojo? {
         val gson = Gson()
         val json = preferences.getString(key, null)
-        val type = object : TypeToken<AddressObjectPojo>() {}.type
+        val type = object : TypeToken<AddressDataPojo>() {}.type
         return if (json != null) gson.fromJson(json.toString(), type) else null
     }
 

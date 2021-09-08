@@ -1,5 +1,6 @@
 package com.e.commerce.ui.fragments.user.address.addresses
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,20 +11,23 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
+import com.e.commerce.data.model.auth.address.AddressesDataPojo.AddressDataPojo
 import com.e.commerce.databinding.FragmentAddressBinding
-import com.e.commerce.ui.fragments.user.address.addresses.AddressAdapter.AddressInterface
+import com.e.commerce.interfaces.AddressInterface
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import timber.log.Timber
 
+@SuppressLint("NotifyDataSetChanged")
 class AddressFragment : Fragment() {
     private var _binding: FragmentAddressBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: AddressViewModel = AddressViewModel()
-    private var addressAdapter: AddressAdapter? = null
-    private var sharedPref: SharedPref? = null
+
+    private lateinit var viewModel: AddressViewModel
+    private lateinit var addressAdapter: AddressAdapter
+    private lateinit var sharedPref: SharedPref
+
     private var isHasNewAddressAdded: Boolean = false
 
     override fun onCreateView(
@@ -56,6 +60,7 @@ class AddressFragment : Fragment() {
         binding.fabAddAddress.setOnClickListener {
             val addressBundle = Bundle()
             addressBundle.putBoolean(resources.getString(R.string.isEditClicked), false)
+            Timber.d("isEditAddress::${addressBundle.getBoolean("isEditClicked")}")
             addressBundle.putParcelable(resources.getString(R.string.edit_address), null)
             val direction = AddressFragmentDirections.actionAddressToAddAddress().actionId
             findNavController().navigate(direction, addressBundle)
@@ -72,14 +77,13 @@ class AddressFragment : Fragment() {
     }
 
     private fun init() {
-        addressAdapter = AddressAdapter(onDeleteAddress)
         sharedPref = SharedPref(requireContext())
-        isHasNewAddressAdded = sharedPref!!.getBoolean(getString(R.string.isHasNewAddressAdded))
+        isHasNewAddressAdded = sharedPref.getBoolean(getString(R.string.isHasNewAddressAdded))
         Timber.d("isHasNewAddressAdded::$isHasNewAddressAdded")
         binding.srlAddress.isRefreshing = false
         binding.srlAddress.setOnRefreshListener {
             viewModel.getAddress()
-            addressAdapter?.notifyDataSetChanged()
+            addressAdapter.notifyDataSetChanged()
         }
 
         binding.rvAddress.apply {
@@ -91,7 +95,7 @@ class AddressFragment : Fragment() {
     }
 
     private val onDeleteAddress = object : AddressInterface {
-        override fun onAddressItemClick(address: AddressObjectPojo) {
+        override fun onAddressItemClick(address: AddressDataPojo) {
             viewModel.deleteAddress(address.id).observe(viewLifecycleOwner, { response ->
                 DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
             })
@@ -105,7 +109,7 @@ class AddressFragment : Fragment() {
     private fun observerData() {
         viewModel.addressMutableLD.observe(viewLifecycleOwner, { response ->
             binding.srlAddress.isRefreshing = false
-            addressAdapter?.setData(response.data.data)
+            addressAdapter = AddressAdapter(requireContext(), onDeleteAddress, response.addressData.addressesData)
             binding.rvAddress.visibility = View.VISIBLE
         })
     }

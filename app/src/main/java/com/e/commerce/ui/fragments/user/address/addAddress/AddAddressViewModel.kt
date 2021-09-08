@@ -2,9 +2,9 @@ package com.e.commerce.ui.fragments.user.address.addAddress
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.auth.AddressPojo
-import com.e.commerce.data.model.auth.AddressPojo.AddAddressPojo
-import com.e.commerce.data.model.auth.AddressPojo.AddressDataPojo.AddressObjectPojo
+import com.e.commerce.data.model.auth.address.AddAddressPojo
+import com.e.commerce.data.model.auth.address.AddressPojo
+import com.e.commerce.data.model.auth.address.AddressesDataPojo.AddressDataPojo
 import com.e.commerce.ui.fragments.user.address.AddressRepo
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,7 +31,7 @@ class AddAddressViewModel : ViewModel() {
         return addAddressMutableLD
     }
 
-    fun updateAddress(addressId: Int, updateAddress: AddressObjectPojo): MutableLiveData<AddressPojo> {
+    fun updateAddress(addressId: Int, updateAddress: AddressDataPojo): MutableLiveData<AddressPojo> {
         val updateAddressMutableLD: MutableLiveData<AddressPojo> = MutableLiveData()
         addressRepo.updateAddress(addressId, updateAddress).enqueue(object : Callback<AddressPojo> {
             override fun onResponse(call: Call<AddressPojo>, response: Response<AddressPojo>) {

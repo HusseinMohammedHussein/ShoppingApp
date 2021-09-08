@@ -1,7 +1,7 @@
 package com.e.commerce.ui.fragments.user.login
 
-import com.e.commerce.data.model.auth.LoginPojo
-import com.e.commerce.data.model.auth.LoginPojo.LoginDataPojo
+import com.e.commerce.data.model.auth.login.LoginDataPojo
+import com.e.commerce.data.model.auth.login.LoginPojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import retrofit2.Call
 

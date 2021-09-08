@@ -1,5 +1,6 @@
 package com.e.commerce.ui.fragments.user.bag
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,21 +11,26 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
+import com.e.commerce.data.model.auth.bag.BagItemPojo
 import com.e.commerce.databinding.FragmentBagBinding
+import com.e.commerce.interfaces.AddRemoveBagItemInterface
+import com.e.commerce.interfaces.NewQuantityInterface
 import com.e.commerce.ui.main.MainActivity
-import com.e.commerce.util.NewQuantity
 import com.e.commerce.util.SharedPref
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
 import timber.log.Timber
 import kotlin.collections.set
 
+@SuppressLint("NotifyDataSetChanged")
 class BagFragment : Fragment() {
     private var _binding: FragmentBagBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: BagViewModel = BagViewModel()
-    private var bagAdapter: BagAdapter? = null
+
+    private lateinit var viewModel: BagViewModel
+    private lateinit var bagAdapter: BagAdapter
+    private lateinit var sharedPref: SharedPref
+
     private val hashMap: HashMap<String, Int> = HashMap()
-    private var sharedPref: SharedPref? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,29 +72,20 @@ class BagFragment : Fragment() {
     }
 
     private fun init() {
-        bagAdapter = BagAdapter(newQuantity)
         sharedPref = SharedPref(requireContext())
+        bagAdapter = BagAdapter(requireContext(), newQuantity, onAddRemoveFavoriteClick)
         binding.loading.loading.visibility = View.VISIBLE
         binding.srContent.isRefreshing = false
 
         binding.srContent.setOnRefreshListener {
             viewModel.getBag()
-            bagAdapter?.notifyDataSetChanged()
+            bagAdapter.notifyDataSetChanged()
         }
 
         binding.content.rvBag.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = bagAdapter
-
-        }
-    }
-
-    private val newQuantity = object : NewQuantity {
-        override fun newQuantity(cartId: Int, quantity: Int) {
-            hashMap["quantity"] = quantity
-            viewModel.updateQuantityBag(cartId, hashMap)
-            Timber.d("cartId::${cartId} && Quantity::${quantity}")
         }
     }
 
@@ -100,11 +97,11 @@ class BagFragment : Fragment() {
                 binding.noauth.tvNoAuthMsg.visibility = View.GONE
                 binding.noauth.tvNoAuthMsg.text
 
-                bagAdapter?.setData(response.bagResponseData.cartItems)
-                Timber.d("BagProductsSize:: ${response.bagResponseData.cartItems.size}")
-                binding.tvTotalamount.text = String.format("${response.bagResponseData.total}$")
-                sharedPref?.setDouble(getString(R.string.total_amount), response.bagResponseData.total)
-                bagAdapter?.notifyDataSetChanged()
+                bagAdapter.setData(response.bagProductsDataData.bagItems)
+                Timber.d("BagProductsSize:: ${response.bagProductsDataData.bagItems.size}")
+                binding.tvTotalamount.text = String.format("${response.bagProductsDataData.total}$")
+                sharedPref.setDouble(getString(R.string.total_amount), response.bagProductsDataData.total)
+                bagAdapter.notifyDataSetChanged()
 
                 binding.etPromocode.isEnabled = true
                 binding.vNotHasProducts.visibility = View.GONE
@@ -120,39 +117,47 @@ class BagFragment : Fragment() {
         })
 
         viewModel.quantityBagUpdateMutableData.observe(viewLifecycleOwner, { bagUpdateResponse ->
-            Timber.d("BagUpdatedResponse:: ${bagUpdateResponse.data.cart.quantity}")
-            binding.tvTotalamount.text = String.format("${bagUpdateResponse.data.total}$")
-            bagAdapter?.notifyDataSetChanged()
+            Timber.d("BagUpdatedResponse:: ${bagUpdateResponse.bagUpdateData.bag.productItemQuantity}")
+            binding.tvTotalamount.text = String.format("${bagUpdateResponse.bagUpdateData.total}$")
+            bagAdapter.notifyDataSetChanged()
         })
     }
 
+    private val newQuantity = object : NewQuantityInterface {
+        override fun newQuantity(cartId: Int, quantity: Int) {
+            hashMap["quantity"] = quantity
+            viewModel.updateQuantityBag(cartId, hashMap)
+            Timber.d("cartId::${cartId} && Quantity::${quantity}")
+        }
+    }
+
+    private val onAddRemoveFavoriteClick = object : AddRemoveBagItemInterface {
+        override fun onAddRemoveFavoriteBagItem(bagPojo: BagItemPojo) {
+            binding.srContent.isRefreshing = true
+            viewModel.addRemoveFavorite(bagPojo.product.id).observe(viewLifecycleOwner, { response ->
+                binding.srContent.isRefreshing = false
+                DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                viewModel.getBag()
+            })
+            bagAdapter.notifyDataSetChanged()
+        }
+
+        override fun onAddRemoveBagItem(bagPojo: BagItemPojo) {
+            viewModel.removeBagProduct(bagPojo.product.id).observe(viewLifecycleOwner, { response ->
+                binding.srContent.isRefreshing = false
+                DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                viewModel.getBag()
+            })
+            bagAdapter.notifyDataSetChanged()
+        }
+    }
+
     private fun onClick() {
-        bagAdapter?.onAddRemoveFavoriteClick = { addBagItemFavoriteClick ->
-            binding.srContent.isRefreshing = true
-            viewModel.addRemoveFavorite(addBagItemFavoriteClick.product.id).observe(viewLifecycleOwner, { response ->
-                binding.srContent.isRefreshing = false
-                DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                viewModel.getBag()
-            })
-            bagAdapter?.notifyDataSetChanged()
-        }
-
-        bagAdapter?.onRemoveFromBagClick = { removeFromBagClick ->
-            binding.srContent.isRefreshing = true
-            viewModel.removeBagProduct(removeFromBagClick.product.id).observe(viewLifecycleOwner, { response ->
-                binding.srContent.isRefreshing = false
-                DynamicToast.makeSuccess(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                viewModel.getBag()
-            })
-            bagAdapter?.notifyDataSetChanged()
-        }
-
-
         binding.btnCheckOut.setOnClickListener {
             val getCodeText = binding.etPromocode.text.toString().trim()
             viewModel.checkPromoCode(getCodeText).observe(viewLifecycleOwner, { response ->
                 if (response.status) {
-                    sharedPref?.setInt(getString(R.string.promocode_id), response.data.id)
+                    sharedPref.setInt(getString(R.string.promocode_id), response.proCodeData.id)
                     findNavController().navigate(R.id.action_bag_to_checkout)
                 } else {
                     DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_SHORT).show()
@@ -165,7 +170,7 @@ class BagFragment : Fragment() {
         super.onResume()
         binding.srContent.isRefreshing = false
         viewModel.getBag()
-        bagAdapter?.notifyDataSetChanged()
+        bagAdapter.notifyDataSetChanged()
     }
 
     override fun onDestroyView() {

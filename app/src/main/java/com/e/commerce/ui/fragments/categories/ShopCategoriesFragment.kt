@@ -14,8 +14,8 @@ import com.e.commerce.ui.main.MainActivity
 class ShopCategoriesFragment : Fragment() {
     private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
-    private var viewModelShop: ShopCategoriesViewModel = ShopCategoriesViewModel()
-    private var categoryAdapter: ShopCategoriesAdapter? = null
+    private lateinit var viewModelShop: ShopCategoriesViewModel
+    private lateinit var categoryAdapter: ShopCategoriesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,14 +43,12 @@ class ShopCategoriesFragment : Fragment() {
     }
 
     private fun init() {
-        categoryAdapter = ShopCategoriesAdapter()
         binding.loading.loading.visibility = View.VISIBLE
         binding.shopCategoryViewGroup.visibility = View.GONE
 
         binding.rvCategories.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = categoryAdapter
         }
     }
 
@@ -70,10 +68,8 @@ class ShopCategoriesFragment : Fragment() {
     private fun observerData() {
         viewModelShop.shopCategoryMutable.observe(viewLifecycleOwner, { categories ->
             if (categories.status) {
-                categoryAdapter?.let { adapter ->
-                    adapter.setData(categories.data.categories)
-                    adapter.notifyDataSetChanged()
-                }
+                categoryAdapter = ShopCategoriesAdapter(categories.categoriesData.categoriesData)
+                binding.rvCategories.adapter = categoryAdapter
                 binding.loading.loading.visibility = View.GONE
                 binding.shopCategoryViewGroup.visibility = View.VISIBLE
             } else {

@@ -1,6 +1,6 @@
 package com.e.commerce.ui.fragments.user.favorite
 
-import com.e.commerce.data.model.auth.FavoritePojo
+import com.e.commerce.data.model.auth.favorite.FavoritePojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import retrofit2.Call
 

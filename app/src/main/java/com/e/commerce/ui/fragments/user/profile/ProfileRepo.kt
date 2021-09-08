@@ -1,9 +1,9 @@
 package com.e.commerce.ui.fragments.user.profile
 
-import com.e.commerce.data.model.ProfilePojo
-import com.e.commerce.data.model.auth.AddressPojo
+import com.e.commerce.data.model.auth.profile.ProfilePojo
+import com.e.commerce.data.model.auth.address.AddressPojo
 import com.e.commerce.data.model.auth.LogoutPojo
-import com.e.commerce.data.model.auth.OrderPojo
+import com.e.commerce.data.model.auth.order.OrderPojo
 import com.e.commerce.data.remote.retrofit.ApiControl
 import retrofit2.Call
 

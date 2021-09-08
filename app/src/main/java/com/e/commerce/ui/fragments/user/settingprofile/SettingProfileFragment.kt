@@ -20,8 +20,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.e.commerce.R
-import com.e.commerce.data.model.ProfilePojo.ProfileResponsePojo
 import com.e.commerce.data.model.auth.SettingProfilePojo
+import com.e.commerce.data.model.auth.profile.ProfileDataPojo
 import com.e.commerce.databinding.FragmentSettingProfileBinding
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
@@ -41,11 +41,12 @@ class SettingProfileFragment : Fragment() {
     private var _binding: FragmentSettingProfileBinding? = null
     private val binding get() = _binding!!
 
-    private var viewModel: SettingViewModel = SettingViewModel()
-    private var imagePath: String = ""
-    private var profileResponse: ProfileResponsePojo? = null
+    private lateinit var viewModel: SettingViewModel
+    private lateinit var imagePath: String
+    private lateinit var profileResponse: ProfileDataPojo
+    private lateinit var sharedPref: SharedPref
+
     private var bundle = Bundle()
-    private var sharedPref: SharedPref? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,7 +83,7 @@ class SettingProfileFragment : Fragment() {
     private fun init() {
         sharedPref = SharedPref(requireContext())
         bundle = requireArguments()
-        profileResponse = bundle.getParcelable(getString(R.string.profilePojo))
+        profileResponse = bundle.getParcelable(getString(R.string.profilePojo))!!
         Timber.d("ProfilePojo::$profileResponse")
     }
 
@@ -100,7 +101,7 @@ class SettingProfileFragment : Fragment() {
             Timber.d("UpdateMessageAgain::${updateResponse.message}")
         })
 
-        profileResponse?.let {
+        profileResponse.let {
             binding.etFullnameSetting.setText(it.name)
             binding.etPhoneSetting.setText(it.phone)
             binding.etEmailSetting.setText(it.email)

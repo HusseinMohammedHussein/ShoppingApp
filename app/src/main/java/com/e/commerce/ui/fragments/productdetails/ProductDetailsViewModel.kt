@@ -2,10 +2,10 @@ package com.e.commerce.ui.fragments.productdetails
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.ProductDetailsPojo
-import com.e.commerce.data.model.ProductsPojo
-import com.e.commerce.data.model.auth.FavoritePojo
-import com.e.commerce.data.model.auth.bag.BagPojo
+import com.e.commerce.data.model.product.ProductDetailsPojo
+import com.e.commerce.data.model.product.ProductsPojo
+import com.e.commerce.data.model.auth.favorite.FavoritePojo
+import com.e.commerce.data.model.auth.bag.BagItemAddRemovePojo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,7 +16,7 @@ class ProductDetailsViewModel : ViewModel() {
     private val productDetailsRepo = ProductDetailsRepo()
     val productDetailsLiveData: MutableLiveData<ProductDetailsPojo> = MutableLiveData()
     val productsLiveData: MutableLiveData<ProductsPojo> = MutableLiveData()
-    val addToBagLiveData: MutableLiveData<BagPojo> = MutableLiveData()
+    val addToBagItemAddRemoveLiveData: MutableLiveData<BagItemAddRemovePojo> = MutableLiveData()
     val addToFavoriteLiveData: MutableLiveData<FavoritePojo> = MutableLiveData()
 
     fun getProductDetails(id: Int) {
@@ -56,14 +56,14 @@ class ProductDetailsViewModel : ViewModel() {
     }
 
     fun addOrRemoveFromCart(productId: Int) {
-        productDetailsRepo.addOrRemoveFromBag(productId).enqueue(object : Callback<BagPojo> {
-            override fun onResponse(call: Call<BagPojo>, response: Response<BagPojo>) {
+        productDetailsRepo.addOrRemoveFromBag(productId).enqueue(object : Callback<BagItemAddRemovePojo> {
+            override fun onResponse(call: Call<BagItemAddRemovePojo>, response: Response<BagItemAddRemovePojo>) {
                 if (response.isSuccessful && response.body() != null) {
-                    addToBagLiveData.value = response.body()
+                    addToBagItemAddRemoveLiveData.value = response.body()
                 }
             }
 
-            override fun onFailure(call: Call<BagPojo>, t: Throwable) {
+            override fun onFailure(call: Call<BagItemAddRemovePojo>, t: Throwable) {
                 Timber.d("addToCartFailure::${t.localizedMessage}")
             }
         })
@@ -88,10 +88,10 @@ class ProductDetailsViewModel : ViewModel() {
         addToFavoriteLiveData.value = null
         productDetailsLiveData.value = null
         productsLiveData.value = null
-        addToBagLiveData.value = null
+        addToBagItemAddRemoveLiveData.value = null
         Timber.d("addToFavoritesLiveData::OnClearedViewModel::${addToFavoriteLiveData.value}")
         Timber.d("productDetailsLiveData::OnClearedViewModel::${productDetailsLiveData.value}")
         Timber.d("productsLiveData::OnClearedViewModel::${productsLiveData.value}")
-        Timber.d("addToBagLiveData::OnClearedViewModel::${addToBagLiveData.value}")
+        Timber.d("addToBagLiveData::OnClearedViewModel::${addToBagItemAddRemoveLiveData.value}")
     }
 }

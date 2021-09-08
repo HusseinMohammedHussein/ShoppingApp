@@ -82,9 +82,9 @@
 
     <fragment
         android:id="@+id/productsCategoryFragment"
-        android:name="com.e.commerce.ui.fragments.categorydetails.ProductsCategoryFragment"
+        android:name="com.e.commerce.ui.fragments.categorydetails.CategoryProductsFragment"
         android:label="fragment_category_details"
-        tools:layout="@layout/fragment_products_category">
+        tools:layout="@layout/fragment_category_products">
         <action
             android:id="@+id/action_product_to_productDetails"
             app:destination="@id/productDetailsFragment" />

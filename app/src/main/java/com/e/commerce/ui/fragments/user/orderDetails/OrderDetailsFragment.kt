@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.OrderDetailsPojo
-import com.e.commerce.data.model.auth.OrderDetailsPojo.OrderProductsPojo
-import com.e.commerce.data.model.auth.OrderPojo.OrdersPojo.OrderItemPojo
+import com.e.commerce.data.model.auth.order.OrderDetailsPojo
+import com.e.commerce.data.model.auth.order.OrderItemPojo
+import com.e.commerce.data.model.auth.order.OrderProductsPojo
 import com.e.commerce.databinding.FragmentOrderDetailsBinding
 import com.e.commerce.ui.main.MainActivity
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
@@ -92,21 +92,21 @@ class OrderDetailsFragment : Fragment() {
     }
 
     private fun initOrderDetailsViews(order: OrderDetailsPojo) {
-        binding.tvOrderId.text = String.format("Order ${order.data.id}")
-        binding.tvDate.text = order.data.date
-        binding.tvPaymentMethod.text = order.data.payment_method
-        binding.tvStatusOrder.text = order.data.status
-        binding.tvTotalProduct.text = String.format("${order.data.products.size} Items")
-        binding.tvAddress.text = order.data.address.city
-        binding.tvCost.text = String.format("${order.data.cost}$")
-        binding.tvVat.text = String.format("${order.data.vat}$")
-        binding.tvPoints.text = order.data.points.toString()
-        binding.tvPointsCommission.text = order.data.points_commission.toString()
-        binding.tvTotalAmount.text = String.format("${order.data.total}$")
-        getPromocodeRecentage(order.data.promo_code)
-        Timber.d("ProductsOrders::${order.data.products.size}")
-        Timber.d("Promocode::${order.data.promo_code}")
-        getOrderProducts(order.data.products)
+        binding.tvOrderId.text = String.format("Order ${order.orderDetailsData.id}")
+        binding.tvDate.text = order.orderDetailsData.date
+        binding.tvPaymentMethod.text = order.orderDetailsData.payment_method
+        binding.tvStatusOrder.text = order.orderDetailsData.status
+        binding.tvTotalProduct.text = String.format("${order.orderDetailsData.orderProducts.size} Items")
+        binding.tvAddress.text = order.orderDetailsData.address.city
+        binding.tvCost.text = String.format("${order.orderDetailsData.cost}$")
+        binding.tvVat.text = String.format("${order.orderDetailsData.vat}$")
+        binding.tvPoints.text = order.orderDetailsData.points.toString()
+        binding.tvPointsCommission.text = order.orderDetailsData.points_commission.toString()
+        binding.tvTotalAmount.text = String.format("${order.orderDetailsData.total}$")
+        getPromocodeRecentage(order.orderDetailsData.promo_code)
+        Timber.d("ProductsOrders::${order.orderDetailsData.orderProducts.size}")
+        Timber.d("Promocode::${order.orderDetailsData.promo_code}")
+        getOrderProducts(order.orderDetailsData.orderProducts)
     }
 
     private fun getOrderProducts(products: ArrayList<OrderProductsPojo>) {
@@ -116,8 +116,8 @@ class OrderDetailsFragment : Fragment() {
 
     private fun getPromocodeRecentage(promoCode: String) {
         viewModel.getPromocodePercentage(promoCode).observe(viewLifecycleOwner, { response ->
-            Timber.d("Promocode::${response.data.percentage}")
-            binding.tvDiscount.text = String.format("${response.data.percentage}%%, Personal promo code")
+            Timber.d("Promocode::${response.proCodeData.percentage}")
+            binding.tvDiscount.text = String.format("${response.proCodeData.percentage}%%, Personal promo code")
         })
     }
 

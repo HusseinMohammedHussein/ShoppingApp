@@ -15,8 +15,9 @@ import timber.log.Timber
 class OrdersFragment : Fragment() {
     private var _binding: FragmentOrdersBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: OrdersViewModel? = null
-    private var ordersAdapter: OrderAdapter? = null
+
+    private lateinit var viewModel: OrdersViewModel
+    private lateinit var ordersAdapter: OrderAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,12 +56,12 @@ class OrdersFragment : Fragment() {
     }
 
     private fun request() {
-        viewModel?.getOrders()
+        viewModel.getOrders()
     }
 
     private fun observerData() {
-        viewModel?.ordersMutableLiveData?.observe(viewLifecycleOwner, { response ->
-            ordersAdapter?.setData(response.data.ordersList)
+        viewModel.ordersMutableLiveData.observe(viewLifecycleOwner, { response ->
+            ordersAdapter.setData(response.orderData.ordersData)
             binding.rvStateOrderNew.visibility = View.VISIBLE
         })
     }

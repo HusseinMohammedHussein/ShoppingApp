@@ -2,7 +2,7 @@ package com.e.commerce.ui.fragments.user.address.addresses
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.e.commerce.data.model.auth.AddressPojo
+import com.e.commerce.data.model.auth.address.AddressPojo
 import com.e.commerce.ui.fragments.user.address.AddressRepo
 import retrofit2.Call
 import retrofit2.Callback

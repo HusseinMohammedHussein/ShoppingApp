@@ -6,13 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.e.commerce.databinding.ItemProductImageBinding
 
-class ProductImageAdapter : RecyclerView.Adapter<ProductImageAdapter.ProductImageViewHolder>() {
-
-    private var pojoList = ArrayList<String>()
-
-    fun setData(pojos: ArrayList<String>) {
-        pojos.also { this.pojoList = it }
-    }
+class ProductImageAdapter(var productImages: ArrayList<String>) : RecyclerView.Adapter<ProductImageAdapter.ProductImageViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductImageViewHolder {
         return ProductImageViewHolder(
@@ -24,9 +18,9 @@ class ProductImageAdapter : RecyclerView.Adapter<ProductImageAdapter.ProductImag
         )
     }
 
-    override fun onBindViewHolder(holder: ProductImageViewHolder, position: Int) = holder.bind(pojoList[position])
+    override fun onBindViewHolder(holder: ProductImageViewHolder, position: Int) = holder.bind(productImages[position])
 
-    override fun getItemCount(): Int = pojoList.size
+    override fun getItemCount(): Int = productImages.size
 
     inner class ProductImageViewHolder(var binding: ItemProductImageBinding) :
         RecyclerView.ViewHolder(binding.root) {

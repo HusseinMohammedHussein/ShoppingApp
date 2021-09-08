@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.e.commerce.R
-import com.e.commerce.data.model.auth.LoginPojo.LoginDataPojo
+import com.e.commerce.data.model.auth.login.LoginDataPojo
 import com.e.commerce.databinding.FragmentLoginBinding
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
@@ -24,8 +24,9 @@ import timber.log.Timber
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-    private var viewModel: LoginViewModel = LoginViewModel()
-    private var sharedPref: SharedPref? = null
+
+    private lateinit var viewModel: LoginViewModel
+    private lateinit var sharedPref: SharedPref
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,8 +86,8 @@ class LoginFragment : Fragment() {
             if (response.status) {
                 Timber.d("ResponseMessage::${response.message}")
                 Timber.d("ResponseStatus::${response.status}")
-                sharedPref?.let {
-                    it.setString(resources.getString(R.string.user_token), response.data.token)
+                sharedPref.let {
+                    it.setString(resources.getString(R.string.user_token), response.loginData.token)
                     it.setBoolean(resources.getString(R.string.is_user), response.status)
                 }
 
@@ -98,7 +99,7 @@ class LoginFragment : Fragment() {
                         val getFCMToken = task.result.toString()
                         Timber.d("FCMTokenResult::$getFCMToken")
                         viewModel.setFCMToken(getFCMToken)
-                        sharedPref?.setString(getString(R.string.user_fcm_token), getFCMToken)
+                        sharedPref.setString(getString(R.string.user_fcm_token), getFCMToken)
                         Timber.d("FCMTokenResponseApi::$getFCMToken")
                         findNavController().navigate(R.id.action_login_to_profile)
                     }
@@ -106,8 +107,8 @@ class LoginFragment : Fragment() {
             } else {
                 DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_SHORT).show()
             }
-            Timber.d("UserToken::${sharedPref?.getString(resources.getString(R.string.user_token))}")
-            Timber.d("Is_User::${sharedPref?.getBoolean(resources.getString(R.string.is_user))}")
+            Timber.d("UserToken::${sharedPref.getString(resources.getString(R.string.user_token))}")
+            Timber.d("Is_User::${sharedPref.getBoolean(resources.getString(R.string.is_user))}")
             Timber.d("ResponseLoginMessage::${response.message}")
         })
     }

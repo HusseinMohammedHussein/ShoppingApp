@@ -10,9 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.e.commerce.R
-import com.e.commerce.data.model.ProfilePojo.ProfileResponsePojo
+import com.e.commerce.data.model.auth.profile.ProfileDataPojo
 import com.e.commerce.databinding.FragmentProfileBinding
-import com.e.commerce.ui.common.ProfileViewModel
+import com.e.commerce.ui.component.ProfileViewModel
 import com.e.commerce.ui.main.MainActivity
 import com.e.commerce.util.SharedPref
 import com.pranavpandey.android.dynamic.toasts.DynamicToast
@@ -63,14 +63,14 @@ class ProfileFragment : Fragment() {
     private fun observerData() {
         viewModel.profileMutableLD.observe(viewLifecycleOwner, { response ->
             if (response.status) {
-                bundle.putParcelable(getString(R.string.profilePojo), response.data)
-                Timber.d("ProfilePojoBundle::${bundle.getParcelable<ProfileResponsePojo>(getString(R.string.profilePojo))}")
-                binding.content.tvUsername.text = response.data.name
-                Timber.d("getUserName::${response.data.name}")
-                binding.content.tvEmail.text = response.data.email
-                sharedPref?.setInt(getString(R.string.user_points), response.data.points)
+                bundle.putParcelable(getString(R.string.profilePojo), response.profileData)
+                Timber.d("ProfilePojoBundle::${bundle.getParcelable<ProfileDataPojo>(getString(R.string.profilePojo))}")
+                binding.content.tvUsername.text = response.profileData.name
+                Timber.d("getUserName::${response.profileData.name}")
+                binding.content.tvEmail.text = response.profileData.email
+                sharedPref?.setInt(getString(R.string.user_points), response.profileData.points)
                 Glide.with(requireContext())
-                    .load(response.data.image)
+                    .load(response.profileData.image)
                     .into(binding.content.imgProfile)
             } else {
                 DynamicToast.makeError(requireContext(), response.message, Toast.LENGTH_LONG).show()
@@ -78,14 +78,14 @@ class ProfileFragment : Fragment() {
         })
 
         viewModel.totalOrdersMutableLD.observe(viewLifecycleOwner, { orderResponse ->
-            Timber.d("TotalOrders::${orderResponse.data.total}")
-            binding.content.contentOption.tvMyordersCount.text = String.format("Already have ${orderResponse.data.total} orders")
+            Timber.d("TotalOrders::${orderResponse.orderData.total}")
+            binding.content.contentOption.tvMyordersCount.text = String.format("Already have ${orderResponse.orderData.total} orders")
         })
 
         viewModel.addressMutableLD.observe(viewLifecycleOwner, { addressResponse ->
             if (addressResponse.status) {
-                Timber.d("TotalOrders::${addressResponse.data.total}")
-                binding.content.contentOption.tvShippingAddress.text = String.format("${addressResponse.data.total} address")
+                Timber.d("TotalOrders::${addressResponse.addressData.total}")
+                binding.content.contentOption.tvShippingAddress.text = String.format("${addressResponse.addressData.total} address")
             }
         })
     }
@@ -129,7 +129,7 @@ class ProfileFragment : Fragment() {
                 viewModel.logout(getFCMToken).observe(viewLifecycleOwner, { response ->
                     if (response.status) {
                         sharedPref?.let {
-                            it.setString(getString(R.string.user_token), response.data.token)
+                            it.setString(getString(R.string.user_token), response.logoutData.token)
                             it.setBoolean(getString(R.string.is_user), false)
                             it.clear()
                         }
