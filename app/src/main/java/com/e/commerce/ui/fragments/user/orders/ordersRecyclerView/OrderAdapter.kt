@@ -17,20 +17,13 @@ class OrderAdapter : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
         pojos.also { this.orderPojoList = it }
     }
 
-    fun clearData() {
-        if (orderPojoList?.isNotEmpty() == true) {
-            orderPojoList?.clear()
-            notifyDataSetChanged()
-        }
-    }
-
     inner class OrderViewHolder(var binding: ItemOrderBinding) : RecyclerView.ViewHolder(binding.root) {
         val bundle = Bundle()
 
         fun bind(orderPojo: OrderItemPojo) {
             binding.tvOrderId.text = String.format("Order ${orderPojo.id}")
             binding.tvDate.text = orderPojo.date
-            binding.tvTotalamount.text = String.format("Total Amount: ${orderPojo.total}")
+            binding.tvTotalamount.text = String.format("Total Amount: %.2f $", orderPojo.total)
             if (orderPojo.status == "Cancelled") {
                 binding.tvOrderStatus.text = orderPojo.status
                 binding.tvOrderStatus.setTextColor(Color.RED)
@@ -40,7 +33,7 @@ class OrderAdapter : RecyclerView.Adapter<OrderAdapter.OrderViewHolder>() {
 
             binding.tvDetails.setOnClickListener { view ->
                 bundle.putParcelable(view.resources.getString(R.string.order_pojo), orderPojo)
-                view.findNavController().navigate(R.id.action_orders_to_orderDetails, bundle)
+                view.findNavController().navigate(R.id.action_orders_to_orderDetails, bundle)   
             }
         }
     }
